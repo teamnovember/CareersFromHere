@@ -1,8 +1,13 @@
-@(message: String)
 
-@main("Welcome to Play") {
-    <div class="container">
+@stylesheets = {
 
+}
+
+@javascripts = {
+
+}
+
+@main("Welcome")(stylesheets)(javascripts) {
         <div class="page-header" id="banner">
             <div class="row">
                 <div class="col-lg-8 col-md-7 col-sm-6">
@@ -1046,6 +1051,4 @@
                 </div>
             </div>
         </div>
-
-    </div>
 }
