@@ -1,16 +1,21 @@
 package models;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Video {
     private String title;
     private String description;
+    private String thumbnailPath;
+    private Duration duration;
     private Boolean approved = true;
 
-    public Video(String title, String description) {
+    public Video(String title, String description, String thumbnailPath, Duration duration) {
         this.title = title;
         this.description = description;
+        this.thumbnailPath = thumbnailPath;
+        this.duration = duration;
         this.approved = false;
     }
 
