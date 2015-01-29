@@ -32,6 +32,10 @@ public class Video {
         return description;
     }
 
+    public String getThumbnailPath() { return thumbnailPath; }
+
+    public Duration getDuration() { return duration; }
+
     public void delete() {
 
     }
