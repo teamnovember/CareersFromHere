@@ -39,7 +39,7 @@ function startRecording() {
 function stopRecording() {
     cancelAnimationFrame(rafId);
 
-    var webmBlob = Whammy.fromImageArray(frames, 1000 / 60);
+    var webmBlob = Whammy.fromImageArray(frames, 1000 / 30);
 
     var player = document.getElementById("video-player");
     player.src = window.URL.createObjectURL(webmBlob);
