@@ -3,12 +3,14 @@
 # ~~~~
 
 # Home page
-GET         /                    controllers.VideoController.index
+GET        /                    controllers.VideoController.index
+
+GET        /view/:id            controllers.VideoController.view(id: Long)
 
 # Dummy page
-GET         /dummy               controllers.Dummy.dummy_page
+GET        /dummy               controllers.Dummy.dummy_page
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file        controllers.Assets.at(path="/public", file)
+GET        /assets/*file        controllers.Assets.at(path="/public", file)
 
     
