@@ -21,4 +21,9 @@ public class VideoController extends Controller {
 
         return ok(index.render(videoList));
     }
+
+    public static Result view(long id) {
+        Video v = new Video("Beatbox brilliance", "Blah", "http://img.youtube.com/vi/GNZBSZD16cY/0.jpg", Duration.ofSeconds(163));
+        return ok(view.render(v));
+    }
 }
