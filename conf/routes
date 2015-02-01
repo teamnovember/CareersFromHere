@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page
-GET         /                    controllers.Application.index
+GET         /                    controllers.VideoController.index
 
 # Dummy page
 GET         /dummy               controllers.Dummy.dummy_page
