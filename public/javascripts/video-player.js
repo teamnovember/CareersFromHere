@@ -20,13 +20,6 @@ var volumeDownInnerHTML = "volume down";
 
 var videoPlayer;
 
-function initialise() {
-    videoPlayer = document.getElementById(videoPlayerId);
-    videoPlayer.controls = false;
-
-    videoPlayer.addEventListener("timeupdate", updateProgressBar, false);
-};
-
 function changeButton(button, btnClass, btnInnerHTML) {
     button.class = btnClass;
     button.innerHTML = btnInnerHTML;
@@ -48,12 +41,12 @@ function playPauseButton(type) {
         changeButton(button, playClass, playInnerHTML);
         videoPlayer.pause();
     }
-}
+};
 
 function stopButton() {
     videoPlayer.pause();
     videoPlayer.currentTime = 0;
-}
+};
 
 function volume(direction) {
     var value = videoPlayer.volume;
@@ -66,7 +59,7 @@ function volume(direction) {
     if (value > 1) value = 1;
 
     videoPlayer.volume = value;
-}
+};
 
 function updateProgressBar() {
     var progressBar = document.getElementById(progressBarId);
@@ -74,6 +67,13 @@ function updateProgressBar() {
     progressBar.value = value;
 
     progressBar.innerHTML = value + "% played";
-}
+};
 
-document.addEventListener("DOMContentLoaded", function() { initialise(); }, false);
+function initialiseVideoPlayer() {
+    videoPlayer = document.getElementById(videoPlayerId);
+    videoPlayer.controls = false;
+
+    videoPlayer.addEventListener("timeupdate", updateProgressBar, false);
+};
+
+document.addEventListener("DOMContentLoaded", function() { initialiseVideoPlayer(); }, false);
