@@ -1,48 +1,51 @@
-var recorderId = "recorder";
+var recorderVideo;
+var recorderAudio;
 
-var recorder;
+var mRecordRTC = new MRecordRTC();
+
+mRecordRTC.media = {
+    audio: true,
+    video: true
+};
 
 function initialiseRecorder() {
-    recorder = document.getElementById(recorderId);
+    recorderAudio = document.getElementById("recorder-audio");
+    recorderVideo = document.getElementById("recorder-video");
 
     navigator.getUserMedia = navigator.getUserMedia ||
                                 navigator.webkitGetUserMedia ||
                                 navigator.mozGetUserMedia ||
                                 navigator.msGetUserMedia;
 
-    navigator.getUserMedia({video: true}, function(stream) {
-        recorder.src = window.URL.createObjectURL(stream);
+    navigator.getUserMedia({
+        audio: true,
+        video: true
+    }, function(stream) {
+        recorderVideo.src = window.URL.createObjectURL(stream);
+
+        mRecordRTC.addStream(stream);
     }, function(e) {
         console.log(e);
     });
 };
 
-var rafId;
-var frames = [];
-
 function startRecording() {
-    var canvas = document.createElement("canvas");
-    var ctx = canvas.getContext("2d");
-
-    var width = canvas.width;
-    var height = canvas.height;
-
-    function drawVideoFrame(time) {
-        rafId = requestAnimationFrame(drawVideoFrame);
-        ctx.drawImage(recorder, 0, 0, width, height);
-        frames.push(canvas.toDataURL("image/webp", 1));
-    };
-
-    rafId = requestAnimationFrame(drawVideoFrame);
+    mRecordRTC.startRecording();
 };
 
 function stopRecording() {
-    cancelAnimationFrame(rafId);
+    mRecordRTC.stopRecording(function(url, type) {
+        if (type == "audio") {
+            recorderAudio.src = url;
+            recorderAudio.play();
+        }
+        if (type == "video") {
+            recorderVideo.src = url;
+            recorderVideo.play();
+        }
 
-    var webmBlob = Whammy.fromImageArray(frames, 1000 / 30);
-
-    var player = document.getElementById("video-player");
-    player.src = window.URL.createObjectURL(webmBlob);
+        mRecordRTC.writeToDisk();
+    });
 };
 
 document.addEventListener("DOMContentLoaded", function() { initialiseRecorder(); }, false);
