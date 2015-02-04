@@ -1,6 +1,5 @@
 package models;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,10 +7,10 @@ public class Video {
     private String title;
     private String description;
     private String thumbnailPath;
-    private Duration duration;
+    private Integer duration;
     private Boolean approved = true;
 
-    public Video(String title, String description, String thumbnailPath, Duration duration) {
+    public Video(String title, String description, String thumbnailPath, Integer duration) {
         this.title = title;
         this.description = description;
         this.thumbnailPath = thumbnailPath;
@@ -34,7 +33,7 @@ public class Video {
 
     public String getThumbnailPath() { return thumbnailPath; }
 
-    public Duration getDuration() { return duration; }
+    public Integer getDuration() { return duration; }
 
     public void delete() {
 
