@@ -12,11 +12,11 @@ var stopClass = "stop";
 var volumeUpClass = "volume-up";
 var volumeDownClass = "volume-down";
 
-var playInnerHTML = "play";
-var pauseInnerHTML = "pause";
-var stopInnerHTML = "stop";
-var volumeUpInnerHTML = "volume up";
-var volumeDownInnerHTML = "volume down";
+var playInnerHTML = "<span class=\"glyphicon glyphicon-play\"></span>";
+var pauseInnerHTML = "<span class=\"glyphicon glyphicon-pause\"></span>";
+var stopInnerHTML = "<span class=\"glyphicon glyphicon-stop\"></span>";
+var volumeUpInnerHTML = "<span class=\"glyphicon glyphicon-volume-up\"></span>";
+var volumeDownInnerHTML = "<span class=\"glyphicon glyphicon-volume-down\"></span>";
 
 var videoPlayer;
 
@@ -72,6 +72,11 @@ function updateProgressBar() {
 function initialiseVideoPlayer() {
     videoPlayer = document.getElementById(videoPlayerId);
     videoPlayer.controls = false;
+
+    document.getElementById(playPauseId).innerHTML = playInnerHTML;
+    document.getElementById(stopId).innerHTML = stopInnerHTML;
+    document.getElementById(volumeUpId).innerHTML = volumeUpInnerHTML;
+    document.getElementById(volumeDownId).innerHTML = volumeDownInnerHTML;
 
     videoPlayer.addEventListener("timeupdate", updateProgressBar, false);
 };

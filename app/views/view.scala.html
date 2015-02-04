@@ -11,11 +11,11 @@
 
 @main(video.getTitle + " - Careers From Here")(stylesheets)(javascripts) {
     <div class="col-md-8">
-        <div id="video-player">
             @video_player()
+        <div id="video-metadata">
+            <h2>@video.getTitle</h2>
+            <p>@video.getDescription</p>
         </div>
-        <h2>@video.getTitle</h2>
-        <p>@video.getDescription</p>
     </div>
     <div id="uploader-info" class="col-md-4">
         <p>Uploader information goes here</p>

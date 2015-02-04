@@ -8,45 +8,35 @@
 
 }
 
-@main("Welcome")(stylesheets)(javascripts) {
+@main("Careers From Here")(stylesheets)(javascripts) {
     <div id="category-sidebar" class="col-sm-3 hidden-xs">
         <h2>Categories</h2>
         <div id="categories">
             <div class="checkbox">
-                <label>
-                    <input type="checkbox"> Check me out
-                </label>
+                <label><input type="checkbox"> Check me out</label>
             </div>
             <div class="checkbox">
-                <label>
-                    <input type="checkbox"> Check me out
-                </label>
+                <label><input type="checkbox"> Check me out</label>
             </div>
             <div class="checkbox">
-                <label>
-                    <input type="checkbox"> Check me out
-                </label>
+                <label><input type="checkbox"> Check me out</label>
             </div>
             <div class="checkbox">
-                <label>
-                    <input type="checkbox"> Check me out
-                </label>
+                <label><input type="checkbox"> Check me out</label>
             </div>
             <div class="checkbox">
-                <label>
-                    <input type="checkbox"> Check me out
-                </label>
+                <label><input type="checkbox"> Check me out</label>
             </div>
         </div>
     </div>
     <div id="video-grid" class="col-sm-9">
         @for(video <- videos) {
-            <a href="#">
+            <a href="@routes.VideoController.view(video.getId)">
                 <div class="video-grid-element col-sm-6 col-md-4"
                     style="background-image: url(@video.getThumbnailPath)">
                     <div class="video-info-overlay">
                         <h2>@video.getTitle</h2>
-                        <span>@video.getDuration.toString</span>
+                        <span>@{var s = video.getDuration; s / 60 + ":" + s % 60}</span>
                     </div>
                 </div>
             </a>

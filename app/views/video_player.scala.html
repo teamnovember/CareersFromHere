@@ -1,13 +1,13 @@
-<div>
-    <video id="video-player" width="640" height="480" controls>
+<div id="video-player-container">
+    <video id="video-player" width="640" height="360" controls>
         <!-- test.mp4 is a quite large file, 4.1M -->
         <source src="/assets/test.mp4" type="video/mp4">
     </video>
     <div id="video-controls">
-        <button id="play-pause-button" class="play" onclick="playPauseButton();">play</button>
-        <button id="stop-button" class="stop" onclick="stopButton();">stop</button>
-        <button id="volume-up-button" class="volume-up" onclick="volume('up');">volume up</button>
-        <button id="volume-down-button" class="volume-down" onclick="volume('down');">volume down</button>
+        <button id="play-pause-button" class="play btn btn-default" onclick="playPauseButton();"></button>
+        <button id="stop-button" class="stop btn btn-default" onclick="stopButton();"></button>
+        <button id="volume-up-button" class="volume-up btn btn-default" onclick="volume('up');"></button>
+        <button id="volume-down-button" class="volume-down btn btn-default" onclick="volume('down');"></button>
         <progress id="progress-bar" min="0" max="100" value="0">0% played</progress>
     </div>
 </div>

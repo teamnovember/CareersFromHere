@@ -31,6 +31,8 @@ public class Video extends Model {
         this.description = newDescription;
     }
 
+    public Long getId() { return id; }
+
     public String getTitle() {
         return title;
     }
