@@ -3,12 +3,20 @@ package models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Video {
+import javax.persistence.*;
+import play.db.ebean.*;
+
+@Entity
+public class Video extends Model {
+    @Id
+    private Long id;
     private String title;
     private String description;
     private String thumbnailPath;
     private Integer duration;
     private Boolean approved = true;
+
+    public static Finder<Long,Video> find = new Finder<>(Long.class, Video.class);
 
     public Video(String title, String description, String thumbnailPath, Integer duration) {
         this.title = title;
@@ -35,10 +43,6 @@ public class Video {
 
     public Integer getDuration() { return duration; }
 
-    public void delete() {
-
-    }
-
     public void approve(Boolean accept) {
         approved = accept;
         if (!accept) {
@@ -46,11 +50,7 @@ public class Video {
         }
     }
 
-    public List<Video> getVideos() {
-        return new ArrayList<>();
-    }
-
-    public List<Video> getVideos(String category) {
+    public static List<Video> getVideos(String category) {
         return new ArrayList<>();
     }
 }
