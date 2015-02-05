@@ -68,7 +68,7 @@ function resetPlayer() {
 
 function initialiseVideoPlayer() {
     videoPlayer = document.getElementById(videoPlayerId);
-    videoPlayer.controls = false;
+    /*videoPlayer.controls = false;*/
 
     videoPlayer.addEventListener("timeupdate", updateProgressBar, false);
     videoPlayer.addEventListener("ended", resetPlayer, false);

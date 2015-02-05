@@ -1,10 +1,11 @@
 @(path: String)
 
 <div id="video-player-container">
-    <video id="video-player" width="640" height="360" controls>
-        <source src=@path type="video/mp4">
-    </video>
-
+    <div id="video-viewport">
+        <video id="video-player">
+            <source src="@path" type="video/mp4">
+        </video>
+    </div>
     <div id="video-controls">
         <button id="play-pause-button" class="play btn btn-default" onclick="playPauseButton();">
             <span class="glyphicon glyphicon-play"></span>
