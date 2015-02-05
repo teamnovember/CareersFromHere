@@ -5,7 +5,12 @@
     height: 38px;
 }
 
+html, body {
+    height: 100%;
+}
+
 #main-container {
+    height: 100%;
     margin-top: 50px;
     /*border-left: #81b5ef 1px solid;
     border-right: #81b5ef 1px solid;*/
