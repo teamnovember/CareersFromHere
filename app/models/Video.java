@@ -52,6 +52,16 @@ public class Video extends Model {
         }
     }
 
+    // TODO: placeholder code
+    public List<String> getPaths() {
+        ArrayList<String> res = new ArrayList<String>();
+        res.add(0, "/assets/test.mp4");
+        res.add(1, "/assets/test.mp4");
+        res.add(2, "assets/test.mp4");
+
+        return res;
+    }
+
     public static List<Video> getVideos(String category) {
         return new ArrayList<>();
     }

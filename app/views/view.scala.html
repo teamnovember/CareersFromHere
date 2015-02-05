@@ -12,7 +12,7 @@
 
 @main(video.getTitle + " - Careers From Here")(stylesheets)(javascripts)(user) {
     <div class="col-md-8">
-            @video_player("/assets/test.mp4")
+            @video_player(video.getPaths)
         <div id="video-metadata">
             <h2>@video.getTitle</h2>
             <p>@video.getDescription</p>

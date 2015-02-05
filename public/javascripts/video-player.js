@@ -24,11 +24,13 @@ function playPauseButton() {
         button.class = pauseClass;
         button.getElementsByClassName(pauseGlyphClass)[0].style.display = "inline";
         button.getElementsByClassName(playGlyphClass)[0].style.display = "none";
+
         videoPlayer.play();
     } else {
         button.class = playClass;
         button.getElementsByClassName(playGlyphClass)[0].style.display = "inline";
         button.getElementsByClassName(pauseGlyphClass)[0].style.display = "none";
+
         videoPlayer.pause();
     }
 };
