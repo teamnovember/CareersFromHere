@@ -1,0 +1,13 @@
+@(user: models.User)
+
+@stylesheets = {
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin-dashboard.css")" />
+}
+
+@javascripts = {
+
+}
+
+@main("Admin Dashboard - Careers From Here")(stylesheets)(javascripts)(user) {
+  <p>Welcome!</p>
+}
