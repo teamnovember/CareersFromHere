@@ -1,7 +1,10 @@
+@(thumbnailPath: String)
+
 <div id="video-player-container">
     <video id="video-player" width="640" height="360" controls>
         <!-- test.mp4 is a quite large file, 4.1M -->
-        <source src="/assets/test.mp4" type="video/mp4">
+        @*<source src="/assets/test.mp4" type="video/mp4">*@
+        <source src=@thumbnailPath type="video/mp4">
     </video>
     <div id="video-controls">
         <button id="play-pause-button" class="play btn btn-default" onclick="playPauseButton();"></button>
