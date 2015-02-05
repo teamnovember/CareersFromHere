@@ -12,40 +12,31 @@ var stopClass = "stop";
 var volumeUpClass = "volume-up";
 var volumeDownClass = "volume-down";
 
-var playInnerHTML = "<span class=\"glyphicon glyphicon-play\"></span>";
-var pauseInnerHTML = "<span class=\"glyphicon glyphicon-pause\"></span>";
-var stopInnerHTML = "<span class=\"glyphicon glyphicon-stop\"></span>";
-var volumeUpInnerHTML = "<span class=\"glyphicon glyphicon-volume-up\"></span>";
-var volumeDownInnerHTML = "<span class=\"glyphicon glyphicon-volume-down\"></span>";
+var playGlyphClass = "glyphicon-play";
+var pauseGlyphClass = "glyphicon-pause";
 
 var videoPlayer;
 
-function changeButton(button, btnClass, btnInnerHTML) {
-    button.class = btnClass;
-    button.innerHTML = btnInnerHTML;
-};
-
-function playPauseButton(type) {
+function playPauseButton() {
     var button = document.getElementById(playPauseId);
 
-    // TODO: handle case when video stops (switch button to play)
-
-    if (type == playClass) changeButton(button, playClass, playInnerHTML);
-    else
-    if (type == pauseClass) changeButton(button, pauseClass, pauseInnerHTML);
-    else
-    if (videoPlayer.paused || videoPlayer.ended) {
-        changeButton(button, pauseClass, pauseInnerHTML);
+    if (videoPlayer.paused) {
+        button.class = pauseClass;
+        button.getElementsByClassName(pauseGlyphClass)[0].style.display = "inline";
+        button.getElementsByClassName(playGlyphClass)[0].style.display = "none";
         videoPlayer.play();
     } else {
-        changeButton(button, playClass, playInnerHTML);
+        button.class = playClass;
+        button.getElementsByClassName(playGlyphClass)[0].style.display = "inline";
+        button.getElementsByClassName(pauseGlyphClass)[0].style.display = "none";
         videoPlayer.pause();
     }
 };
 
 function stopButton() {
     videoPlayer.pause();
-    videoPlayer.currentTime = 0;
+
+    resetPlayer();
 };
 
 function volume(direction) {
@@ -63,22 +54,24 @@ function volume(direction) {
 
 function updateProgressBar() {
     var progressBar = document.getElementById(progressBarId);
-    var value = Math.floor(100 / videoPlayer.duration) * videoPlayer.currentTime;
+    var value = Math.floor(100 * videoPlayer.currentTime / videoPlayer.duration);
     progressBar.value = value;
-
-    progressBar.innerHTML = value + "% played";
 };
+
+function resetPlayer() {
+    videoPlayer.currentTime = 0;
+
+    var button = document.getElementById(playPauseId);
+    button.getElementsByClassName(playGlyphClass)[0].style.display = "inline";
+    button.getElementsByClassName(pauseGlyphClass)[0].style.display = "none";
+}
 
 function initialiseVideoPlayer() {
     videoPlayer = document.getElementById(videoPlayerId);
     videoPlayer.controls = false;
 
-    document.getElementById(playPauseId).innerHTML = playInnerHTML;
-    document.getElementById(stopId).innerHTML = stopInnerHTML;
-    document.getElementById(volumeUpId).innerHTML = volumeUpInnerHTML;
-    document.getElementById(volumeDownId).innerHTML = volumeDownInnerHTML;
-
     videoPlayer.addEventListener("timeupdate", updateProgressBar, false);
+    videoPlayer.addEventListener("ended", resetPlayer, false);
 };
 
 document.addEventListener("DOMContentLoaded", function() { initialiseVideoPlayer(); }, false);
