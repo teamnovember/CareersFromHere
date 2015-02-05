@@ -4,7 +4,7 @@
 # --- !Ups
 
 create table question (
-  question_id               bigint auto_increment not null,
+  question_id               bigint not null,
   text                      varchar(255),
   duration                  integer,
   SCHOOL                    bigint,
@@ -12,13 +12,13 @@ create table question (
 ;
 
 create table school (
-  school_id                 bigint auto_increment not null,
+  school_id                 bigint not null,
   name                      varchar(255),
   constraint pk_school primary key (school_id))
 ;
 
 create table student (
-  id                        bigint auto_increment not null,
+  id                        bigint not null,
   name                      varchar(255),
   password                  varchar(255),
   email                     varchar(255),
@@ -27,7 +27,7 @@ create table student (
 ;
 
 create table user (
-  id                        bigint auto_increment not null,
+  id                        bigint not null,
   name                      varchar(255),
   password                  varchar(255),
   email                     varchar(255),
@@ -36,14 +36,24 @@ create table user (
 ;
 
 create table video (
-  id                        bigint auto_increment not null,
+  id                        bigint not null,
   title                     varchar(255),
   description               varchar(255),
   thumbnail_path            varchar(255),
   duration                  integer,
-  approved                  tinyint(1) default 0,
+  approved                  boolean,
   constraint pk_video primary key (id))
 ;
+
+create sequence question_seq;
+
+create sequence school_seq;
+
+create sequence student_seq;
+
+create sequence user_seq;
+
+create sequence video_seq;
 
 alter table question add constraint fk_question_school_1 foreign key (SCHOOL) references school (school_id) on delete restrict on update restrict;
 create index ix_question_school_1 on question (SCHOOL);
@@ -56,17 +66,27 @@ create index ix_user_school_3 on user (school_school_id);
 
 # --- !Downs
 
-SET FOREIGN_KEY_CHECKS=0;
+SET REFERENTIAL_INTEGRITY FALSE;
 
-drop table question;
+drop table if exists question;
 
-drop table school;
+drop table if exists school;
 
-drop table student;
+drop table if exists student;
 
-drop table user;
+drop table if exists user;
 
-drop table video;
+drop table if exists video;
 
-SET FOREIGN_KEY_CHECKS=1;
+SET REFERENTIAL_INTEGRITY TRUE;
+
+drop sequence if exists question_seq;
+
+drop sequence if exists school_seq;
+
+drop sequence if exists student_seq;
+
+drop sequence if exists user_seq;
+
+drop sequence if exists video_seq;
 
