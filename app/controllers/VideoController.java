@@ -25,7 +25,7 @@ public class VideoController extends Controller {
         }
         List<Video> videoList = Video.find.all();
 
-        User u = new User(1,"Edgaras Liberis","blahblah","el398@cam.ac.uk");
+        User u = new User("Edgaras Liberis","blahblah","el398@cam.ac.uk");
 
         return ok(index.render(videoList, u));
     }

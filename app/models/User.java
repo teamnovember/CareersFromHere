@@ -5,35 +5,44 @@ package models;
 /**
  * Created by biko on 03/02/15.
  */
+import javax.persistence.*;
+import play.db.ebean.*;
 
 
-public class User {
+@Entity
+public class User extends Model {
 
-    private long id;
+
+    @Id
+    private Long id;
     private String name;
     private String password;
     private String email;
+    @ManyToOne
+    private School school;
 
-   public User(long id, String name, String password, String email){
-        this.id = id;
+
+
+
+
+
+   public User(String name, String password, String email){
         this.name=name;
         this.email=email;
         this.password=password;
     }
 
-    public long getId(){
-        return id;
+    public static Finder<Long,User> find = new Finder<>(Long.class,User.class);
+
+    public Long getId(){
+        return this.id;
     }
 
-    public void setId(long id){
-        this.id = id;
-    }
-
-    public String getPassword(){
+    public String getPassword(){ //todo use secure social here
         return password;
     }
 
-    public void setPassword(String password){
+    public void setPassword(String password){ //todo use secure social here
         this.password=password;
     }
 
@@ -52,6 +61,13 @@ public class User {
 
     public void setEmail(String email){
         this.email=email;
-
     }
+
+    public School getSchool(){
+        return this.school;
+    }
+    public void setSchool(School school){
+        this.school = school;
+    }
+
 }

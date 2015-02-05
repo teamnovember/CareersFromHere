@@ -7,12 +7,11 @@ package models;
 import java.util.List;
 
 
-public interface UserDAO {
+public interface UserDAO<T extends User> {
 
     public List<User> getAllUsers();
-    public User getUser(long id);
-    public void updateUser(User user);
-    public void deleteUser(User user);
+    public User getUser(Long id);
+    public void deleteUser(Long ID);
 
 
 }

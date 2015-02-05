@@ -10,7 +10,7 @@ import java.util.List;
 
 public class AdminController extends Controller {
     public static Result index() {
-        User u = new User(1,"Edgaras Liberis","blahblah","el398@cam.ac.uk");
+        User u = new User("Edgaras Liberis","blahblah","el398@cam.ac.uk");
         return ok(dashboard.render(u));
     }
 }
