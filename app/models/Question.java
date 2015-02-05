@@ -11,14 +11,16 @@ public class Question extends Model {
     @Id
     private Long questionId;
     private String text;
+    private int duration;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="SCHOOL")
     public School school;
 
-    Question(String text, School school) {
+    Question(String text, School school,int duration) {
         this.text = text;
         this.school = school;
+        this.duration = duration;
     }
 
     public static Finder<Long,Question> find = new Finder<>(Long.class, Question.class);
@@ -38,6 +40,10 @@ public class Question extends Model {
     public void setText(String text) {
         this.text = text;
     }
+
+    public int getDuration() { return duration; }
+
+    public void setDuration(int duration) { this.duration = duration; }
 
     public School getSchool() {
         return school;

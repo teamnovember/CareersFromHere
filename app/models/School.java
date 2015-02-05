@@ -43,8 +43,8 @@ public class School extends Model {
         return this.questions;
     }
 
-    public void addQuestion(String question) {
-        Question newQuestion = new Question(question, this);
+    public void addQuestion(String question, int duration) {
+        Question newQuestion = new Question(question, this, duration);
         this.questions.add(newQuestion);
         newQuestion.save();
         this.save();
