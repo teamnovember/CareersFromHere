@@ -1,6 +1,8 @@
 package models;
 
+import com.avaje.ebean.Ebean;
 import com.avaje.ebean.ExpressionList;
+import com.avaje.ebean.Query;
 
 import java.util.List;
 
@@ -14,16 +16,38 @@ public class Admin extends User {
         super.setSchool(school);
     }
     public List<Video> getUnapprovedVideos(){
-
-        ExpressionList<Video> explist = Video.find.where().eq("approved",Video.class);//todo this is just a placeholder
-        List<Video> videos = explist.findList();//todo find the results
-
+        ExpressionList<Video> expList = Video.find.where().eq("approved",0);
+        List<Video> videos = expList.findList();
 
         return videos;
     }
 
-    public void addQuestion(String question, int duration){
-        new Question(question,this.getSchool(),duration);
+    public List<Video> getApprovedVideos(){
+        ExpressionList<Video> expList = Video.find.where().eq("approved",1);
+        List<Video> videos = expList.findList();
+
+        return videos;
     }
 
+    public List<Video> getAllVideos(){
+        List<Video> videos = Ebean.find(Video.class).select("*").orderBy("Video.approved, approved asc").findList();
+        return videos;
+    }
+
+    public void addQuestion(String question, int duration){
+        School school = this.getSchool();
+        school.addQuestion(question,duration);
+    }
+
+    public List<Student> getStudents() {
+        School school = this.getSchool();
+        List<Student> students = Student.find.where().eq("school",school).findList();
+        return students;
+    }
+
+    public List<Alumni> getAlumni() {
+        School school = this.getSchool();
+        List<Alumni> alumni = Alumni.find.where().eq("school",school).findList();
+        return alumni;
+    }
 }

@@ -18,6 +18,7 @@ public class Alumni extends User {
     @OneToMany
     List<Video> videos;
 
+    public static Finder<Long,Alumni> find = new Finder<>(Long.class,Alumni.class);
 
     public void setProfile(String profile){
         this.profile=profile;
