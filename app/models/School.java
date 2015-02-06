@@ -17,7 +17,7 @@ public class School extends Model {
     @OneToMany(mappedBy="school", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Question> questions;
 
-    School(String name) {
+    public School(String name) {
         this.name = name;
     }
 
