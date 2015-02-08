@@ -10,6 +10,8 @@ import play.db.ebean.*;
 public class Video extends Model {
     @Id
     private Long id;
+    @ManyToOne
+    private User user;
     private String title;
     @Lob
     private String description;
@@ -20,7 +22,8 @@ public class Video extends Model {
 
     public static Finder<Long,Video> find = new Finder<>(Long.class, Video.class);
 
-    public Video(String title, String description, String thumbnailPath) {
+    public Video(User user, String title, String description, String thumbnailPath) {
+        this.user = user;
         this.title = title;
         this.description = description;
         this.thumbnailPath = thumbnailPath;
@@ -38,6 +41,8 @@ public class Video extends Model {
     }
 
     public Long getId() { return id; }
+
+    public User getUser() { return user; }
 
     public String getTitle() { return title; }
 
