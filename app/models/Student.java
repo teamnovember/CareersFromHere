@@ -1,5 +1,7 @@
 package models;
 
+import views.forms.UserForm;
+
 import javax.persistence.Entity;
 
 /**
@@ -14,5 +16,11 @@ public class Student extends User{
         super.setSchool(school);
     }
 
+    public static Student makeInstance(UserForm data) {
+        Student student = new Student(data.username,data.email,data.password,data.school);
+        return student;
+    }
+
     public static Finder<Long,Student> find = new Finder<>(Long.class,Student.class);
+
 }

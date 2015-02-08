@@ -1,5 +1,7 @@
 package models;
 
+import views.forms.UserForm;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -12,6 +14,11 @@ public class Alumni extends User {
     public Alumni(String name,String password,String email, School school){
         super(name,password,email);
         super.setSchool(school);
+    }
+
+    public static Alumni makeInstance(UserForm data) {
+        Alumni alumni = new Alumni(data.username,data.email,data.password,data.school);
+        return alumni;
     }
 
     private String profile;
