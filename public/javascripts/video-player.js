@@ -39,10 +39,16 @@ function playPauseButton() {
 };
 
 function stopButton() {
-    videoPlayer.pause();
-
-    resetPlayer();
+    index = 0;
+    switchToVideo();
+    resetButtons();
 };
+
+function resetButtons() {
+    var button = document.getElementById(playPauseId);
+    button.getElementsByClassName(playGlyphClass)[0].style.display = "inline";
+    button.getElementsByClassName(pauseGlyphClass)[0].style.display = "none";
+}
 
 function volume(direction) {
     var value = videoPlayer.volume;
@@ -54,7 +60,8 @@ function volume(direction) {
     else
     if (value > 1) value = 1;
 
-    videoPlayer.volume = value;
+    for (var i = 0; i < videos.length; ++ i)
+        videos[i].volume = value;
 };
 
 function updateProgressBar() {
@@ -63,19 +70,15 @@ function updateProgressBar() {
     progressBar.value = value;
 };
 
-function resetPlayer() {
-    videoPlayer.currentTime = 0;
-
-    var button = document.getElementById(playPauseId);
-    button.getElementsByClassName(playGlyphClass)[0].style.display = "inline";
-    button.getElementsByClassName(pauseGlyphClass)[0].style.display = "none";
-};
-
 function switchToVideo() {
     if (videoPlayer) {
         videoPlayer.style.display = "none";
         videoPlayer.currentTime = 0;
-        passedTime += videoPlayer.duration;
+        if (index != 0) passedTime += videoPlayer.duration;
+        else {
+            passedTime = 0;
+            resetButtons();
+        }
         videoPlayer.pause();
     }
 
