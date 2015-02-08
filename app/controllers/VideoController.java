@@ -36,15 +36,15 @@ public class VideoController extends Controller {
     public static Result view(long id) {
         User u = new User("Test user", "Stuff", "test@asdf.com");
         Video v = new Video(u, "Beatbox brilliance", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sollicitudin augue et molestie tincidunt. Suspendisse eu semper diam. Maecenas pulvinar arcu rhoncus augue suscipit, vitae sodales nulla condimentum. Etiam dignissim varius massa non tristique. Integer vel dolor et purus ultrices tincidunt ut eu turpis. Pellentesque laoreet varius diam et finibus. Etiam scelerisque erat velit, quis fringilla tellus interdum varius. Praesent eu rutrum tortor. Praesent volutpat tellus a mi viverra malesuada. Donec egestas ut nisi sed interdum. In vel ex at nisl pulvinar interdum. Aenean nisl velit, lobortis sed suscipit sed, mollis id nisl. Sed iaculis lectus eu lorem dignissim accumsan.", "http://img.youtube.com/vi/GNZBSZD16cY/0.jpg");
-        VideoClip clip = new VideoClip("/assets/test1.mp4", null, 100);
+        VideoClip clip = new VideoClip("/assets/test1.mp4", null, 20);
         v.addClip(clip);
-        clip = new VideoClip("/assets/test2.mp4", null, 100);
+        clip = new VideoClip("/assets/test2.mp4", null, 14);
         v.addClip(clip);
-        clip = new VideoClip("/assets/test3.mp4", null, 100);
+        clip = new VideoClip("/assets/test3.mp4", null, 19);
         v.addClip(clip);
-        clip = new VideoClip("/assets/test4.mp4", null, 100);
+        clip = new VideoClip("/assets/test4.mp4", null, 16);
         v.addClip(clip);
-        clip = new VideoClip("/assets/test5.mp4", null, 100);
+        clip = new VideoClip("/assets/test5.mp4", null, 7);
         v.addClip(clip);
         return ok(view.render(v, null));
     }

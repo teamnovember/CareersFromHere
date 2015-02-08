@@ -1,9 +1,9 @@
-@(paths: java.util.List[String])(duration: Integer)
+@(paths: java.util.List[String])
 
 <div id="video-player-container">
-    <div id="video-viewport" data-length=@duration>
+    <div id="video-viewport">
         @for(path <- paths) {
-            <video style="display: none" preload="none">
+            <video style="display: none" preload="metadata">
                 <source src="@path" type="video/mp4">
             </video>
         }
