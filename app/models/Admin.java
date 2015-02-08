@@ -3,6 +3,7 @@ package models;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.ExpressionList;
 import com.avaje.ebean.Query;
+import views.forms.UserForm;
 
 import java.util.List;
 
@@ -15,6 +16,12 @@ public class Admin extends User {
         super(name,password,email);
         super.setSchool(school);
     }
+
+    public static Admin makeInstance(UserForm data) {
+        Admin admin = new Admin(data.username,data.email,data.password,data.school);
+        return admin;
+    }
+
     public List<Video> getUnapprovedVideos(){
         ExpressionList<Video> expList = Video.find.where().eq("approved",0);
         List<Video> videos = expList.findList();

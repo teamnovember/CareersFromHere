@@ -1,5 +1,7 @@
 package models;
 
+import views.forms.UserForm;
+
 import java.util.List;
 
 /**
@@ -9,6 +11,11 @@ public class SuperAdmin extends Admin {
 
     public SuperAdmin(String name, String password, String email, School school){
         super(name,password,email,school);
+    }
+
+    public static SuperAdmin makeInstance(UserForm data) {
+        SuperAdmin admin = new SuperAdmin(data.username,data.email,data.password,data.school);
+        return admin;
     }
 
     public void setActiveSchool(School school){

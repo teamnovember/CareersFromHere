@@ -3,19 +3,21 @@
 # ~~~~
 
 # Video gallery pages
-GET        /                    controllers.VideoController.index
-GET        /view/:id            controllers.VideoController.view(id: Long)
+GET        /                       controllers.VideoController.index
+GET        /view/:id               controllers.VideoController.view(id: Long)
 
 # Admin pages
-GET        /admin               controllers.AdminController.index()
-GET        /admin/users         controllers.AdminController.users()
-GET        /admin/videos        controllers.AdminController.videos()
-GET        /admin/questions     controllers.AdminController.questions()
+GET        /admin                  controllers.AdminController.index()
+GET        /admin/users            controllers.AdminController.users()
+GET        /admin/videos           controllers.AdminController.videos()
+GET        /admin/questions        controllers.AdminController.questions()
+GET        /admin/users/:id        controllers.AdminController.getUser(id: Long)
+POST       /admin/users            controllers.AdminController.postUser()
 
 # Dummy page
-GET        /dummy               controllers.Dummy.dummy_page
+GET        /dummy                  controllers.Dummy.dummy_page
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file        controllers.Assets.at(path="/public", file)
+GET        /assets/*file           controllers.Assets.at(path="/public", file)
 
     
