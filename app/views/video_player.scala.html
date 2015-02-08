@@ -2,9 +2,11 @@
 
 <div id="video-player-container">
     <div id="video-viewport">
-        <video id="video-player">
-            <source src="@paths.get(0)" type="video/mp4">
-        </video>
+        @for(path <- paths) {
+            <video style="display: none" preload="metadata">
+                <source src="@path" type="video/mp4">
+            </video>
+        }
     </div>
     <div id="video-controls">
         <button id="play-pause-button" class="play btn btn-default" onclick="playPauseButton();">

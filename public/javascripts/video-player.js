@@ -1,4 +1,3 @@
-var videoPlayerId = "video-player";
 var playPauseId = "play-pause-button";
 var stopId = "stop-button";
 var volumeUpId = "volume-up-button";
@@ -16,6 +15,10 @@ var playGlyphClass = "glyphicon-play";
 var pauseGlyphClass = "glyphicon-pause";
 
 var videoPlayer;
+var videos;
+var index = 0;
+var totalDuration = 0;
+var passedTime = 0;
 
 function playPauseButton() {
     var button = document.getElementById(playPauseId);
@@ -56,7 +59,7 @@ function volume(direction) {
 
 function updateProgressBar() {
     var progressBar = document.getElementById(progressBarId);
-    var value = Math.floor(100 * videoPlayer.currentTime / videoPlayer.duration);
+    var value = Math.floor(100 * (videoPlayer.currentTime + passedTime) / totalDuration);
     progressBar.value = value;
 };
 
@@ -66,14 +69,40 @@ function resetPlayer() {
     var button = document.getElementById(playPauseId);
     button.getElementsByClassName(playGlyphClass)[0].style.display = "inline";
     button.getElementsByClassName(pauseGlyphClass)[0].style.display = "none";
-}
-
-function initialiseVideoPlayer() {
-    videoPlayer = document.getElementById(videoPlayerId);
-    /*videoPlayer.controls = false;*/
-
-    videoPlayer.addEventListener("timeupdate", updateProgressBar, false);
-    videoPlayer.addEventListener("ended", resetPlayer, false);
 };
 
-document.addEventListener("DOMContentLoaded", function() { initialiseVideoPlayer(); }, false);
+function switchToVideo() {
+    if (videoPlayer) {
+        videoPlayer.style.display = "none";
+        videoPlayer.currentTime = 0;
+        passedTime += videoPlayer.duration;
+        videoPlayer.pause();
+    }
+
+    videoPlayer = videos[index];
+    videoPlayer.style.display = "inline";
+    if (index > 0) videoPlayer.play();
+
+    index = (index + 1) % videos.length;
+};
+
+function addDuration(e) {
+    totalDuration += videos[e.target.id].duration;
+}
+
+function getVideos() {
+    videos = document.getElementsByTagName("video");
+
+    for (var i = 0; i < videos.length; ++ i) {
+        videos[i].id = i;
+        videos[i].addEventListener("loadedmetadata", addDuration, false);
+        videos[i].addEventListener("timeupdate", updateProgressBar, false);
+        videos[i].addEventListener("ended", switchToVideo, false);
+    }
+
+    videoPlayer = undefined;
+
+    switchToVideo();
+};
+
+document.addEventListener("DOMContentLoaded", function() { getVideos(); }, false);
