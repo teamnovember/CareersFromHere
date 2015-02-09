@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by biko on 03/02/15.
  */
-public class UserDAOImpl<T extends User> implements UserDAO {
+public class UserDAOImpl implements UserDAO {
 
     public UserDAOImpl() {}
 
