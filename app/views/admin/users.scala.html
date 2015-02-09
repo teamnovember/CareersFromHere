@@ -1,0 +1,13 @@
+@(user: models.Admin)(form: play.data.Form[views.forms.UserForm])
+
+@stylesheets = {
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
+}
+
+@javascripts = {
+
+}
+
+@main("Admin Dashboard: User Management - Careers From Here")(stylesheets)(javascripts)(user) {
+  <p>Welcome!</p>
+}

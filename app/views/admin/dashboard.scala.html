@@ -1,7 +1,7 @@
-@(user: models.User)
+@(user: models.Admin)
 
 @stylesheets = {
-    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin-dashboard.css")" />
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
 }
 
 @javascripts = {
@@ -9,5 +9,35 @@
 }
 
 @main("Admin Dashboard - Careers From Here")(stylesheets)(javascripts)(user) {
-  <p>Welcome!</p>
+    <div class="spacing-panel col-md-6">
+        <div id="actions-links" class="shadow-panel">
+          <div><a class="btn btn-primary choice-button" href="@routes.AdminController.users">
+              <h3><span class="glyphicon glyphicon-user"></span> Manage users</h3>
+              <p>Click here to:
+              <ul>
+                  <li>Approve new user registrations</li>
+                  <li>Create new users</li>
+                  <li>Edit existing user information</li>
+                  <li>Delete users</li>
+              </ul>
+              </p>
+          </a></div>
+          <div><a class="btn btn-primary choice-button" href="@routes.AdminController.videos">
+              <h3><span class="glyphicon glyphicon-facetime-video"></span> Manage Videos</h3>
+              <p>Click here to:
+              <ul>
+                  <li>View and approve newly recorded interviews</li>
+                  <li>List currently available videos</li>
+                  <li>Edit existing video metadata, such as description</li>
+                  <li>Delete videos</li>
+              </ul>
+              </p>
+          </a></div>
+        </div>
+    </div>
+    <div class="spacing-panel col-md-6">
+        <div id="admin-stats" class=" shadow-panel">
+            <p>Some admin stats, maybe list of unapproved videos</p>
+        </div>
+    </div>
 }

@@ -7,6 +7,7 @@ package models;
  */
 import javax.persistence.*;
 import play.db.ebean.*;
+import views.forms.UserForm;
 
 
 @Entity
@@ -26,7 +27,7 @@ public class User extends Model {
 
 
 
-   public User(String name, String password, String email){
+    public User(String name, String password, String email){
         this.name=name;
         this.email=email;
         this.password=password;

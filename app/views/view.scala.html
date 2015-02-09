@@ -11,13 +11,13 @@
 
 @main(video.getTitle + " - Careers From Here")(stylesheets)(javascripts)(user) {
     <div class="col-md-8">
-            @video_player(video.getPaths)
-        <div id="video-metadata">
+            @video_player(video.getPaths)(video.getDuration)
+        <div id="video-metadata" class="shadow-panel">
             <h2>@video.getTitle</h2>
             <p>@video.getDescription</p>
         </div>
     </div>
-    <div id="uploader-info" class="col-md-4">
+    <div id="uploader-info" class="col-md-4 shadow-panel">
         <p>Uploader information goes here</p>
     </div>
 
