@@ -1,10 +1,15 @@
+var EPSILON = 0.00001;
+
 var videoPlayerId = "video-player";
 var playPauseId = "play-pause-button";
 var prevId = "prev-section-button";
 var nextId = "next-section-button";
+var posterId = "poster";
+var posterImgId = "poster-img";
 var overlayId = "overlay";
 var underlayId = "underlay";
 
+var progressClass = "progress";
 var progressBarClass = "progress-bar";
 
 var totalDurationAttr = "data-total-duration";
@@ -16,6 +21,9 @@ var playGlyphClass = "glyphicon-play";
 var pauseGlyphClass = "glyphicon-pause";
 
 var videoPlayer;
+var progress;
+var videoTime;
+var poster;
 var overlay;
 var overlayDelay;
 var underlay;
@@ -29,6 +37,7 @@ var volume;
 var isPaused;
 var noOverlay;
 var passedTime;
+var noDelay;
 
 function playPause() {
     var button = document.getElementById(playPauseId);
@@ -87,6 +96,7 @@ function prev() {
         index = toLoadIndex;
 
         passedTime -= durations[index];
+        if (passedTime < EPSILON) passedTime = 0;
         updateProgressBar(true);
 
         switchToVideo();
@@ -145,18 +155,65 @@ function switchToVideo() {
     }
 };
 
-function updateProgressBar(noTimeUpdate) {
-    var percentage;
-    if (noTimeUpdate == true) percentage = (passedTime) / totalDuration * 100;
-    else percentage = (passedTime + videoPlayer.currentTime) / totalDuration * 100;
-    percentage = percentage.toString() + "%";
+function takeSnapshot() {
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+    canvas.width = 640;
+    canvas.height = 360;
+    ctx.drawImage(videoPlayer, 0, 0, canvas.width, canvas.height);
+    document.getElementById(posterImgId).src = canvas.toDataURL();
+};
 
-    document.getElementsByClassName(progressBarClass)[0].style.width = percentage;
+function switchToVideoWithTime(toLoadIndex) {
+    if (index != toLoadIndex) {
+        takeSnapshot();
+
+        underlay.innerHTML = questions[toLoadIndex];
+
+        poster.style.display = "inline";
+    }
+
+    videoPlayer.pause();
+
+    if (index != toLoadIndex) {
+        index = toLoadIndex;
+
+        videoPlayer.src = paths[index];
+        noDelay = true;
+        videoPlayer.load();
+
+        if (index == 0) {
+            document.getElementById(prevId).disabled = true;
+        } else {
+            document.getElementById(prevId).disabled = false;
+        }
+
+        if (index == numOfVideos - 1) {
+            document.getElementById(nextId).disabled = true;
+        } else {
+            document.getElementById(nextId).disabled = false;
+        }
+    } else {
+        videoPlayer.currentTime = videoTime;
+        videoTime = -1.0;
+
+        if (!isPaused) videoPlayer.play();
+    }
 };
 
 function loadComplete() {
-    if (!isPaused) {
-        setTimeout(function() {
+    if (noDelay) {
+        noDelay = false;
+        poster.style.display = "none";
+        overlay.style.display = "none";
+        underlay.style.display = "inline-block";
+        noOverlay = true;
+
+        if (isPaused) return;
+
+        videoPlayer.play();
+    } else if (!isPaused) {
+        setTimeout(function () {
             if (isPaused) return;
 
             overlay.style.display = "none";
@@ -168,11 +225,51 @@ function loadComplete() {
     }
 };
 
+function updateProgressBar(noTimeUpdate) {
+    var percentage;
+    if (noTimeUpdate == true) percentage = (passedTime) / totalDuration * 100;
+    else percentage = (passedTime + videoPlayer.currentTime) / totalDuration * 100;
+    percentage = percentage.toString() + "%";
+
+    document.getElementsByClassName(progressBarClass)[0].style.width = percentage;
+};
+
+function updateTime() {
+    if (videoTime != -1 && videoTime != undefined) {
+        videoPlayer.currentTime = videoTime;
+        videoTime = -1.0;
+    }
+};
+
+function skipVideo(e) {
+    var offset = $(e.target).offset();
+    var time = (e.clientX - offset.left) / progress.offsetWidth * totalDuration;
+
+    passedTime = 0;
+    var toLoadIndex = 0;
+
+    while (passedTime + durations[toLoadIndex] <= time) {
+        passedTime += durations[toLoadIndex ++];
+    }
+
+    videoTime = time - passedTime;
+    if (videoTime < EPSILON) videoTime = 0;
+
+    switchToVideoWithTime(toLoadIndex);
+};
+
 function initVideoPlayer() {
     videoPlayer = document.getElementById(videoPlayerId);
     videoPlayer.addEventListener("timeupdate", updateProgressBar, false);
     videoPlayer.addEventListener("ended", next, false);
+    videoPlayer.addEventListener("loadedmetadata", updateTime, false);
     videoPlayer.addEventListener("loadeddata", loadComplete, false);
+
+    progress = document.getElementsByClassName(progressClass)[0];
+    progress.addEventListener("click", skipVideo, false);
+
+    poster = document.getElementById(posterId);
+    poster.style.display = "none";
 
     overlay = document.getElementById(overlayId);
     overlayDelay = 2000;
@@ -200,6 +297,7 @@ function initVideoPlayer() {
     isPaused = true;
     noOverlay = false;
     passedTime = 0;
+    noDelay = false;
 
     switchToVideo();
 };

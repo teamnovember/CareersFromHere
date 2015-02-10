@@ -12,6 +12,7 @@
     height: 360px;
 }
 
+#video-player-container #poster,
 #video-player-container #overlay {
     position: absolute;
     text-align: center;

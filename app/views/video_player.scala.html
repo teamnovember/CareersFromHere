@@ -1,11 +1,16 @@
 @(paths: String)(questions: String)(durations: String)(totalDuration: Double)
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.3/jquery.mobile.min.js"></script>
+
 <div id="video-player-container">
     <div id="video-viewport">
         <video id="video-player" preload="metadata"
             data-total-duration="@totalDuration" data-paths="@paths" data-questions="@questions" data-durations="@durations">
             <source type="video/mp4" style="display: none">
         </video>
+
+        <div id="poster"><img id="poster-img"></div>
 
         <div id="overlay"></div>
         <div id="underlay"></div>
