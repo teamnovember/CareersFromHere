@@ -13,7 +13,7 @@ import java.util.List;
 public class Admin extends User {
 
     public Admin(String name,String password,String email, School school){
-        super(name,password,email);
+        super(name,password,email,"admin");
         super.setSchool(school);
     }
 

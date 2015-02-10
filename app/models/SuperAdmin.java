@@ -11,6 +11,7 @@ public class SuperAdmin extends Admin {
 
     public SuperAdmin(String name, String password, String email, School school){
         super(name,password,email,school);
+        this.setDiscriminator("superadmin");
     }
 
     public static SuperAdmin makeInstance(UserForm data) {

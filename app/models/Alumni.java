@@ -12,7 +12,7 @@ import java.util.List;
 public class Alumni extends User {
 
     public Alumni(String name,String password,String email, School school){
-        super(name,password,email);
+        super(name,password,email,"alumni");
         super.setSchool(school);
     }
 
