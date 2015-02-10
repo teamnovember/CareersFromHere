@@ -25,6 +25,7 @@ var durations;
 var totalDuration;
 var index;
 var numOfVideos;
+var volume;
 var isPaused;
 var noOverlay;
 var passedTime;
@@ -106,6 +107,18 @@ function next() {
 
 };
 
+function volumeChanged(direction) {
+    if (direction == "up") volume += 0.1;
+    else
+    if (direction == "down") volume -= 0.1;
+
+    if (0 > volume) volume = 0;
+    else
+    if (volume > 1) volume = 1;
+
+    videoPlayer.volume = volume;
+};
+
 function switchToVideo() {
     videoPlayer.pause();
 
@@ -181,6 +194,8 @@ function initVideoPlayer() {
     index = 0;
 
     numOfVideos = paths.length;
+
+    volume = videoPlayer.volume;
 
     isPaused = true;
     noOverlay = false;
