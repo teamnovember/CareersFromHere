@@ -17,7 +17,7 @@ public class AdminController extends Controller {
     public static Result users() {
         School s = new School("Super High School");
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
-        return ok(users.render(u,null));
+        return ok(users.render(u));
     }
 
     public static Result videos() {
@@ -32,11 +32,15 @@ public class AdminController extends Controller {
         return ok(questions.render(u));
     }
 
+    public static Result getNewUser() {
+        return getUser(null);
+    }
+
     public static Result getUser(Long id) {
         School s = new School("Super High School");
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
         UserForm data;
-        if (id == 0) {
+        if (id == null) {
             data = new UserForm();
         } else {
             UserDAOImpl dao = new UserDAOImpl();
@@ -44,40 +48,42 @@ public class AdminController extends Controller {
             data = new UserForm(user.getName(),user.getPassword(),user.getEmail(),user.getSchool(),user.getDiscriminator());
         }
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
-        return ok(users.render(u,formdata));
+        return ok(edit_user.render(u, formdata));
     }
 
-    public static Result postUser() {
+    public static Result postNewUser() {
+        return postUser(null);
+    }
+
+    public static Result postUser(Long id) {
         School s = new School("Super High School");
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
         Form<UserForm> data = Form.form(UserForm.class).bindFromRequest();
 
         if (data.hasErrors()) {
             flash("error", "Please correct errors above.");
-            return badRequest(users.render(u,data));
+            return badRequest(edit_user.render(u,data));
         }
         else {
-            UserForm formdata = data.get();
-            if (formdata.discriminator.equals("student")) {
-                Student student = Student.makeInstance(formdata);
-                student.save();
-                flash("success", "Student instance created/edited: " + student);
-            } else if (formdata.discriminator.equals("alumni")) {
-                Alumni alumni = Alumni.makeInstance(formdata);
-                alumni.save();
-                flash("success", "Alumni instance created/edited: " + alumni);
-            } else if (formdata.discriminator.equals("admin")) {
-                Admin admin = Admin.makeInstance(formdata); //TODO: add validation so only SuperAdmin can do this one
-                admin.save();
-                flash("success", "Admin instance created/edited: " + admin);
-            } else  if (formdata.discriminator.equals("superadmin")) {
-                SuperAdmin sadmin = SuperAdmin.makeInstance(formdata);
-                sadmin.save();
-                flash("success", "Admin instance created/edited: " + sadmin); //TODO: add validation so only SuperAdmin can do this one
-            } else {
-                //TODO: throw an error or something
+            UserForm formData = data.get();
+            User formUser = null;
+            switch(formData.discriminator) {
+                case "alumni":
+                    formUser = Alumni.makeInstance(formData);
+                    break;
+                case "admin": //TODO: add validation so only (Super/)Admin can do this one
+                    formUser = Admin.makeInstance(formData);
+                    break;
+                case "superadmin": //TODO: add validation so only SuperAdmin can do this one
+                    formUser = SuperAdmin.makeInstance(formData);
+                    break;
+                default: //"student"
+                    formUser = Student.makeInstance(formData);
+                    break;
+
             }
-            return ok(users.render(u,data));
+
+            return ok(edit_user.render(u, data));
         }
     }
 }

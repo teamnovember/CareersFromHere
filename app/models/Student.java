@@ -17,7 +17,7 @@ public class Student extends User{
     }
 
     public static Student makeInstance(UserForm data) {
-        Student student = new Student(data.username,data.email,data.password,data.school);
+        Student student = new Student(data.name,data.email,data.password,data.school);
         return student;
     }
 

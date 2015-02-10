@@ -1,4 +1,6 @@
-@(user: models.Admin)
+@(user: models.Admin)(form: play.data.Form[views.forms.UserForm])
+
+@import helper.twitterBootstrap._
 
 @stylesheets = {
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
@@ -9,5 +11,5 @@
 }
 
 @main("Admin Dashboard: User Management - Careers From Here")(stylesheets)(javascripts)(user) {
-  <p>Welcome!</p>
+    <p>Welcome!</p>
 }
