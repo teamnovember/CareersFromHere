@@ -70,7 +70,6 @@ function stop() {
     isPaused = true;
     index = 0;
     switchToVideo();
-
 };
 
 function prev() {

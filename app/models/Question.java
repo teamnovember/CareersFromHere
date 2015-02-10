@@ -17,17 +17,10 @@ public class Question extends Model {
     @JoinColumn(name="SCHOOL")
     public School school;
 
-    Question(String text, School school,int duration) {
+    public Question(String text, School school,int duration) {
         this.text = text;
         this.school = school;
         this.duration = duration;
-    }
-
-    // TODO: delete this; used only for testing; seems that previous Question constr is not public
-    public Question(String text) {
-        this.text = text;
-        this.school = null;
-        this.duration = 0;
     }
 
     public static Finder<Long,Question> find = new Finder<>(Long.class, Question.class);
