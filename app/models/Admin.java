@@ -18,7 +18,7 @@ public class Admin extends User {
     }
 
     public static Admin makeInstance(UserForm data) {
-        Admin admin = new Admin(data.username,data.email,data.password,data.school);
+        Admin admin = new Admin(data.name,data.email,data.password,data.school);
         return admin;
     }
 

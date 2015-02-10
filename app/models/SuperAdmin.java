@@ -14,7 +14,7 @@ public class SuperAdmin extends Admin {
     }
 
     public static SuperAdmin makeInstance(UserForm data) {
-        SuperAdmin admin = new SuperAdmin(data.username,data.email,data.password,data.school);
+        SuperAdmin admin = new SuperAdmin(data.name,data.email,data.password,data.school);
         return admin;
     }
 
