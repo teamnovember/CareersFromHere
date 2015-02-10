@@ -32,4 +32,3 @@ alter table video modify description varchar(255);
 drop table video_clip;
 
 SET FOREIGN_KEY_CHECKS=1;
-
