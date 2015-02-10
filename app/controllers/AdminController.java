@@ -41,15 +41,7 @@ public class AdminController extends Controller {
         } else {
             UserDAOImpl dao = new UserDAOImpl();
             User user = dao.getUser(id);
-            if (user instanceof Student) {
-                data = new UserForm(user.getName(),user.getPassword(),user.getEmail(),user.getSchool(),1);
-            } else if (user instanceof Alumni) {
-                data = new UserForm(user.getName(),user.getPassword(),user.getEmail(),user.getSchool(),2);
-            } else if (user instanceof Admin) {
-                data = new UserForm(user.getName(),user.getPassword(),user.getEmail(),user.getSchool(),3); //TODO: restrict
-            } else {
-                data = new UserForm(user.getName(),user.getPassword(),user.getEmail(),user.getSchool(),4); //TODO: restrict
-            }
+            data = new UserForm(user.getName(),user.getPassword(),user.getEmail(),user.getSchool(),user.getDiscriminator());
         }
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
         return ok(users.render(u,formdata));
@@ -66,18 +58,24 @@ public class AdminController extends Controller {
         }
         else {
             UserForm formdata = data.get();
-            if (formdata.type == 1) {
+            if (formdata.discriminator.equals("student")) {
                 Student student = Student.makeInstance(formdata);
+                student.save();
                 flash("success", "Student instance created/edited: " + student);
-            } else if (formdata.type == 2) {
+            } else if (formdata.discriminator.equals("alumni")) {
                 Alumni alumni = Alumni.makeInstance(formdata);
-                flash("success","Alumni instance created/edited: " + alumni);
-            } else if (formdata.type == 3) {
+                alumni.save();
+                flash("success", "Alumni instance created/edited: " + alumni);
+            } else if (formdata.discriminator.equals("admin")) {
                 Admin admin = Admin.makeInstance(formdata); //TODO: add validation so only SuperAdmin can do this one
-                flash("success","Admin instance created/edited: " + admin);
-            } else {
+                admin.save();
+                flash("success", "Admin instance created/edited: " + admin);
+            } else  if (formdata.discriminator.equals("superadmin")) {
                 SuperAdmin sadmin = SuperAdmin.makeInstance(formdata);
-                flash("success","Admin instance created/edited: " + sadmin); //TODO: add validation so only SuperAdmin can do this one
+                sadmin.save();
+                flash("success", "Admin instance created/edited: " + sadmin); //TODO: add validation so only SuperAdmin can do this one
+            } else {
+                //TODO: throw an error or something
             }
             return ok(users.render(u,data));
         }

@@ -21,11 +21,7 @@ public class User extends Model {
     private String email;
     @ManyToOne
     private School school;
-
-
-
-
-
+    private String discriminator;
 
     public User(String name, String password, String email){
         this.name=name;
@@ -55,7 +51,6 @@ public class User extends Model {
         this.name = name;
     }
 
-
     public String getEmail(){
         return email;
     }
@@ -70,5 +65,8 @@ public class User extends Model {
     public void setSchool(School school){
         this.school = school;
     }
+
+    public String getDiscriminator() { return this.discriminator; }
+    public void setDiscriminator(String d) { this.discriminator = d; }
 
 }
