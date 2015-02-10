@@ -33,4 +33,6 @@ public class VideoClip extends Model {
     public String getVideoPath() { return videoClipPath; }
 
     public Integer getDuration() { return duration; }
+
+    public Question getQuestion() { return question; }
 }

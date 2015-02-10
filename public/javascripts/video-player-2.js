@@ -1,3 +1,5 @@
+// multiple video elements but not loaded at the same time
+
 var playPauseId = "play-pause-button";
 var stopId = "stop-button";
 var volumeUpId = "volume-up-button";
@@ -66,12 +68,13 @@ function volume(direction) {
 
 function updateProgressBar() {
     var progressBar = document.getElementById(progressBarId);
-    var value = Math.floor(100 * (videoPlayer.currentTime + passedTime) / totalDuration);
+    var value = Math.floor(100 * (Math.floor(videoPlayer.currentTime) + passedTime) / totalDuration);
     progressBar.value = value;
 };
 
 function switchToVideo(arg) {
     var sign = 1;
+    console.log(index);
 
     if (arg == '-') {
         index -= 2;
@@ -80,6 +83,7 @@ function switchToVideo(arg) {
     }
 
     if (videoPlayer) {
+        var paused = videoPlayer.paused;
         videoPlayer.style.display = "none";
         videoPlayer.pause();
         videoPlayer.currentTime = 0;
@@ -93,22 +97,20 @@ function switchToVideo(arg) {
 
     videoPlayer = videos[index];
     videoPlayer.style.display = "inline";
-    if (index > 0) videoPlayer.play();
+    if (index > 0 && !paused) videoPlayer.play();
 
     index = (index + 1) % videos.length;
-};
-
-function addDuration(e) {
-    totalDuration += videos[e.target.id].duration;
-    console.log(e.target.id);
+    if (index != 0) videos[index].load();
 };
 
 function getVideos() {
+    totalDuration = document.getElementById("video-viewport").getAttribute("data-length");
+
     videos = document.getElementsByTagName("video");
+    videos[0].load();
 
     for (var i = 0; i < videos.length; ++ i) {
         videos[i].id = i;
-        videos[i].addEventListener("loadedmetadata", addDuration, false);
         videos[i].addEventListener("timeupdate", updateProgressBar, false);
         videos[i].addEventListener("ended", switchToVideo, false);
     }

@@ -1,121 +1,162 @@
+var videoPlayerId = "video-player";
 var playPauseId = "play-pause-button";
-var stopId = "stop-button";
-var volumeUpId = "volume-up-button";
-var volumeDownId = "volume-down-button";
-var progressBarId = "progress-bar";
+var prevId = "prev-section-button";
+var nextId = "next-section-button";
+var overlayId = "overlay";
+var underlayId = "underlay";
 
-
-var playClass = "play";
-var pauseClass = "pause";
-var stopClass = "stop";
-var volumeUpClass = "volume-up";
-var volumeDownClass = "volume-down";
+var totalDurationAttr = "data-total-duration";
+var pathsAttr = "data-paths";
+var questionsAttr = "data-questions";
 
 var playGlyphClass = "glyphicon-play";
 var pauseGlyphClass = "glyphicon-pause";
 
 var videoPlayer;
-var videos;
-var index = 0;
-var totalDuration = 0;
-var passedTime = 0;
+var overlay;
+var overlayDelay;
+var underlay;
+var paths;
+var questions;
+var totalDuration;
+var index;
+var numOfVideos;
+var isPaused;
+var noOverlay;
 
-function playPauseButton() {
+function playPause() {
     var button = document.getElementById(playPauseId);
 
-    if (videoPlayer.paused) {
-        button.class = pauseClass;
-        button.getElementsByClassName(pauseGlyphClass)[0].style.display = "inline";
-        button.getElementsByClassName(playGlyphClass)[0].style.display = "none";
+    if (noOverlay) {
+        if (isPaused) {
+            button.getElementsByClassName(pauseGlyphClass)[0].style.display = "inline";
+            button.getElementsByClassName(playGlyphClass)[0].style.display = "none";
 
-        videoPlayer.play();
+            videoPlayer.play();
+            isPaused = false;
+        } else {
+            button.getElementsByClassName(playGlyphClass)[0].style.display = "inline";
+            button.getElementsByClassName(pauseGlyphClass)[0].style.display = "none";
+
+            videoPlayer.pause();
+            isPaused = true;
+        }
     } else {
-        button.class = playClass;
-        button.getElementsByClassName(playGlyphClass)[0].style.display = "inline";
-        button.getElementsByClassName(pauseGlyphClass)[0].style.display = "none";
+        if (isPaused) {
+            button.getElementsByClassName(pauseGlyphClass)[0].style.display = "inline";
+            button.getElementsByClassName(playGlyphClass)[0].style.display = "none";
 
-        videoPlayer.pause();
+            overlay.style.display = "none";
+            underlay.style.display = "inline-block";
+            noOverlay = false;
+
+            videoPlayer.play();
+            isPaused = false;
+        } else {
+            button.getElementsByClassName(playGlyphClass)[0].style.display = "inline";
+            button.getElementsByClassName(pauseGlyphClass)[0].style.display = "none";
+
+            videoPlayer.pause();
+            isPaused = true;
+        }
     }
 };
 
-function stopButton() {
-    index = 0;
-    switchToVideo();
-    resetButtons();
-};
-
-function resetButtons() {
+function stop() {
     var button = document.getElementById(playPauseId);
     button.getElementsByClassName(playGlyphClass)[0].style.display = "inline";
     button.getElementsByClassName(pauseGlyphClass)[0].style.display = "none";
+
+    isPaused = true;
+    index = 0;
+    switchToVideo();
+
+};
+
+function prev() {
+    var toLoadIndex = index - 1 > 0 ? index - 1 : 0;
+    if (toLoadIndex != index) {
+        index = toLoadIndex;
+        switchToVideo();
+    }
+};
+
+function next() {
+    var toLoadIndex = index + 1 < numOfVideos - 1 ? index + 1 : numOfVideos - 1;
+    if (toLoadIndex != index) {
+        index = toLoadIndex;
+        switchToVideo();
+    } else if (index == numOfVideos - 1) stop();
+
 }
 
-function volume(direction) {
-    var value = videoPlayer.volume;
-    if (direction == "up") value += 0.1;
-    else
-    if (direction == "down") value -= 0.1;
+function switchToVideo() {
+    videoPlayer.pause();
 
-    if (0 > value) value = 0;
-    else
-    if (value > 1) value = 1;
+    underlay.style.display = "none";
+    underlay.innerHTML = questions[index];
 
-    for (var i = 0; i < videos.length; ++ i)
-        videos[i].volume = value;
-};
+    overlay.innerHTML = questions[index];
+    overlay.style.display = "inline";
+    noOverlay = false;
 
-function updateProgressBar() {
-    var progressBar = document.getElementById(progressBarId);
-    var value = Math.floor(100 * (Math.floor(videoPlayer.currentTime) + passedTime) / totalDuration);
-    progressBar.value = value;
-};
+    videoPlayer.src = paths[index];
+    videoPlayer.load();
 
-function switchToVideo(arg) {
-    var sign = 1;
-    console.log(index);
-
-    if (arg == '-') {
-        index -= 2;
-        sign = -1;
-        if (index < 0) index = 0;
+    if (index == 0) {
+        document.getElementById(prevId).disabled = true;
+    } else {
+        document.getElementById(prevId).disabled = false;
     }
 
-    if (videoPlayer) {
-        var paused = videoPlayer.paused;
-        videoPlayer.style.display = "none";
-        videoPlayer.pause();
-        videoPlayer.currentTime = 0;
-        if (index != 0) passedTime += videoPlayer.duration * sign;
-        else {
-            passedTime = 0;
-            resetButtons();
-        }
-        videoPlayer.pause();
+    if (index == numOfVideos - 1) {
+        document.getElementById(nextId).disabled = true;
+    } else {
+        document.getElementById(nextId).disabled = false;
     }
-
-    videoPlayer = videos[index];
-    videoPlayer.style.display = "inline";
-    if (index > 0 && !paused) videoPlayer.play();
-
-    index = (index + 1) % videos.length;
-    if (index != 0) videos[index].load();
 };
 
-function getVideos() {
-    totalDuration = document.getElementById("video-viewport").getAttribute("data-length");
+function loadComplete() {
+    if (!isPaused) {
+        setTimeout(function() {
+            if (isPaused) return;
 
-    videos = document.getElementsByTagName("video");
-    videos[0].load();
+            overlay.style.display = "none";
+            underlay.style.display = "inline-block";
+            noOverlay = true;
 
-    for (var i = 0; i < videos.length; ++ i) {
-        videos[i].id = i;
-        videos[i].addEventListener("timeupdate", updateProgressBar, false);
-        videos[i].addEventListener("ended", switchToVideo, false);
+            videoPlayer.play();
+        }, overlayDelay);
     }
+};
 
-    videoPlayer = undefined;
+function initVideoPlayer() {
+    videoPlayer = document.getElementById(videoPlayerId);
+    videoPlayer.addEventListener("ended", next, false);
+    videoPlayer.addEventListener("loadeddata", loadComplete, false);
+
+    overlay = document.getElementById(overlayId);
+    overlayDelay = 2000;
+
+    underlay = document.getElementById(underlayId);
+    underlay.style.display = "none";
+
+    paths = videoPlayer.getAttribute(pathsAttr);
+    paths = JSON.parse(paths);
+
+    questions = videoPlayer.getAttribute(questionsAttr);
+    questions = JSON.parse(questions);
+
+    totalDuration = videoPlayer.getAttribute(totalDurationAttr);
+
+    index = 0;
+
+    numOfVideos = paths.length;
+
+    isPaused = true;
+    noOverlay = false;
 
     switchToVideo();
 };
 
-document.addEventListener("DOMContentLoaded", function() { getVideos(); }, false);
+document.addEventListener("DOMContentLoaded", function() { initVideoPlayer(); }, false);

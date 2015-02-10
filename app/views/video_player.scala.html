@@ -1,33 +1,30 @@
-@(paths: java.util.List[String])(duration: Integer)
+@(paths: String)(questions: String)(totalDuration: Integer)
 
 <div id="video-player-container">
-    <div id="video-viewport" data-length=@duration>
-        @for(path <- paths) {
-            <video style="display: none" preload="none">
-                <source src="@path" type="video/mp4">
-            </video>
-        }
-    </div>
-    <div id="video-controls">
-        <button id="play-pause-button" class="play btn btn-default" onclick="playPauseButton();">
+    <div id="video-viewport">
+        <video id="video-player" preload="metadata"
+            data-total-duration="@totalDuration" data-paths="@paths" data-questions="@questions">
+            <source type="video/mp4" style="display: none">
+        </video>
+
+        <div id="overlay"></div>
+    </div><!--
+    --><div id="underlay">
+    </div><!--
+    --><div id="video-controls">
+        <button id="prev-section-button" class="prev btn btn-default" onclick="prev();">
+            <span class="glyphicon glyphicon-chevron-left"></span>
+        </button>
+        <button id="play-pause-button" class="play btn btn-default" onclick="playPause();">
             <span class="glyphicon glyphicon-play"></span>
             <span class="glyphicon glyphicon-pause" style="display: none"></span>
         </button>
-        <button id="stop-button" class="stop btn btn-default" onclick="stopButton();">
-            <span class="glyphicon glyphicon-stop"></span>
-        </button>
-        <button id="volume-down-button" class="volume-down btn btn-default" onclick="volume('down');">
-            <span class="glyphicon glyphicon-volume-down"></span>
-        </button>
-        <button id="volume-up-button" class="volume-up btn btn-default" onclick="volume('up');">
-            <span class="glyphicon glyphicon-volume-up"></span>
-        </button>
-        <button id="prev-section-button" class="prev btn btn-default" onclick="switchToVideo('-')">
-            <span class="glyphicon glyphicon-chevron-left"></span>
-        </button>
-        <button id="next-section-button" class="next btn btn-default" onclick="switchToVideo()">
+        <button id="next-section-button" class="next btn btn-default" onclick="next();">
             <span class="glyphicon glyphicon-chevron-right"></span>
         </button>
-        <progress id="progress-bar" min="0" max="100" value="0">0% played</progress>
+        <button id="stop-button" class="stop btn btn-default" onclick="stop();">
+            <span class="glyphicon glyphicon-stop"></span>
+        </button>
+        <progress id="progress-bar" min="0" max="100" value="0"></progress>
     </div>
 </div>

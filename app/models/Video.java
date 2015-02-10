@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import play.db.ebean.*;
 
 @Entity
@@ -67,11 +70,39 @@ public class Video extends Model {
         }
     }
 
-    public List<String> getPaths() {
+    public String getJSONPaths() {
         ArrayList<String> res = new ArrayList<String>();
         for (VideoClip clip : videoClips) {
             res.add(clip.getVideoPath());
         }
-        return res;
+
+        String json = "";
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            json = objectMapper.writeValueAsString(res);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return json;
+    }
+
+    public String getJSONQuestionsText() {
+        ArrayList<String> questionsText = new ArrayList<String>();
+        for (VideoClip clip : videoClips) {
+            questionsText.add(clip.getQuestion().getText());
+        }
+
+        String json = "";
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            json = objectMapper.writeValueAsString(questionsText);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return json;
     }
 }
