@@ -14,16 +14,16 @@ public class UserForm {
     public String password = "";
     public String email = "";
     public School school = null;
-    public int type = 0;
+    public String discriminator = "";
 
     public UserForm() {}
 
-    public UserForm(String name, String password, String email, School school, int type) {
+    public UserForm(String name, String password, String email, School school, String descriminator) {
         this.username = name;
         this.password = password;
         this.email = email;
         this.school = school;
-        this.type = type; //1 for Student, 2 for Alumni, 3 for Admin, 4 for SuperAdmin (3 & 4 only accessible to SuperAdmin)
+        this.discriminator = descriminator;
     }
 
     public List<ValidationError> validate() {
@@ -48,9 +48,9 @@ public class UserForm {
             errors.add(new ValidationError("school","No school was given"));
         }
 
-        if (type ==0) {
+        if (discriminator == null || discriminator.length() == 0) {
             errors.add(new ValidationError("type","No user type was given"));
-        } else if (type > 4) {
+        } else if (!discriminator.equals("student") && !discriminator.equals("alumni") && !discriminator.equals("admin") && !discriminator.equals("superadmin")) {
             errors.add(new ValidationError("type","Invalid user type given"));
         }
 

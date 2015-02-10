@@ -21,7 +21,7 @@ public class User extends Model {
     private String email;
     @ManyToOne
     private School school;
-    private int type; //1= student, 2 = alumni, 3=admin, 4=super admin
+    private String discriminator;
 
     public User(String name, String password, String email){
         this.name=name;
@@ -66,7 +66,7 @@ public class User extends Model {
         this.school = school;
     }
 
-    public int getType() { return this.type; }
-    public void setType(int t) { this.type = t; }
+    public String getDiscriminator() { return this.discriminator; }
+    public void setDiscriminator(String d) { this.discriminator = d; }
 
 }

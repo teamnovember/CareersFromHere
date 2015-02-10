@@ -16,19 +16,20 @@ public class UserDAOImpl implements UserDAO {
     }
     public User getUser(Long ID){
         User user = User.find.byId(ID);
-        if (user.getType() == 1) {
+        if (user.getDiscriminator().equals("student")) {
             Student s = new Student(user.getName(),user.getEmail(),user.getPassword(),user.getSchool());
             return s;
-        } else if (user.getType() == 2) {
+        } else if (user.getDiscriminator().equals("alumni")) {
             Alumni a = new Alumni(user.getName(),user.getEmail(),user.getPassword(),user.getSchool());
             return a;
-        } else if (user.getType() == 3) {
+        } else if (user.getDiscriminator().equals("admin")) {
             Admin ad = new Admin(user.getName(),user.getEmail(),user.getPassword(),user.getSchool());
             return ad;
-        } else {
+        } else if (user.getDiscriminator().equals("superadmin")) {
             SuperAdmin sa = new SuperAdmin(user.getName(),user.getEmail(),user.getPassword(),user.getSchool());
             return sa;
         }
+        else return user; //TODO: throw an exception or something
     }
 
     public void deleteUser(Long ID){
