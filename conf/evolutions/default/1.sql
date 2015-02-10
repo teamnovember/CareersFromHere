@@ -6,7 +6,7 @@
 create table question (
   question_id               bigint auto_increment not null,
   text                      varchar(255),
-  duration                  integer,
+  duration                  double,
   SCHOOL                    bigint,
   constraint pk_question primary key (question_id))
 ;
@@ -48,7 +48,7 @@ create table video (
 create table video_clip (
   id                        bigint auto_increment not null,
   video_clip_path           varchar(255),
-  duration                  integer,
+  duration                  double,
   video_id                  bigint,
   question_question_id      bigint,
   constraint pk_video_clip primary key (id))

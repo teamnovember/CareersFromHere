@@ -53,8 +53,8 @@ public class Video extends Model {
 
     public String getThumbnailPath() { return thumbnailPath; }
 
-    public Integer getDuration() {
-        Integer totalDuration = 0;
+    public double getDuration() {
+        double totalDuration = 0.0;
         for (VideoClip clip : videoClips) {
             totalDuration += clip.getDuration();
         }

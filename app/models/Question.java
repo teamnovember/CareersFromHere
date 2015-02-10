@@ -11,13 +11,13 @@ public class Question extends Model {
     @Id
     private Long questionId;
     private String text;
-    private int duration;
+    private double duration;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="SCHOOL")
     public School school;
 
-    public Question(String text, School school,int duration) {
+    public Question(String text, School school,double duration) {
         this.text = text;
         this.school = school;
         this.duration = duration;
@@ -41,9 +41,9 @@ public class Question extends Model {
         this.text = text;
     }
 
-    public int getDuration() { return duration; }
+    public double getDuration() { return duration; }
 
-    public void setDuration(int duration) { this.duration = duration; }
+    public void setDuration(double duration) { this.duration = duration; }
 
     public School getSchool() {
         return school;
