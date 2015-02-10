@@ -6,7 +6,7 @@ lazy val `november` = (project in file(".")).enablePlugins(PlayJava)
 
 scalaVersion := "2.11.1"
 
-libraryDependencies ++= Seq( javaJdbc , javaEbean , cache , javaWs, "mysql" % "mysql-connector-java" % "5.1.34")
+libraryDependencies ++= Seq( javaJdbc , javaEbean , cache , javaWs, "mysql" % "mysql-connector-java" % "5.1.34", "com.typesafe.play" %% "play-mailer" % "2.4.0")
 
 
 
