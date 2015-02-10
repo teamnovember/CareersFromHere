@@ -7,7 +7,7 @@ alter table video modify description longtext;
 create table video_clip (
   id                        bigint auto_increment not null,
   video_clip_path           varchar(255),
-  duration                  integer,
+  duration                  double,
   video_id                  bigint,
   question_question_id      bigint,
   constraint pk_video_clip primary key (id))
@@ -25,7 +25,7 @@ create index ix_video_user_6 on video (user_id);
 
 SET FOREIGN_KEY_CHECKS=0;
 
-alter table video add duration integer;
+alter table video add duration double;
 alter table video drop user_id;
 alter table video modify description varchar(255);
 

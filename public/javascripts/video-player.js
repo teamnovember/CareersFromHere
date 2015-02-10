@@ -5,9 +5,12 @@ var nextId = "next-section-button";
 var overlayId = "overlay";
 var underlayId = "underlay";
 
+var progressBarClass = "progress-bar";
+
 var totalDurationAttr = "data-total-duration";
 var pathsAttr = "data-paths";
 var questionsAttr = "data-questions";
+var durationsAttr = "data-durations";
 
 var playGlyphClass = "glyphicon-play";
 var pauseGlyphClass = "glyphicon-pause";
@@ -18,11 +21,13 @@ var overlayDelay;
 var underlay;
 var paths;
 var questions;
+var durations;
 var totalDuration;
 var index;
 var numOfVideos;
 var isPaused;
 var noOverlay;
+var passedTime;
 
 function playPause() {
     var button = document.getElementById(playPauseId);
@@ -69,6 +74,9 @@ function stop() {
 
     isPaused = true;
     index = 0;
+    passedTime = 0;
+    updateProgressBar(true);
+
     switchToVideo();
 };
 
@@ -76,6 +84,10 @@ function prev() {
     var toLoadIndex = index - 1 > 0 ? index - 1 : 0;
     if (toLoadIndex != index) {
         index = toLoadIndex;
+
+        passedTime -= durations[index];
+        updateProgressBar(true);
+
         switchToVideo();
     }
 };
@@ -83,11 +95,16 @@ function prev() {
 function next() {
     var toLoadIndex = index + 1 < numOfVideos - 1 ? index + 1 : numOfVideos - 1;
     if (toLoadIndex != index) {
+        passedTime += durations[index];
+        updateProgressBar(true);
+
         index = toLoadIndex;
         switchToVideo();
-    } else if (index == numOfVideos - 1) stop();
+    } else if (index == numOfVideos - 1) {
+        stop();
+    }
 
-}
+};
 
 function switchToVideo() {
     videoPlayer.pause();
@@ -115,6 +132,15 @@ function switchToVideo() {
     }
 };
 
+function updateProgressBar(noTimeUpdate) {
+    var percentage;
+    if (noTimeUpdate == true) percentage = (passedTime) / totalDuration * 100;
+    else percentage = (passedTime + videoPlayer.currentTime) / totalDuration * 100;
+    percentage = percentage.toString() + "%";
+
+    document.getElementsByClassName(progressBarClass)[0].style.width = percentage;
+};
+
 function loadComplete() {
     if (!isPaused) {
         setTimeout(function() {
@@ -131,6 +157,7 @@ function loadComplete() {
 
 function initVideoPlayer() {
     videoPlayer = document.getElementById(videoPlayerId);
+    videoPlayer.addEventListener("timeupdate", updateProgressBar, false);
     videoPlayer.addEventListener("ended", next, false);
     videoPlayer.addEventListener("loadeddata", loadComplete, false);
 
@@ -146,6 +173,9 @@ function initVideoPlayer() {
     questions = videoPlayer.getAttribute(questionsAttr);
     questions = JSON.parse(questions);
 
+    durations = videoPlayer.getAttribute(durationsAttr);
+    durations = JSON.parse(durations);
+
     totalDuration = videoPlayer.getAttribute(totalDurationAttr);
 
     index = 0;
@@ -154,6 +184,7 @@ function initVideoPlayer() {
 
     isPaused = true;
     noOverlay = false;
+    passedTime = 0;
 
     switchToVideo();
 };

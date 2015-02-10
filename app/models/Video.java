@@ -105,4 +105,22 @@ public class Video extends Model {
 
         return json;
     }
+
+    public String getJSONDurations() {
+        ArrayList<Double> res = new ArrayList<Double>();
+        for (VideoClip clip : videoClips) {
+            res.add(clip.getDuration());
+        }
+
+        String json = "";
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            json = objectMapper.writeValueAsString(res);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return json;
+    }
 }

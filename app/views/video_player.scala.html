@@ -1,14 +1,17 @@
-@(paths: String)(questions: String)(totalDuration: Double)
+@(paths: String)(questions: String)(durations: String)(totalDuration: Double)
 
 <div id="video-player-container">
     <div id="video-viewport">
         <video id="video-player" preload="metadata"
-            data-total-duration="@totalDuration" data-paths="@paths" data-questions="@questions">
+            data-total-duration="@totalDuration" data-paths="@paths" data-questions="@questions" data-durations="@durations">
             <source type="video/mp4" style="display: none">
         </video>
 
         <div id="overlay"></div>
         <div id="underlay"></div>
+    </div>
+    <div class="progress">
+        <div class="progress-bar" style="width: 0%"></div>
     </div>
     <div id="video-controls">
         <button id="prev-section-button" class="prev btn btn-default" onclick="prev();">
@@ -24,6 +27,5 @@
         <button id="stop-button" class="stop btn btn-default" onclick="stop();">
             <span class="glyphicon glyphicon-stop"></span>
         </button>
-        <progress id="progress-bar" min="0" max="100" value="0"></progress>
     </div>
 </div>

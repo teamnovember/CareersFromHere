@@ -12,7 +12,7 @@
     height: 360px;
 }
 
-#overlay {
+#video-player-container #overlay {
     position: absolute;
     text-align: center;
     top: 0;
@@ -25,8 +25,20 @@
     font-weight: bold;
 }
 
-#underlay {
+#video-player-container #underlay {
     padding-top: 360px;
     display: inline-block;
     width: 640px;
+}
+
+#video-player-container .progress,
+#video-player-container .progress-bar {
+    width: 640px;
+    height: 10px;
+    margin-bottom: 0px;
+    -webkit-transition: none;
+    -moz-transition: none;
+    -ms-transition: none;
+    -o-transition: none;
+    transition: none;
 }
