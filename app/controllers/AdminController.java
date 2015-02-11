@@ -6,6 +6,7 @@ import play.mvc.*;
 import views.forms.QuestionForm;
 import views.forms.SchoolForm;
 import views.forms.UserForm;
+import views.forms.VideoForm;
 import views.html.admin.*;
 
 import java.util.ArrayList;
@@ -13,6 +14,9 @@ import java.util.List;
 
 public class AdminController extends Controller {
     //TODO: will need to authenticate the current user in these methods (replace new user creation)
+
+    //TODO: just realised makeInstance methods are creating new models rather than updating ones in the db. Need to change this
+
     public static Result index() {
         School s = new School("Super High School");
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
@@ -112,6 +116,65 @@ public class AdminController extends Controller {
 
         return ok(users.render(u,dao.getSchoolUsers(s)));
     }
+
+    //dont need "new" video methods in AdminController
+    public static Result getVideo(Long id) {
+        School s = new School("Super High School");
+        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        VideoForm data;
+        VideoDAO dao = new VideoDAO();
+        Video video = dao.getVideo(id);
+        data = new VideoForm(video.getTitle(),video.getDescription(),video.getCategories());
+        Form<VideoForm> formdata = Form.form(VideoForm.class).fill(data);
+        return ok(edit_video.render(u,formdata,id));
+    }
+
+    public static Result postVideo(Long id) {
+        School s = new School("Super High School");
+        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        Form<VideoForm> data = Form.form(VideoForm.class).bindFromRequest();
+        VideoDAO dao = new VideoDAO();
+        Video video = dao.getVideo(id);
+
+        if (data.hasErrors()) {
+            flash("error", "Please correct errors above.");
+            return badRequest(edit_video.render(u, data, id));
+        }
+        else {
+            VideoForm formData = data.get();
+            video.setTitle(formData.title);
+            video.setDescription(formData.description);
+            for (Category c : formData.categories) {
+                if (!video.getCategories().contains(c)) {
+                    video.addCategory(c);
+                }
+            }
+            return ok(edit_video.render(u,data,id));
+        }
+    }
+
+    public static Result deleteVideo(Long id) {
+        School s = new School("Super High School");
+        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+
+        VideoDAO dao = new VideoDAO();
+        dao.deleteVideo(id);
+
+        return ok(videos.render(u));
+    }
+
+    public static Result approveVideo(Long id) {
+        School s = new School("Super High School");
+        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+
+        VideoDAO dao = new VideoDAO();
+        Video v = dao.getVideo(id);
+        v.approve(true);
+
+        return ok(videos.render(u));
+    }
+
+    //TODO: need a method/way for admins to preview video before they decide to approve or delete
 
     public static Result getNewQuestion() { return getQuestion(null);}
 

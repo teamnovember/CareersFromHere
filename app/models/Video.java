@@ -22,6 +22,8 @@ public class Video extends Model {
     private Boolean approved = true;
     @OneToMany(mappedBy="video", cascade=CascadeType.ALL)
     private List<VideoClip> videoClips;
+    @ManyToMany(mappedBy = "videos")
+    public List<Category> categories;
 
     public static Finder<Long,Video> find = new Finder<>(Long.class, Video.class);
 
@@ -47,11 +49,19 @@ public class Video extends Model {
 
     public User getUser() { return user; }
 
+    public void setUser(User user) { this.user = user; }
+
     public String getTitle() { return title; }
+
+    public void setTitle(String title) { this.title = title; }
 
     public String getDescription() { return description; }
 
+    public void setDescription(String description) { this.description = description; }
+
     public String getThumbnailPath() { return thumbnailPath; }
+
+    public void setThumbnailPath(String thumbnailPath) { this.thumbnailPath = thumbnailPath; }
 
     public double getDuration() {
         double totalDuration = 0.0;
@@ -62,6 +72,13 @@ public class Video extends Model {
     }
 
     public List<VideoClip> getVideoClips() { return videoClips; }
+
+    public List<Category> getCategories() { return categories; }
+
+    public void addCategory(Category c) {
+        categories.add(c);
+        c.addVideo(this);
+    }
 
     public void approve(Boolean accept) {
         approved = accept;
