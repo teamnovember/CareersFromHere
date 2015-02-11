@@ -202,6 +202,16 @@ function switchToVideoWithTime(toLoadIndex) {
     }
 };
 
+function overlayTimeout() {
+    if (isPaused) return;
+
+    overlay.style.display = "none";
+    underlay.style.display = "inline-block";
+    noOverlay = true;
+
+    videoPlayer.play();
+};
+
 function loadComplete() {
     if (noDelay) {
         noDelay = false;
@@ -215,15 +225,7 @@ function loadComplete() {
         videoPlayer.play();
     } else if (!isPaused) {
         clearTimeout(timeoutID);
-        timeoutID = setTimeout(function() {
-            if (isPaused) return;
-
-            overlay.style.display = "none";
-            underlay.style.display = "inline-block";
-            noOverlay = true;
-
-            videoPlayer.play();
-        }, overlayDelay);
+        timeoutID = setTimeout(overlayTimeout, overlayDelay);
     }
 };
 
