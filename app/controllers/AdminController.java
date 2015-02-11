@@ -6,6 +6,9 @@ import play.mvc.*;
 import views.forms.UserForm;
 import views.html.admin.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AdminController extends Controller {
     //TODO: will need to authenticate the current user in these methods (replace new user creation)
     public static Result index() {
@@ -16,8 +19,12 @@ public class AdminController extends Controller {
 
     public static Result users() {
         School s = new School("Super High School");
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
-        return ok(users.render(u));
+        Admin u = new Admin("Edgaras Liberis", "blahblah", "el398@cam.ac.uk", s);
+        List<User> usrs = new ArrayList<>();
+        usrs.add(new Student("Amazing Person 1", "muchpassword", "cl@cam.ac.uk", s));
+        usrs.add(new Student("Amazing Person 2", "muchpassword", "cl@cam.ac.uk", s));
+        usrs.add(new Student("Amazing Person 3", "muchpassword", "cl@cam.ac.uk", s));
+        return ok(users.render(u, usrs));
     }
 
     public static Result videos() {

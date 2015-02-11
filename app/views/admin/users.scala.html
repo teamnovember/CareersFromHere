@@ -1,4 +1,4 @@
-@(user: models.Admin)
+@(currentUser: models.Admin)(userList: java.util.List[models.User])
 
 @stylesheets = {
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
@@ -8,6 +8,33 @@
 
 }
 
-@main("Admin Dashboard: User Management - Careers From Here")(stylesheets)(javascripts)(user) {
-  <p>Welcome!</p>
+@main("Admin Dashboard: User Management - Careers From Here")(stylesheets)(javascripts)(currentUser) {
+    <div class="spacing-panel">
+        <div class="shadow-panel table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for(user <- userList) {
+                    <tr>
+                        <td>@user.getName</td>
+                        <td>@user.getEmail</td> <!-- TODO: change id, in mocks it has it NULL-->
+                        <td><a class="btn btn-default action-button" href="@routes.AdminController.getUser(1)">
+                            <span class="glyphicon glyphicon-pencil"></span></a>
+                            <a class="btn btn-success action-button" href="#">
+                                <span class="glyphicon glyphicon-ok"></span></a>
+                            <a class="btn btn-danger action-button" href="#">
+                                <span class="glyphicon glyphicon-remove"></span></a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
 }
