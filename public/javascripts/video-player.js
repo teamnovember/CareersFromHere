@@ -38,6 +38,7 @@ var isPaused;
 var noOverlay;
 var passedTime;
 var noDelay;
+var timeoutID;
 
 function playPause() {
     var button = document.getElementById(playPauseId);
@@ -173,11 +174,10 @@ function switchToVideoWithTime(toLoadIndex) {
         poster.style.display = "inline";
     }
 
-    videoPlayer.pause();
-
     if (index != toLoadIndex) {
         index = toLoadIndex;
 
+        videoPlayer.pause();
         videoPlayer.src = paths[index];
         noDelay = true;
         videoPlayer.load();
@@ -195,6 +195,7 @@ function switchToVideoWithTime(toLoadIndex) {
         }
     } else {
         videoPlayer.currentTime = videoTime;
+        videoPlayer.pause();
         videoTime = -1.0;
 
         if (!isPaused) videoPlayer.play();
@@ -213,7 +214,8 @@ function loadComplete() {
 
         videoPlayer.play();
     } else if (!isPaused) {
-        setTimeout(function () {
+        clearTimeout(timeoutID);
+        timeoutID = setTimeout(function() {
             if (isPaused) return;
 
             overlay.style.display = "none";
