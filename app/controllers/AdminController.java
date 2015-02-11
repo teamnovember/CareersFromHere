@@ -3,6 +3,8 @@ package controllers;
 import models.*;
 import play.data.Form;
 import play.mvc.*;
+import views.forms.QuestionForm;
+import views.forms.SchoolForm;
 import views.forms.UserForm;
 import views.html.admin.*;
 
@@ -20,7 +22,7 @@ public class AdminController extends Controller {
     public static Result users() {
         School s = new School("Super High School");
         Admin u = new Admin("Edgaras Liberis", "blahblah", "el398@cam.ac.uk", s);
-        List<User> usrs = new ArrayList<>();
+        List<User> usrs = new ArrayList<>(); //TODO: actually query from DB to get list of users from school (using getSchoolUsers in UserDAO)
         usrs.add(new Student("Amazing Person 1", "muchpassword", "cl@cam.ac.uk", s));
         usrs.add(new Student("Amazing Person 2", "muchpassword", "cl@cam.ac.uk", s));
         usrs.add(new Student("Amazing Person 3", "muchpassword", "cl@cam.ac.uk", s));
@@ -37,6 +39,12 @@ public class AdminController extends Controller {
         School s = new School("Super High School");
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
         return ok(questions.render(u));
+    }
+
+    public static Result schools() {
+        School s = new School("Super High School");
+        SuperAdmin u = new SuperAdmin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s); //TODO: restrict school functions to super admin
+        return ok(schools.render(u));
     }
 
     public static Result getNewUser() {
@@ -89,8 +97,112 @@ public class AdminController extends Controller {
                     break;
 
             }
-
             return ok(edit_user.render(u, data));
         }
     }
+
+    public static Result deleteUser(Long id) {
+        School s = new School("Super High School");
+        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+
+        UserDAOImpl dao = new UserDAOImpl();
+        dao.deleteUser(id);
+
+        return ok(users.render(u,dao.getSchoolUsers(s)));
+    }
+
+    public static Result getNewQuestion() { return getQuestion(null);}
+
+    public static Result getQuestion(Long id) {
+        School s = new School("Super High School");
+        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        QuestionForm data;
+
+        if (id == null) {
+            data = new QuestionForm();
+        }
+        else {
+            QuestionDAO dao = new QuestionDAO();
+            Question q = dao.getQuestion(id);
+            data = new QuestionForm(q.getText(),q.getDuration(),q.getSchool());
+        }
+        Form<QuestionForm> formdata = Form.form(QuestionForm.class).fill(data);
+        return ok(edit_question.render(u, formdata));
+    }
+
+    public static Result postNewQuestion() {return postQuestion(null);}
+
+    public static Result postQuestion(Long id) {
+        School s = new School("Super High School");
+        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        Form<QuestionForm> data = Form.form(QuestionForm.class).bindFromRequest();
+
+        if (data.hasErrors()) {
+            flash("error", "Please correct errors above.");
+            return badRequest(edit_question.render(u,data));
+        }
+        else {
+            QuestionForm formData = data.get();
+            Question q = Question.makeInstance(formData);
+            return ok(edit_question.render(u,data));
+        }
+    }
+
+    public static Result deleteQuestion(Long id) {
+        School s = new School("Super High School");
+        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+
+        QuestionDAO dao = new QuestionDAO();
+        dao.deleteQuestion(id);
+
+        return ok(questions.render(u));
+    }
+
+    public static Result getNewSchool() { return getSchool(null);}
+
+    public static Result getSchool(Long id) {
+        School s = new School("Super High School");
+        SuperAdmin u = new SuperAdmin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        SchoolForm data;
+
+        if (id == null) {
+            data = new SchoolForm();
+        }
+        else {
+            SchoolDAO dao = new SchoolDAO();
+            School sch = dao.getSchool(id);
+            data = new SchoolForm(sch.getName());
+        }
+        Form<SchoolForm> formdata = Form.form(SchoolForm.class).fill(data);
+        return ok(edit_school.render(u, formdata));
+    }
+
+    public static Result postNewSchool() {return postSchool(null);}
+
+    public static Result postSchool(Long id) {
+        School s = new School("Super High School");
+        SuperAdmin u = new SuperAdmin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        Form<SchoolForm> data = Form.form(SchoolForm.class).bindFromRequest();
+
+        if (data.hasErrors()) {
+            flash("error", "Please correct errors above.");
+            return badRequest(edit_school.render(u,data));
+        }
+        else {
+            SchoolForm formData = data.get();
+            School q = School.makeInstance(formData);
+            return ok(edit_school.render(u,data));
+        }
+    }
+
+    public static Result deleteSchool(Long id) {
+        School s = new School("Super High School");
+        SuperAdmin u = new SuperAdmin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+
+        SchoolDAO dao = new SchoolDAO();
+        dao.deleteSchool(id);
+
+        return ok(schools.render(u));
+    }
+
 }

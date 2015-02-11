@@ -2,6 +2,7 @@ package models;
 
 import javax.persistence.*;
 import play.db.ebean.*;
+import views.forms.SchoolForm;
 
 import java.util.List;
 
@@ -19,6 +20,11 @@ public class School extends Model {
 
     public School(String name) {
         this.name = name;
+    }
+
+    public static School makeInstance(SchoolForm data) {
+        School s = new School(data.name);
+        return s;
     }
 
     public static Finder<Long,School> find = new Finder<>(Long.class, School.class);
@@ -43,8 +49,8 @@ public class School extends Model {
         return this.questions;
     }
 
-    public void addQuestion(String question, int duration) {
-        Question newQuestion = new Question(question, this, duration);
+    public void addQuestion(String question, double duration) {
+        Question newQuestion = new Question(question, duration, this);
         this.questions.add(newQuestion);
         newQuestion.save();
         this.save();

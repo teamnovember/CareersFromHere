@@ -1,0 +1,15 @@
+@(user: models.Admin)(form: play.data.Form[views.forms.QuestionForm])
+
+@import helper.twitterBootstrap._
+
+@stylesheets = {
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
+}
+
+@javascripts = {
+
+}
+
+@main("Admin Dashboard: Question Management - Careers From Here")(stylesheets)(javascripts)(user) {
+    <p>Welcome!</p>
+}

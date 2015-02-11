@@ -1,0 +1,15 @@
+@(user: models.SuperAdmin)(form: play.data.Form[views.forms.SchoolForm])
+
+@import helper.twitterBootstrap._
+
+@stylesheets = {
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
+}
+
+@javascripts = {
+
+}
+
+@main("Admin Dashboard: School Management - Careers From Here")(stylesheets)(javascripts)(user) {
+    <p>Welcome!</p>
+}

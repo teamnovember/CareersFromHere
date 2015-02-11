@@ -1,5 +1,7 @@
 package models;
 
+import com.avaje.ebean.ExpressionList;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +16,13 @@ public class UserDAOImpl implements UserDAO {
         List<User> users = User.find.all();
         return users;
     }
+
+    public List<User> getSchoolUsers(School school) {
+        ExpressionList<User> expList = User.find.where().eq("school",school);
+        List<User> users = expList.findList();
+        return users;
+    }
+
     public User getUser(Long ID){
         User user = User.find.byId(ID);
         if (user.getDiscriminator().equals("student")) {

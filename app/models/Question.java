@@ -2,6 +2,7 @@ package models;
 
 import javax.persistence.*;
 import play.db.ebean.*;
+import views.forms.QuestionForm;
 
 /**
  * Created by Louise on 04/02/2015.
@@ -17,10 +18,15 @@ public class Question extends Model {
     @JoinColumn(name="SCHOOL")
     public School school;
 
-    public Question(String text, School school,double duration) {
+    public Question(String text, double duration, School school) {
         this.text = text;
         this.school = school;
         this.duration = duration;
+    }
+
+    public static Question makeInstance(QuestionForm data) {
+        Question q = new Question(data.text,data.duration,data.school);
+        return q;
     }
 
     public static Finder<Long,Question> find = new Finder<>(Long.class, Question.class);
