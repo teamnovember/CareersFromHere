@@ -39,19 +39,19 @@ public class VideoController extends Controller {
         Video v = new Video(u, "Beatbox brilliance", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sollicitudin augue et molestie tincidunt. Suspendisse eu semper diam. Maecenas pulvinar arcu rhoncus augue suscipit, vitae sodales nulla condimentum. Etiam dignissim varius massa non tristique. Integer vel dolor et purus ultrices tincidunt ut eu turpis. Pellentesque laoreet varius diam et finibus. Etiam scelerisque erat velit, quis fringilla tellus interdum varius. Praesent eu rutrum tortor. Praesent volutpat tellus a mi viverra malesuada. Donec egestas ut nisi sed interdum. In vel ex at nisl pulvinar interdum. Aenean nisl velit, lobortis sed suscipit sed, mollis id nisl. Sed iaculis lectus eu lorem dignissim accumsan.", "http://img.youtube.com/vi/GNZBSZD16cY/0.jpg");
 
         Question q = new Question("RANDOM text RANDOM very", 0, null);
-        VideoClip clip = new VideoClip("/assets/test1.mp4", q, 20.34068);
+        VideoClip clip = new VideoClip("/assets/test1.mp4", null, q, 20.34068);
         v.addClip(clip);
         q = new Question("I. S. R. A. O. Y. O. T. E.", 0, null);
-        clip = new VideoClip("/assets/test2.mp4", q, 14.481133);
+        clip = new VideoClip("/assets/test2.mp4", null, q, 14.481133);
         v.addClip(clip);
         q = new Question("I shall remember all of you on the exams.", 0, null);
-        clip = new VideoClip("/assets/test3.mp4", q, 19.686333);
+        clip = new VideoClip("/assets/test3.mp4", null, q, 19.686333);
         v.addClip(clip);
         q = new Question("The great ending ...", 0, null);
-        clip = new VideoClip("/assets/test4.mp4", q, 16.964983);
+        clip = new VideoClip("/assets/test4.mp4", null, q, 16.964983);
         v.addClip(clip);
         q = new Question("TOC TOC", 0, null);
-        clip = new VideoClip("/assets/test5.mp4", q, 7.941267);
+        clip = new VideoClip("/assets/test5.mp4", null, q, 7.941267);
         v.addClip(clip);
         return ok(view.render(v, null));
     }

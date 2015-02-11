@@ -8,6 +8,7 @@ public class VideoClip extends Model {
     @Id
     private Long id;
     private String videoClipPath;
+    private String audioClipPath;
     private double duration;
     @ManyToOne
     private Video video;
@@ -16,8 +17,9 @@ public class VideoClip extends Model {
 
     public static Finder<Long,VideoClip> find = new Finder<>(Long.class, VideoClip.class);
 
-    public VideoClip(String path, Question question, double duration) {
-        this.videoClipPath = path;
+    public VideoClip(String videoClipPath, String audioClipPath, Question question, double duration) {
+        this.videoClipPath = videoClipPath;
+        this.audioClipPath = audioClipPath;
         this.question = question;
         this.duration = duration;
     }
@@ -31,6 +33,8 @@ public class VideoClip extends Model {
     public Long getId() { return id; }
 
     public String getVideoPath() { return videoClipPath; }
+
+    public String getAudioPath() { return audioClipPath; }
 
     public double getDuration() { return duration; }
 

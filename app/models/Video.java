@@ -92,17 +92,15 @@ public class Video extends Model {
         for (VideoClip clip : videoClips) {
             res.add(clip.getVideoPath());
         }
+        return getJSONForList(res);
+    }
 
-        String json = "";
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            json = objectMapper.writeValueAsString(res);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+    public String getJSONAudioPaths() {
+        ArrayList<String> res = new ArrayList<String>();
+        for (VideoClip clip : videoClips) {
+            res.add(clip.getAudioPath());
         }
-
-        return json;
+        return getJSONForList(res);
     }
 
     public String getJSONQuestionsText() {
@@ -110,17 +108,7 @@ public class Video extends Model {
         for (VideoClip clip : videoClips) {
             questionsText.add(clip.getQuestion().getText());
         }
-
-        String json = "";
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            json = objectMapper.writeValueAsString(questionsText);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        return json;
+        return getJSONForList(questionsText);
     }
 
     public String getJSONDurations() {
@@ -128,16 +116,20 @@ public class Video extends Model {
         for (VideoClip clip : videoClips) {
             res.add(clip.getDuration());
         }
+        return getJSONForList(res);
+    }
 
+    private String getJSONForList(ArrayList list) {
         String json = "";
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            json = objectMapper.writeValueAsString(res);
+            json = objectMapper.writeValueAsString(list);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 
         return json;
+
     }
 }
