@@ -4,6 +4,7 @@ import models.Question;
 import models.User;
 import models.Video;
 import models.VideoClip;
+import models.VideoDAO;
 import play.mvc.*;
 import views.html.*;
 
@@ -27,7 +28,8 @@ public class VideoController extends Controller {
             v = new Video(u, "Coming out of your closet", "Blah", "http://img.youtube.com/vi/kSR4xuU07sc/0.jpg");
             v.save();
         }
-        List<Video> videoList = Video.find.all();
+        VideoDAO dao = new VideoDAO();
+        List<Video> videoList = dao.getAllVideos();
 
         User u = new User("Edgaras Liberis","blahblah","el398@cam.ac.uk","student");
 

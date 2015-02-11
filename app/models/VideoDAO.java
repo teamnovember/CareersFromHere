@@ -17,7 +17,11 @@ public class VideoDAO {
         Video.find.byId(id).delete();
     }
 
-    public List<Video> getAllVideo() {
+    public List<Video> getAllVideos() {
         return Video.find.all();
+    }
+
+    public List<Video> getAllApprovedVideos() {
+        return Video.find.where().eq("approved", true).findList();
     }
 }
