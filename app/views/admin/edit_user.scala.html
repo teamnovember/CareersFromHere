@@ -1,6 +1,6 @@
-@(user: models.Admin)(form: play.data.Form[views.forms.UserForm])
+@(user: models.Admin)(form: play.data.Form[views.forms.UserForm])(id: Long)
 
-@import helper.twitterBootstrap._
+@import bootstrap3._
 
 @stylesheets = {
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
@@ -11,5 +11,33 @@
 }
 
 @main("Admin Dashboard: User Management - Careers From Here")(stylesheets)(javascripts)(user) {
-    <p>Welcome!</p>
+    <div class="spacing-panel">
+        <div class="shadow-panel">
+            <h2>Edit user information</h2>
+            <hr>
+            @helper.form(action = routes.AdminController.postUser(id)) {
+                <fieldset>
+                    @text(form("name"),
+                        label = "Name",
+                        placeholder = "User Name",
+                        help = "Please enter user's first and last name (required).")
+                    @text(form("email"),
+                        label = "Email",
+                        placeholder = "email@example.com",
+                        help = "Please enter user's email (required).")
+                    @password(form("password"),
+                        label = "Password",
+                        placeholder = "",
+                        help = "Please make sure you choose secure socket (required).")
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button id="submit" type="submit" value="Submit" class="btn btn-primary">Submit</button>
+                            <button id="cancel" class="btn cancel">Cancel</button>
+                        </div>
+                    </div>
+                </fieldset>
+            }
+        </div>
+    </div>
+
 }

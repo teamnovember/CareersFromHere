@@ -22,7 +22,7 @@ public class AdminController extends Controller {
     public static Result users() {
         School s = new School("Super High School");
         Admin u = new Admin("Edgaras Liberis", "blahblah", "el398@cam.ac.uk", s);
-        List<User> usrs = new ArrayList<>(); //TODO: actually query from DB to get list of users from school (using getSchoolUsers in UserDAO)
+        List<User> usrs = new ArrayList<>();
         usrs.add(new Student("Amazing Person 1", "muchpassword", "cl@cam.ac.uk", s));
         usrs.add(new Student("Amazing Person 2", "muchpassword", "cl@cam.ac.uk", s));
         usrs.add(new Student("Amazing Person 3", "muchpassword", "cl@cam.ac.uk", s));
@@ -63,7 +63,7 @@ public class AdminController extends Controller {
             data = new UserForm(user.getName(),user.getPassword(),user.getEmail(),user.getSchool(),user.getDiscriminator());
         }
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
-        return ok(edit_user.render(u, formdata));
+        return ok(edit_user.render(u, formdata, id));
     }
 
     public static Result postNewUser() {
@@ -77,7 +77,7 @@ public class AdminController extends Controller {
 
         if (data.hasErrors()) {
             flash("error", "Please correct errors above.");
-            return badRequest(edit_user.render(u,data));
+            return badRequest(edit_user.render(u, data, id));
         }
         else {
             UserForm formData = data.get();
@@ -97,7 +97,9 @@ public class AdminController extends Controller {
                     break;
 
             }
-            return ok(edit_user.render(u, data));
+
+            // Redirect to users page?
+            return ok(edit_user.render(u, data, id));
         }
     }
 
