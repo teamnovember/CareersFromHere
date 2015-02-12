@@ -50,7 +50,7 @@ public class User extends Model {
             this.password= HashHelper.createPassword(password);
             return true;
         }catch (AppException e){
-            return false; //todo confirm this is how we want this
+            return false;
         }
     }
 
