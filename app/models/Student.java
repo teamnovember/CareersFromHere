@@ -12,8 +12,7 @@ import javax.persistence.Entity;
 public class Student extends User{
 
     public Student(String name, String email, String password, School school){
-        super(name,email,password,"student");
-        super.setSchool(school);
+        super(name,email,password,"student", school);
     }
 
     public static Student makeInstance(UserForm data) {

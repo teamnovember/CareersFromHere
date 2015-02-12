@@ -38,7 +38,7 @@
                             style="background-image: url(@video.getThumbnailPath)">
                             <div class="video-info-overlay">
                                 <h2>@video.getTitle</h2>
-                                <span>@{var s = video.getDuration; s / 60 + ":" + s % 60}</span>
+                                <span>@{var s = video.getDuration.toInt; s / 60 + ":" + s % 60}</span>
                             </div>
                         </div>
                     </a>

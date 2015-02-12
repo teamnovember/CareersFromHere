@@ -45,7 +45,20 @@
                 </div>
             </div>
         </div>
+
         <div id="main-container" class="container">
+            @if(flash.contains("success")) {
+                <div class="alert alert-success" role="alert">
+                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                    @flash.get("success")
+                </div>
+            }
+            @if(flash.contains("error")) {
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    @flash.get("error")
+                </div>
+            }
             @content
         </div>
     </body>

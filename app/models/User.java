@@ -23,11 +23,12 @@ public class User extends Model {
     private School school;
     private String discriminator;
 
-    public User(String name, String password, String email, String discriminator){
+    public User(String name, String password, String email, String discriminator, School school){
         this.name=name;
         this.email=email;
         this.password=password;
         this.discriminator=discriminator;
+        this.school = school;
     }
 
     public static Finder<Long,User> find = new Finder<>(Long.class,User.class);
