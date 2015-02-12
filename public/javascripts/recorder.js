@@ -10,7 +10,9 @@ mRecordRTC.media = {
 
 function initialiseRecorder() {
     recorderAudio = document.getElementById("recorder-audio");
+
     recorderVideo = document.getElementById("recorder-video");
+    recorderVideo.volume = 0;
 
     navigator.getUserMedia = navigator.getUserMedia ||
                                 navigator.webkitGetUserMedia ||

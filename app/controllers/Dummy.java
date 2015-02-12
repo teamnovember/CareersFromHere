@@ -9,4 +9,5 @@ public class Dummy extends Controller {
     public static Result dummy_page() {
         return ok(dummy_page.render());
     }
+
 }
