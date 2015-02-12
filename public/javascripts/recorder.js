@@ -50,4 +50,16 @@ function stopRecording() {
     });
 };
 
+function up() {
+    var f = document.forms[0];
+    var fi = document.getElementById("video-data");
+
+    MRecordRTC.getFromDisk("all", function(dataURL, type) {
+        if (type == "video") {
+            fi.setAttribute("value", dataURL.toString());
+            //f.submit();
+        }
+    });
+};
+
 document.addEventListener("DOMContentLoaded", function() { initialiseRecorder(); }, false);

@@ -43,6 +43,7 @@ POST        /admin/schools/delete              controllers.AdminController.delet
 
 # Dummy page
 GET         /dummy                             controllers.Dummy.dummy_page()
+POST        /dummy                             controllers.Dummy.upload()
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                      controllers.Assets.at(path="/public", file)

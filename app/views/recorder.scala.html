@@ -6,3 +6,10 @@
             <button id="recorder-stop-button" onclick="stopRecording();">stop</button>
         </div>
 </div>
+
+@helper.form(action = routes.Dummy.upload) {
+    <input type="text" name="videoData" id="video-data" value="" />
+    <input type="submit" />
+}
+
+<button onclick="up()">Update Input And Submit</button>
