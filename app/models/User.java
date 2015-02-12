@@ -6,8 +6,11 @@ package models;
  * Created by biko on 03/02/15.
  */
 import javax.persistence.*;
+
+import helpers.*;
 import play.db.ebean.*;
 import views.forms.UserForm;
+import play.libs.Crypto;
 
 
 @Entity
@@ -19,9 +22,11 @@ public class User extends Model {
     private String name;
     private String password;
     private String email;
+    private boolean approved = false;
     @ManyToOne
     private School school;
     private String discriminator;
+
 
     public User(String name, String password, String email, String discriminator){
         this.name=name;
@@ -36,13 +41,19 @@ public class User extends Model {
         return this.id;
     }
 
-    public String getPassword(){ //todo use secure social here
+    public String getPassword(){
         return password;
     }
 
-    public void setPassword(String password){ //todo use secure social here
-        this.password=password;
+    public boolean setPassword(String password){
+        try{
+            this.password= HashHelper.createPassword(password);
+            return true;
+        }catch (AppException e){
+            return false; //todo confirm this is how we want this
+        }
     }
+
 
     public String getName() {
         return name;
@@ -67,6 +78,9 @@ public class User extends Model {
         this.school = school;
     }
 
+    public void approved(){
+        this.approved = false;
+    }
     public String getDiscriminator() { return this.discriminator; }
     public void setDiscriminator(String d) { this.discriminator = d; }
 
