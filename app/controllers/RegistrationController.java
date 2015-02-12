@@ -22,13 +22,34 @@ public class RegistrationController extends Controller {
         return ok("Email " + id + " sent!");
     }
 
-    public void register(String email,String password, School school){
-        //todo, invoked by users from registration page - sends a verification email to user email
+    public Result register(String name,String email,String password, School school,String discrim){
+        if (discrim.equals("student")) {
+            Student s = new Student(name, email, password, school);
+            s.setPassword(password);
+        }else if (discrim.equals("alumni")){
+            Alumni a = new Alumni(name,password,email,school);
+            a.setPassword(password);
+        }else if (discrim.equals("admin")){
+            Admin a = new Admin(name,password,email,school);
+            a.setPassword(password);
+        }else if (discrim.equals("superadmin")){
+            SuperAdmin sa = new SuperAdmin(name,password,email,school);
+            sa.setPassword(password);
+        }
+        Email mail = new Email();
+        mail.setSubject("Approve your Email for CareersFromHere");
+        mail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
+        mail.addTo("TO <"+email+">");
+        mail.setBodyText("");//todo, have a message with the links to approve email or send a request to delete information
+        String id = MailerPlugin.send(mail);
+        return ok("Email "+id+" sent!");
 
     }
 
     public void emailVerification(User user){
         //todo, from verification link
+
+
 
     }
 
@@ -50,6 +71,8 @@ public class RegistrationController extends Controller {
 
     public void changePassword(User user, String password){
         //todo, change password
+
+        user.setPassword(password);
     }
 
 }

@@ -1,4 +1,4 @@
-@(user: models.Admin)
+@(user: models.Admin)(videoList: java.util.List[models.Video])
 
 @stylesheets = {
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
@@ -9,5 +9,44 @@
 }
 
 @main("Admin Dashboard: Video Management - Careers From Here")(stylesheets)(javascripts)(user) {
-  <p>Welcome!</p>
+    <div class="spacing-panel">
+        <div class="shadow-panel table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Author</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @for(video <- videoList) {
+                    <tr>
+                        <td><a href="@routes.VideoController.view(video.getId)">@video.getTitle</a></td>
+                        <td>@video.getUser.getName</td>
+                        <td>
+                            <a class="btn btn-default action-button"
+                                href="@routes.AdminController.getVideo(video.getId)">
+                            <span class="glyphicon glyphicon-pencil"></span></a>
+
+                            @helper.form(action = routes.AdminController.approveVideo) {
+                                <input type="hidden" name="id" value="@video.getId" />
+                                @* CSRF here *@
+                                <button class="btn btn-success action-button" type="submit">
+                                <span class="glyphicon glyphicon-ok"></span></button>
+                            }
+
+                            @helper.form(action = routes.AdminController.deleteVideo) {
+                                <input type="hidden" name="id" value="@video.getId" />
+                                @* CSRF here *@
+                                <button class="btn btn-danger action-button" type="submit">
+                                    <span class="glyphicon glyphicon-remove"></span></button>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
 }

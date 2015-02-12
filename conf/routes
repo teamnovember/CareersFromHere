@@ -13,6 +13,7 @@ GET         /admin/videos                      controllers.AdminController.video
 GET         /admin/questions                   controllers.AdminController.questions()
 GET         /admin/schools                     controllers.AdminController.schools()
 
+# Admin pages: Users
 GET         /admin/users/manage/new            controllers.AdminController.getNewUser()
 GET         /admin/users/manage/:id            controllers.AdminController.getUser(id: Long)
 POST        /admin/users/manage/new            controllers.AdminController.postNewUser()
@@ -20,17 +21,20 @@ POST        /admin/users/manage/:id            controllers.AdminController.postU
 #POST       /admin/users/approve     controllers.AdminController.approveUser()
 POST        /admin/users/delete                controllers.AdminController.deleteUser(id: Long)
 
+# Admin pages: Videos
 GET         /admin/videos/manage/:id           controllers.AdminController.getVideo(id: Long)
 POST        /admin/videos/manage/:id           controllers.AdminController.postVideo(id: Long)
-POST        /admin/videos/delete               controllers.AdminController.deleteVideo(id: Long)
-POST        /admin/videos/approve              controllers.AdminController.approveVideo(id: Long)
+POST        /admin/videos/delete               controllers.AdminController.deleteVideo
+POST        /admin/videos/approve              controllers.AdminController.approveVideo
 
+# Admin pages: Questions
 GET         /admin/questions/manage/new        controllers.AdminController.getNewQuestion()
 GET         /admin/questions/manage/:id        controllers.AdminController.getQuestion(id: Long)
 POST        /admin/questions/manage/new        controllers.AdminController.postNewQuestion()
 POST        /admin/questions/manage/:id        controllers.AdminController.postQuestion(id: Long)
 POST        /admin/questions/delete            controllers.AdminController.deleteQuestion(id: Long)
 
+# (Super) admin pages: Schools
 GET         /admin/schools/manage/new          controllers.AdminController.getNewSchool()
 GET         /admin/schools/manage/:id          controllers.AdminController.getSchool(id: Long)
 POST        /admin/schools/manage/new          controllers.AdminController.postNewSchool()
