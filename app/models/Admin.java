@@ -2,7 +2,6 @@ package models;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.ExpressionList;
-import com.avaje.ebean.Query;
 import views.forms.UserForm;
 
 import java.util.List;
@@ -13,8 +12,7 @@ import java.util.List;
 public class Admin extends User {
 
     public Admin(String name,String password,String email, School school){
-        super(name,password,email,"admin");
-        super.setSchool(school);
+        super(name,password,email,"admin", school);
     }
 
     public static Admin makeInstance(UserForm data) {

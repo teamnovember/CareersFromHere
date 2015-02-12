@@ -2,6 +2,7 @@ package controllers;
 
 import models.*;
 import play.data.Form;
+import play.data.DynamicForm;
 import play.mvc.*;
 import views.forms.QuestionForm;
 import views.forms.SchoolForm;
@@ -24,19 +25,17 @@ public class AdminController extends Controller {
     }
 
     public static Result users() {
-        School s = new School("Super High School");
+        School s = School.find.all().get(0);
         Admin u = new Admin("Edgaras Liberis", "blahblah", "el398@cam.ac.uk", s);
-        List<User> usrs = new ArrayList<>();
-        usrs.add(new Student("Amazing Person 1", "muchpassword", "cl@cam.ac.uk", s));
-        usrs.add(new Student("Amazing Person 2", "muchpassword", "cl@cam.ac.uk", s));
-        usrs.add(new Student("Amazing Person 3", "muchpassword", "cl@cam.ac.uk", s));
-        return ok(users.render(u, usrs));
+        UserDAOImpl dao = new UserDAOImpl();
+        return ok(users.render(u, dao.getSchoolUsers(s)));
     }
 
     public static Result videos() {
         School s = new School("Super High School");
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
-        return ok(videos.render(u));
+        List<Video> videoList = Video.find.all();
+        return ok(videos.render(u, videoList));
     }
 
     public static Result questions() {
@@ -114,7 +113,9 @@ public class AdminController extends Controller {
         UserDAOImpl dao = new UserDAOImpl();
         dao.deleteUser(id);
 
-        return ok(users.render(u,dao.getSchoolUsers(s)));
+        flash("User deleted!");
+
+        return redirect("/admin/users");
     }
 
     //dont need "new" video methods in AdminController
@@ -153,25 +154,33 @@ public class AdminController extends Controller {
         }
     }
 
-    public static Result deleteVideo(Long id) {
+    public static Result deleteVideo() {
         School s = new School("Super High School");
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
 
+        DynamicForm requestData = Form.form().bindFromRequest();
+        Long id = Long.parseLong(requestData.get("id"));
         VideoDAO dao = new VideoDAO();
         dao.deleteVideo(id);
 
-        return ok(videos.render(u));
+        flash("success", "Video deleted!");
+
+        return redirect("/admin/videos");
     }
 
-    public static Result approveVideo(Long id) {
+    public static Result approveVideo() {
         School s = new School("Super High School");
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
 
+        DynamicForm requestData = Form.form().bindFromRequest();
+        Long id = Long.parseLong(requestData.get("id"));
         VideoDAO dao = new VideoDAO();
         Video v = dao.getVideo(id);
         v.approve(true);
 
-        return ok(videos.render(u));
+        flash("success", "Video approved!");
+
+        return redirect("/admin/videos");
     }
 
     //TODO: need a method/way for admins to preview video before they decide to approve or delete
