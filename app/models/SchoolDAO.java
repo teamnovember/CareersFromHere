@@ -20,6 +20,8 @@ public class SchoolDAO {
 
     public void deleteSchool(Long id) {
         School.find.byId(id).delete();
+
+
     }
 
 }

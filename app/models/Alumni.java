@@ -21,8 +21,8 @@ public class Alumni extends User {
     }
 
     private String profile;
-    @OneToMany
-    List<Video> videos;
+    @OneToMany(cascade=CascadeType.ALL)
+    private List<Video> videos;
 
     public static Finder<Long,Alumni> find = new Finder<>(Long.class,Alumni.class);
 
