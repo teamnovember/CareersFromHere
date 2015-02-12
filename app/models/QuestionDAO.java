@@ -41,7 +41,7 @@ public class QuestionDAO {
     public void reorderQuestion() {} //TODO: how do we want to do this? swapping?
 
     public List<Question> getActiveQuestions(School school) {
-        ExpressionList<Question> expList = Question.find.where().eq("SCHOOL",school).eq("active",true); //TODO: check that this works
+        ExpressionList<Question> expList = Question.find.where().eq("school.schoolId",school.getId()).eq("active",true); //TODO: check that this works
         List<Question> result = expList.findList();
         Collections.sort(result);
         return result;

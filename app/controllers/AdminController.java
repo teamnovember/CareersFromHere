@@ -16,8 +16,6 @@ import java.util.List;
 public class AdminController extends Controller {
     //TODO: will need to authenticate the current user in these methods (replace new user creation)
 
-    //TODO: just realised makeInstance methods are creating new models rather than updating ones in the db. Need to change this
-
     public static Result index() {
         School s = new School("Super High School");
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
@@ -28,25 +26,30 @@ public class AdminController extends Controller {
         School s = School.find.all().get(0);
         Admin u = new Admin("Edgaras Liberis", "blahblah", "el398@cam.ac.uk", s);
         UserDAOImpl dao = new UserDAOImpl();
-        return ok(users.render(u, dao.getSchoolUsers(s)));
+        return ok(users.render(u, dao.getSchoolUsers(s))); //gets all users for a school
     }
 
     public static Result videos() {
         School s = new School("Super High School");
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
-        List<Video> videoList = Video.find.all();
-        return ok(videos.render(u, videoList));
+        VideoDAO dao = new VideoDAO();
+        return ok(videos.render(u, dao.getAllVideos())); //returns all videos
     }
 
     public static Result questions() {
         School s = new School("Super High School");
+        s.save();
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        QuestionDAO dao = new QuestionDAO();
+        List<Question> qs = dao.getActiveQuestions(s); //this gets all the active questions for a school
         return ok(questions.render(u));
     }
 
     public static Result schools() {
         School s = new School("Super High School");
         SuperAdmin u = new SuperAdmin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s); //TODO: restrict school functions to super admin
+        SchoolDAO dao = new SchoolDAO();
+        List<School> ss = dao.getAllSchool(); //list of all current schools
         return ok(schools.render(u));
     }
 
@@ -85,22 +88,33 @@ public class AdminController extends Controller {
         else {
             UserForm formData = data.get();
             User formUser = null;
-            switch(formData.discriminator) {
-                case "alumni":
-                    formUser = Alumni.makeInstance(formData);
-                    break;
-                case "admin": //TODO: add validation so only (Super/)Admin can do this one
-                    formUser = Admin.makeInstance(formData);
-                    break;
-                case "superadmin": //TODO: add validation so only SuperAdmin can do this one
-                    formUser = SuperAdmin.makeInstance(formData);
-                    break;
-                default: //"student"
-                    formUser = Student.makeInstance(formData);
-                    break;
+            if (id == null) { //aka if we're making a new user, actually make a new one
+                switch(formData.discriminator) {
+                    case "alumni":
+                        formUser = Alumni.makeInstance(formData);
+                        break;
+                    case "admin": //TODO: add validation so only (Super/)Admin can do this one
+                        formUser = Admin.makeInstance(formData);
+                        break;
+                    case "superadmin": //TODO: add validation so only SuperAdmin can do this one
+                        formUser = SuperAdmin.makeInstance(formData);
+                        break;
+                    default: //"student"
+                        formUser = Student.makeInstance(formData);
+                        break;
 
+                }
             }
-
+             else { //if we have an id (aka we're editing) we want to edit the details of the user in the database already
+                UserDAOImpl dao = new UserDAOImpl();
+                formUser = dao.getUser(id);
+                formUser.setName(formData.name);
+                formUser.setEmail(formData.email);
+                formUser.setPassword(formData.password);
+                formUser.setSchool(formData.school); //do we need this? might want to restrict to Super Admin...
+                formUser.setDiscriminator(formData.discriminator); //upgrading users, again might either not want to restrict...
+            }
+            formUser.save(); //save to database no matter the outcome
             // Redirect to users page?
             return ok(edit_user.render(u, data, id));
         }
@@ -141,7 +155,7 @@ public class AdminController extends Controller {
             flash("error", "Please correct errors above.");
             return badRequest(edit_video.render(u, data, id));
         }
-        else {
+        else { //don't need to check for null id because we don't create videos here
             VideoForm formData = data.get();
             video.setTitle(formData.title);
             video.setDescription(formData.description);
@@ -217,7 +231,18 @@ public class AdminController extends Controller {
         }
         else {
             QuestionForm formData = data.get();
-            Question q = Question.makeInstance(formData);
+            Question q = null;
+            QuestionDAO dao = new QuestionDAO();
+            if (id == null) { //if we are creating a new question
+                q = Question.makeInstance(formData);
+                dao.newQuestion(q); //this ensures we get the ordering correct
+            } else {
+                q = dao.getQuestion(id);
+                q.setText(formData.text);
+                q.setDuration(formData.duration);
+                //TODO: edit the question form to allow for reordering. or to reorder normally...
+                q.save();
+            }
             return ok(edit_question.render(u,data));
         }
     }
@@ -264,7 +289,16 @@ public class AdminController extends Controller {
         }
         else {
             SchoolForm formData = data.get();
-            School q = School.makeInstance(formData);
+            School sch;
+            if (id == null) {
+                sch = School.makeInstance(formData);
+
+            } else {
+                SchoolDAO dao = new SchoolDAO();
+                sch = dao.getSchool(id);
+                sch.setName(formData.name);
+            }
+            sch.save();
             return ok(edit_school.render(u,data));
         }
     }
