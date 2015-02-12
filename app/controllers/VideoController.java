@@ -12,7 +12,7 @@ public class VideoController extends Controller {
             // Seed data, TEDx videos sorted by popularity
             School s = new School("Super High School");
             s.save();
-            User u = new User("Test user", "Stuff", "test@asdf.com","student", s);
+            Alumni u = new Alumni("Test user", "Stuff", "test@asdf.com", s);
             u.save();
             Video v = new Video(u, "Beatbox brilliance", "Blah", "http://img.youtube.com/vi/GNZBSZD16cY/0.jpg");
             v.save();
@@ -34,7 +34,7 @@ public class VideoController extends Controller {
     }
 
     public static Result view(Long id) {
-        Student u = new Student("Test user", "Stuff", "test@asdf.com", null);
+        Alumni u = new Alumni("Test user", "Stuff", "test@asdf.com", null);
         Video v = new Video(u, "Beatbox brilliance", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sollicitudin augue et molestie tincidunt. Suspendisse eu semper diam. Maecenas pulvinar arcu rhoncus augue suscipit, vitae sodales nulla condimentum. Etiam dignissim varius massa non tristique. Integer vel dolor et purus ultrices tincidunt ut eu turpis. Pellentesque laoreet varius diam et finibus. Etiam scelerisque erat velit, quis fringilla tellus interdum varius. Praesent eu rutrum tortor. Praesent volutpat tellus a mi viverra malesuada. Donec egestas ut nisi sed interdum. In vel ex at nisl pulvinar interdum. Aenean nisl velit, lobortis sed suscipit sed, mollis id nisl. Sed iaculis lectus eu lorem dignissim accumsan.", "http://img.youtube.com/vi/GNZBSZD16cY/0.jpg");
 
         Question q = new Question("RANDOM text RANDOM very", 0, null);
