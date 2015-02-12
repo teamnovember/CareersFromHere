@@ -1,4 +1,6 @@
-@(videos: java.util.List[models.Video])(user: models.User)
+@(videos: java.util.List[models.Video])(catForm: Form[views.forms.CategorySelectionForm])(categoryMap: Map[String, Boolean])(user: models.User)
+
+@import bootstrap3._
 
 @stylesheets = {
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/index.css")">
@@ -11,27 +13,21 @@
 @main("Careers From Here")(stylesheets)(javascripts)(user) {
     <div id="content-wrapper">
         <div class="row">
-            <div id="category-sidebar" class="col-sm-3 hidden-xs">
+            <div id="category-sidebar" class="col-md-3 hidden-xs">
                 <h2>Categories</h2>
                 <div id="categories">
-                    <div class="checkbox">
-                        <label><input type="checkbox"> Check me out</label>
-                    </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox"> Check me out</label>
-                    </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox"> Check me out</label>
-                    </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox"> Check me out</label>
-                    </div>
-                    <div class="checkbox">
-                        <label><input type="checkbox"> Check me out</label>
-                    </div>
+                    @helper.form(action = routes.VideoController.categorySelect) {
+                        <fieldset>
+                            @checkboxes(catForm("categories"),
+                                label = "",
+                                checkboxMap = categoryMap,
+                                help = "")
+                            <button id="submit" type="submit" value="Submit" class="btn btn-primary">Update</button>
+                        </fieldset>
+                    }
                 </div>
             </div>
-            <div id="video-grid" class="col-sm-9">
+            <div id="video-grid" class="col-md-9">
                 @for(video <- videos) {
                     <a href="@routes.VideoController.view(video.getId)">
                         <div class="video-grid-element col-sm-6 col-md-4"

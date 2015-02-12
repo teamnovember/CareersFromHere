@@ -1,10 +1,17 @@
 package controllers;
 
 import models.*;
+import play.data.Form;
 import play.mvc.*;
+import views.forms.CategorySelectionForm;
 import views.html.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static play.data.Form.form;
 
 public class VideoController extends Controller {
     public static Result index() {
@@ -29,8 +36,45 @@ public class VideoController extends Controller {
         List<Video> videoList = dao.getAllVideos();
 
         Student u = new Student("Test user", "Stuff", "test@asdf.com", null);
+        CategoryDAO cdao = new CategoryDAO();
+        List<Category> allCats = cdao.getAllCategories();
 
-        return ok(index.render(videoList, u));
+        Map<String, Boolean> catIdNameMap = new HashMap<>();
+        for(Category c : allCats)  {
+            catIdNameMap.put(c.getName(), false);
+        }
+
+        Form<CategorySelectionForm> catForm = form(CategorySelectionForm.class)
+                .fill(new CategorySelectionForm(allCats));
+
+        return ok(index.render(videoList, catForm, catIdNameMap, u));
+    }
+
+    public static Result categorySelect()
+    {
+        VideoDAO dao = new VideoDAO();
+        List<Video> videoList = dao.getAllVideos();
+
+        Student u = new Student("Test user", "Stuff", "test@asdf.com", null);
+        CategoryDAO cdao = new CategoryDAO();
+        List<Category> allCats = cdao.getAllCategories();
+
+        CategorySelectionForm form = Form.form(CategorySelectionForm.class).bindFromRequest().get();
+        List<String> selectedNames = new ArrayList<>();
+        for(Category c : form.categories) {
+            selectedNames.add(c.getName());
+        }
+
+        Map<String, Boolean> catIdNameMap = new HashMap<>();
+        for(Category c : allCats)  {
+            // TODO: for categories in selectedNames (second argument is true), add to a separate list for filtering
+            catIdNameMap.put(c.getName(), selectedNames.contains(c.getName()));
+        }
+
+        Form<CategorySelectionForm> catForm = form(CategorySelectionForm.class)
+                .fill(new CategorySelectionForm(allCats));
+
+        return ok(index.render(videoList, catForm, catIdNameMap, u));
     }
 
     public static Result view(Long id) {

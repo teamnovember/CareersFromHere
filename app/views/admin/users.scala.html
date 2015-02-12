@@ -27,14 +27,21 @@
                         <td>
                             <a class="btn btn-default action-button"
                             href="@routes.AdminController.getUser(user.getId)">
-                            <span class="glyphicon glyphicon-pencil"></span></a>
+                                <span class="glyphicon glyphicon-pencil"></span></a>
 
-                            <a class="btn btn-success action-button" href="#">
-                                <span class="glyphicon glyphicon-ok"></span></a>
+                            @helper.form(action = routes.AdminController.approveUser) {
+                                <input type="hidden" name="id" value="@user.getId" />
+                                @* CSRF here *@
+                                <button class="btn btn-success action-button" type="submit">
+                                    <span class="glyphicon glyphicon-ok"></span></button>
+                            }
 
-                            <a class="btn btn-danger action-button"
-                                href="@routes.AdminController.deleteUser(user.getId)">
-                                <span class="glyphicon glyphicon-remove"></span></a>
+                            @helper.form(action = routes.AdminController.deleteUser) {
+                                <input type="hidden" name="id" value="@user.getId" />
+                                @* CSRF here *@
+                                <button class="btn btn-danger action-button" type="submit">
+                                    <span class="glyphicon glyphicon-remove"></span></button>
+                            }
                         </td>
                     </tr>
                 }

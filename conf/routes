@@ -3,7 +3,8 @@
 # ~~~~
 
 # Video gallery pages
-GET         /                                  controllers.VideoController.index
+GET         /                                  controllers.VideoController.index()
+POST        /                                  controllers.VideoController.categorySelect()
 GET         /view/:id                          controllers.VideoController.view(id: Long)
 
 # Admin pages
@@ -18,14 +19,14 @@ GET         /admin/users/manage/new            controllers.AdminController.getNe
 GET         /admin/users/manage/:id            controllers.AdminController.getUser(id: Long)
 POST        /admin/users/manage/new            controllers.AdminController.postNewUser()
 POST        /admin/users/manage/:id            controllers.AdminController.postUser(id: Long)
-#POST       /admin/users/approve     controllers.AdminController.approveUser()
-POST        /admin/users/delete                controllers.AdminController.deleteUser(id: Long)
+POST        /admin/users/approve               controllers.AdminController.approveUser()
+POST        /admin/users/delete                controllers.AdminController.deleteUser()
 
 # Admin pages: Videos
 GET         /admin/videos/manage/:id           controllers.AdminController.getVideo(id: Long)
 POST        /admin/videos/manage/:id           controllers.AdminController.postVideo(id: Long)
-POST        /admin/videos/delete               controllers.AdminController.deleteVideo
-POST        /admin/videos/approve              controllers.AdminController.approveVideo
+POST        /admin/videos/delete               controllers.AdminController.deleteVideo()
+POST        /admin/videos/approve              controllers.AdminController.approveVideo()
 
 # Admin pages: Questions
 GET         /admin/questions/manage/new        controllers.AdminController.getNewQuestion()

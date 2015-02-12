@@ -105,7 +105,7 @@ public class AdminController extends Controller {
 
                 }
             }
-             else { //if we have an id (aka we're editing) we want to edit the details of the user in the database already
+            else { //if we have an id (aka we're editing) we want to edit the details of the user in the database already
                 UserDAOImpl dao = new UserDAOImpl();
                 formUser = dao.getUser(id);
                 formUser.setName(formData.name);
@@ -115,19 +115,35 @@ public class AdminController extends Controller {
                 formUser.setDiscriminator(formData.discriminator); //upgrading users, again might either not want to restrict...
             }
             formUser.save(); //save to database no matter the outcome
-            // Redirect to users page?
-            return ok(edit_user.render(u, data, id));
         }
+        return redirect("/admin/users");
     }
 
-    public static Result deleteUser(Long id) {
+    public static Result deleteUser() {
         School s = new School("Super High School");
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
 
+        DynamicForm requestData = Form.form().bindFromRequest();
+        Long id = Long.parseLong(requestData.get("id"));
         UserDAOImpl dao = new UserDAOImpl();
         dao.deleteUser(id);
 
         flash("User deleted!");
+
+        return redirect("/admin/users");
+    }
+
+    public static Result approveUser() {
+        School s = new School("Super High School");
+        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+
+        DynamicForm requestData = Form.form().bindFromRequest();
+        Long id = Long.parseLong(requestData.get("id"));
+
+        UserDAOImpl dao = new UserDAOImpl();
+        //TODO: dao.approveUser(id);
+
+        flash("success", "User approved!");
 
         return redirect("/admin/users");
     }
