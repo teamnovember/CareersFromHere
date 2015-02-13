@@ -23,7 +23,7 @@ public class AdminController extends Controller {
     }
 
     public static Result users() {
-        School s = School.find.all().get(0);
+        School s = School.find.all().get(1);
         Admin u = new Admin("Edgaras Liberis", "blahblah", "el398@cam.ac.uk", s);
         UserDAOImpl dao = new UserDAOImpl();
         return ok(users.render(u, dao.getSchoolUsers(s))); //gets all users for a school

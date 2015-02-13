@@ -9,6 +9,6 @@
     margin-right: 2px;
 }
 
-.action-button {
-
+.action-button-place {
+    display: inline-block;
 }

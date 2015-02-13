@@ -25,23 +25,25 @@
                         <td><a href="@routes.VideoController.view(video.getId)">@video.getTitle</a></td>
                         <td>@video.getUser.getName</td>
                         <td>
-                            <a class="btn btn-default action-button"
+                            <div class="action-button-place"><a class="btn btn-default action-button"
                                 href="@routes.AdminController.getVideo(video.getId)">
-                            <span class="glyphicon glyphicon-pencil"></span></a>
+                            <span class="glyphicon glyphicon-pencil"></span> Edit</a></div>
 
+                            <div class="action-button-place">
                             @helper.form(action = routes.AdminController.approveVideo) {
                                 <input type="hidden" name="id" value="@video.getId" />
                                 @* CSRF here *@
                                 <button class="btn btn-success action-button" type="submit">
-                                <span class="glyphicon glyphicon-ok"></span></button>
-                            }
+                                <span class="glyphicon glyphicon-ok"></span> Approve</button>
+                            }</div>
 
+                            <div class="action-button-place">
                             @helper.form(action = routes.AdminController.deleteVideo) {
                                 <input type="hidden" name="id" value="@video.getId" />
                                 @* CSRF here *@
                                 <button class="btn btn-danger action-button" type="submit">
-                                    <span class="glyphicon glyphicon-remove"></span></button>
-                            }
+                                    <span class="glyphicon glyphicon-remove"></span> Delete</button>
+                            } </div>
                         </td>
                     </tr>
                 }
