@@ -50,15 +50,40 @@ function stopRecording() {
     });
 };
 
-function up() {
-    var f = document.forms[0];
-    var fi = document.getElementById("video-data");
+function go(blob) {
+    var fileType = 'video';
+    var fileName = 'ABCDEF.webm';
 
+    var formData = new FormData();
+    formData.append(fileType + '-filename', fileName);
+    formData.append(fileType + '-blob', blob);
+
+    xhr('/dummy', formData, function (fName) {
+        window.open(location.href + fName);
+    });
+
+    function xhr(url, data, callback) {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function () {
+            if (request.readyState == 4 && request.status == 200) {
+                callback(location.href + request.responseText);
+            }
+        };
+        request.open('POST', url);
+        request.send(data);
+    }
+};
+
+function up() {
     MRecordRTC.getFromDisk("all", function(dataURL, type) {
         if (type == "video") {
-            fi.setAttribute("value", dataURL.toString());
-            //f.submit();
+            console.log(dataURL);
         }
+    });
+
+    mRecordRTC.getBlob(function(blobs) {
+        console.log(blobs.video);
+        go(blobs.video);
     });
 };
 
