@@ -19,7 +19,7 @@ public class VideoController extends Controller {
             // Seed data, TEDx videos sorted by popularity
             School s = new School("Super High School");
             s.save();
-            Alumni u = new Alumni("Test user", "Stuff", "test@asdf.com", s);
+            User u = new User("Test user", "Stuff", "test@asdf.com", "alumni", s);
             u.save();
             Video v = new Video(u, "Beatbox brilliance", "Blah", "http://img.youtube.com/vi/GNZBSZD16cY/0.jpg");
             v.save();
@@ -61,8 +61,10 @@ public class VideoController extends Controller {
 
         CategorySelectionForm form = Form.form(CategorySelectionForm.class).bindFromRequest().get();
         List<String> selectedNames = new ArrayList<>();
-        for(Category c : form.categories) {
-            selectedNames.add(c.getName());
+        if(form.categories != null) {
+            for (Category c : form.categories) {
+                selectedNames.add(c.getName());
+            }
         }
 
         Map<String, Boolean> catIdNameMap = new HashMap<>();

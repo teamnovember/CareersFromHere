@@ -10,15 +10,18 @@
 }
 
 @main(video.getTitle + " - Careers From Here")(stylesheets)(javascripts)(user) {
-    <div class="col-md-8">
+    <div class="col-md-7">
             @video_player(video.getJSONPaths)(video.getJSONQuestionsText)(video.getJSONDurations)(video.getDuration)
         <div id="video-metadata" class="shadow-panel">
             <h2>@video.getTitle</h2>
             <p>@video.getDescription</p>
         </div>
     </div>
-    <div id="uploader-info" class="col-md-4 shadow-panel">
-        <p>Uploader information goes here</p>
+    <div class="spacing-panel col-md-5">
+        <div id="uploader-info" class="shadow-panel clearfix">
+                <img class="profile-picture" src="@routes.Assets.at("images/placeholderProfile.png")" />
+                <h3>@video.getUser().getName()</h3>
+                <p>Future First is a service designed around trying to connect current secondary school and college students with former students. Facilitating the communication between alumni and former students is important as current students may find it helpful to seek advice from alumni close to their community and background rather than gain generic advice from an impersonal source. Students, especially those from less fortunate backgrounds, can often be confused about their future path and engaging with their former peers gives them a reliable and relatable helpline.</p>
+        </div>
     </div>
-
 }

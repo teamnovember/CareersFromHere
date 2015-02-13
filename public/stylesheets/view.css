@@ -11,5 +11,16 @@
 }
 
 #uploader-info {
+    margin-top: 25px;
+}
 
+#uploader-info .profile-picture {
+    width: 64px;
+    float: right;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+#uploader-info h3 {
+    margin-top: 5px;
 }

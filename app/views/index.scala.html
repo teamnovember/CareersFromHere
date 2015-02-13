@@ -13,13 +13,12 @@
 @main("Careers From Here")(stylesheets)(javascripts)(user) {
     <div id="content-wrapper">
         <div class="row">
-            <div id="category-sidebar" class="col-md-3 hidden-xs">
+            <div id="category-sidebar" class="col-md-3 hidden-xs hidden-sm">
                 <h2>Categories</h2>
                 <div id="categories">
                     @helper.form(action = routes.VideoController.categorySelect) {
                         <fieldset>
                             @checkboxes(catForm("categories"),
-                                label = "",
                                 checkboxMap = categoryMap,
                                 help = "")
                             <button id="submit" type="submit" value="Submit" class="btn btn-primary">Update</button>
