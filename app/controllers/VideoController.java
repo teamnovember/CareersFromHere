@@ -1,6 +1,9 @@
 package controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import models.*;
+import play.api.Routes;
 import play.data.Form;
 import play.mvc.*;
 import views.forms.CategorySelectionForm;
@@ -100,4 +103,35 @@ public class VideoController extends Controller {
         v.addClip(clip);
         return ok(view.render(v, null));
     }
+
+    public static Result record() {
+        ArrayList<Question> questions = new ArrayList<>();
+
+        questions.add(0, new Question("People say nothing is impossible, but I do nothing every day.", 19.0, null));
+        questions.add(1, new Question("Etc. – End of Thinking Capacity.", 37.0, null));
+        questions.add(2, new Question("We live in the era of smart phones and stupid people.", 75.0, null));
+        questions.add(3, new Question("Alarm Clocks: because every morning should begin with a heart attack.", 153.0, null));
+
+        // TODO: this might look redundant now , but it can be useful later
+        ArrayList<String> questionsText = new ArrayList<>();
+        for (int i = 0; i < questions.size(); ++i)
+            questionsText.add(i, questions.get(i).getText());
+
+        ArrayList<Double> questionsDurations = new ArrayList<>();
+        for (int i = 0; i < questions.size(); ++i)
+            questionsDurations.add(i, questions.get(i).getDuration());
+
+        ObjectMapper obj = new ObjectMapper();
+        String JSONQuestionsText = null;
+        String JSONQuestionsDurations = null;
+        try {
+            JSONQuestionsText = obj.writeValueAsString(questionsText);
+            JSONQuestionsDurations = obj.writeValueAsString(questionsDurations);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return ok(record.render(questions, JSONQuestionsText, JSONQuestionsDurations));
+    }
+
 }

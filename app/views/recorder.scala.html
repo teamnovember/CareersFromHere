@@ -1,10 +1,38 @@
-<div>
-    <audio id="recorder-audio" autoplay></audio>
-    <video id="recorder-video" autoplay></video>
-        <div id="recorder-controls">
-            <button id="recorder-start-button" onclick="startRecording();">start</button>
-            <button id="recorder-stop-button" onclick="stopRecording();">stop</button>
-        </div>
+@(JSONquestions: String)(JSONdurations: String)
+
+<link rel="stylesheet" href="@routes.Assets.at("stylesheets/recorder.css")" />
+
+<div id="recorder-container" data-questions="@JSONquestions" data-durations="@JSONdurations">
+    <div id="recorder-viewport">
+        <div id="overlay-top"></div>
+
+        <audio id="recorder-audio"></audio>
+        <video id="recorder-video"></video>
+
+        <div id="overlay-full"></div>
+    </div>
+
+    @*<div id="left-clock"></div>*@
+
+    @*<div class="progress">*@
+        @*<div class="progress-bar" style="width: 0%"></div>*@
+    @*</div>*@
+
+    @*<div id="right-clock"></div>*@
+
+    <div id="recorder-controls">
+        <button id="retry-button" class="btn btn-default" onclick="retry()">
+            <span class="glyphicon glyphicon-repeat"></span>
+        </button>
+        <button id="start-stop-play-pause-button" class="btn btn-default" onclick="startStopPlayPause()">
+            <span class="glyphicon glyphicon-record"></span>
+        </button>
+        <button id="next-button" class="btn btn-default" onclick="next()">
+            <span class="glyphicon glyphicon-arrow-right"></span>
+        </button>
+    </div>
 </div>
 
-<button onclick="up()">Update Input And Submit</button>
+<form id="publish" style="display: none" action="/record/publish">
+    <input type="submit" value="Publish" />
+</form>
