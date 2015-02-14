@@ -104,6 +104,7 @@ function startStopPlayPause() {
             });
 
             // TODO: look for other solution, otherwise leave it like this (audio not working on firefox)
+            // TODO: seems like getting audio from disk works (on dummy, but not here)
             if (notAudio || notVideo) {
                 var notReload = true;
 
