@@ -28,9 +28,9 @@ public class Video extends Model {
     public static Finder<Long,Video> find = new Finder<>(Long.class, Video.class);
 
     public Video(User user, String title, String description, String thumbnailPath) {
-        if (user == null) { throw new NullPointerException("Video author must be provided"); }
+        if (user == null) { throw new IllegalArgumentException("Video author must be provided"); }
         if (user.getDiscriminator() != "alumni") { throw new IllegalArgumentException("Video author must be Alumni"); }
-        if (title == null) { throw new NullPointerException("Video title must be provided"); }
+        if (title == null) { throw new IllegalArgumentException("Video title must be provided"); }
 
         this.user = user;
         this.title = title;
