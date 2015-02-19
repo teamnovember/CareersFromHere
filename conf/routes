@@ -55,3 +55,4 @@ GET         /assets/*file                      controllers.Assets.at(path="/publ
 
 #Login page
 GET         /login                             controllers.RegistrationController.login()
+POST        /login                             controllers.RegistrationController.authenticate()

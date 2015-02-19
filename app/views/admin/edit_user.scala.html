@@ -15,7 +15,9 @@
         <div class="shadow-panel">
             <h2>Edit user information</h2>
             <hr>
-            @helper.form(action = routes.AdminController.postUser(id)) {
+            @helper.form(action =
+                    if (id == null) { routes.AdminController.postNewUser() }
+                    else { routes.AdminController.postUser(id) }) {
                 <fieldset>
                     @text(form("name"),
                         label = "Name",
@@ -32,7 +34,6 @@
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
                             <button id="submit" type="submit" value="Submit" class="btn btn-primary">Submit</button>
-                            <button id="cancel" class="btn cancel">Cancel</button>
                         </div>
                     </div>
                 </fieldset>

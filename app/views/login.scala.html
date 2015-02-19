@@ -1,3 +1,6 @@
+@(loginForm: play.data.Form[views.forms.LoginForm])
+
+@import bootstrap3._
 
 @stylesheets = {
   <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
@@ -8,5 +11,19 @@
 }
 
 @main("Login")(stylesheets)(javascripts)(null) {
-
+    <div class="spacing-panel col-md-5">
+        <div class="shadow-panel">
+            @helper.form(action = routes.RegistrationController.authenticate) {
+                <fieldset>
+                    @text(loginForm("login"), label = "Email")
+                    @password(loginForm("password"), label = "Password")
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button id="submit" type="submit" value="Submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </div>
+                </fieldset>
+            }
+        </div>
+    </div>
 }

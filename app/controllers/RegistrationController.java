@@ -61,26 +61,24 @@ public class RegistrationController extends Controller {
     }
 
     public static Result login(){
-        return ok(
-         //todo error here       login.render(form(LoginForm.class))
-        );
+        Form<LoginForm> form = form(LoginForm.class).fill(new LoginForm());
+        return ok(login.render(form));
     }
 
 
     public static Result authenticate(){
         Form<LoginForm> loginForm = form(LoginForm.class).bindFromRequest();
         if (loginForm.hasErrors()){
-            return badRequest(login.render(/*todo error here loginForm*/));
-        }else{
+            return badRequest(login.render(loginForm));
+        } else {
             session().clear();
             //todo error here session("email",loginForm.get().email);
-            return redirect(
-                   "/" //todo Is this correct?
-            );
+            return redirect("/");
         }
     }
 
-    public void changePassword(User user, String password){
+    // TODO: move to User class
+    public static void changePassword(User user, String password){
         user.setPassword(password);
     }
 

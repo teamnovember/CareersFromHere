@@ -35,6 +35,7 @@ public class VideoController extends Controller {
             v = new Video(u, "Coming out of your closet", "Blah", "http://img.youtube.com/vi/kSR4xuU07sc/0.jpg");
             v.save();
         }
+
         VideoDAO dao = new VideoDAO();
         List<Video> videoList = dao.getAllVideos();
 
