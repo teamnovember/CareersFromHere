@@ -33,7 +33,14 @@ public class User extends Model {
         this.password=password;
         this.discriminator=discriminator;
         this.school = school;
+
     }
+
+
+    public static User authenticate(String email, String password){
+        return find.where().eq("email",email).eq("password",password).findUnique();
+    }
+
 
     public static Finder<Long,User> find = new Finder<>(Long.class,User.class);
 

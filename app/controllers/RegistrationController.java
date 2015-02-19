@@ -1,9 +1,12 @@
 package controllers;
 
 import models.*;
+import play.data.*;
+import static play.data.Form.*;
 import play.libs.mailer.*;
 import play.Play;
-
+import views.forms.LoginForm;
+import views.html.login;
 import play.mvc.*;
 
 /**
@@ -57,21 +60,27 @@ public class RegistrationController extends Controller {
         //todo, do this method
     }
 
-    public void login(String email, String password){
-        //todo, logs in
+    public static Result login(){
+        return ok(
+         //todo error here       login.render(form(LoginForm.class))
+        );
     }
 
-    public void delete(User user){
-        //todo,deletes a user (in their school)
-    }
 
-    public void edit(User prevDetails, User newDetails){
-        //todo,to edit user information - invoked by admins or users
+    public static Result authenticate(){
+        Form<LoginForm> loginForm = form(LoginForm.class).bindFromRequest();
+        if (loginForm.hasErrors()){
+            return badRequest(login.render(/*todo error here loginForm*/));
+        }else{
+            session().clear();
+            //todo error here session("email",loginForm.get().email);
+            return redirect(
+                   "/" //todo Is this correct?
+            );
+        }
     }
 
     public void changePassword(User user, String password){
-        //todo, change password
-
         user.setPassword(password);
     }
 
