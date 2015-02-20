@@ -9,10 +9,12 @@ import java.util.List;
 /**
  * Created by biko on 05/02/15.
  */
+@Entity
+@DiscriminatorValue("alumni")
 public class Alumni extends User {
 
     public Alumni(String name,String password,String email, School school){
-        super(name,password,email,"alumni", school);
+        super(name,password,email, school);
     }
 
     public static Alumni makeInstance(UserForm data) {

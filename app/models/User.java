@@ -12,11 +12,10 @@ import play.db.ebean.*;
 import views.forms.UserForm;
 import play.libs.Crypto;
 
-
 @Entity
-public class User extends Model {
-
-
+@DiscriminatorColumn(name="discriminator")
+@Inheritance
+public abstract class User extends Model {
     @Id
     private Long id;
     private String name;
@@ -25,20 +24,28 @@ public class User extends Model {
     private boolean approved = false;
     @ManyToOne
     private School school;
-    private String discriminator;
 
-    public User(String name, String password, String email, String discriminator, School school){
+    public User(String name, String password, String email, School school){
         this.name=name;
         this.email=email;
         this.password=password;
-        this.discriminator=discriminator;
         this.school = school;
-
     }
-
 
     public static User authenticate(String email, String password){
         return find.where().eq("email",email).eq("password",password).findUnique();
+    }
+
+    //hacky fix so new db structure is compatible with old code
+    @Transient
+    public String getDiscriminator(){
+        DiscriminatorValue val = this.getClass().getAnnotation( DiscriminatorValue.class );
+
+        if (val == null) {
+            return null; //TODO: because it "can" return null we should probably add some checks for it even though it should NEVER be null
+        } else {
+            return val.value();
+        }
     }
 
 
@@ -88,7 +95,5 @@ public class User extends Model {
     public void approved(){
         this.approved = false;
     }
-    public String getDiscriminator() { return this.discriminator; }
-    public void setDiscriminator(String d) { this.discriminator = d; }
 
 }

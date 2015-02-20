@@ -14,7 +14,7 @@ public class Video extends Model {
     @Id
     private Long id;
     @ManyToOne
-    private User user;
+    private Alumni user;
     private String title;
     @Lob
     private String description;
@@ -27,9 +27,8 @@ public class Video extends Model {
 
     public static Finder<Long,Video> find = new Finder<>(Long.class, Video.class);
 
-    public Video(User user, String title, String description, String thumbnailPath) {
+    public Video(Alumni user, String title, String description, String thumbnailPath) {
         if (user == null) { throw new IllegalArgumentException("Video author must be provided"); }
-        if (user.getDiscriminator() != "alumni") { throw new IllegalArgumentException("Video author must be Alumni"); }
         if (title == null) { throw new IllegalArgumentException("Video title must be provided"); }
 
         this.user = user;
@@ -51,9 +50,9 @@ public class Video extends Model {
 
     public Long getId() { return id; }
 
-    public User getUser() { return user; }
+    public Alumni getUser() { return user; }
 
-    public void setUser(User user) { this.user = user; }
+    public void setUser(Alumni user) { this.user = user; }
 
     public String getTitle() { return title; }
 

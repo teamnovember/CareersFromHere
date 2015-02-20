@@ -39,6 +39,7 @@ public class RegistrationController extends Controller {
             SuperAdmin sa = new SuperAdmin(name,password,email,school);
             sa.setPassword(password);
         }
+
         Email mail = new Email();
         mail.setSubject("Approve your Email for CareersFromHere");
         mail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
@@ -46,7 +47,6 @@ public class RegistrationController extends Controller {
         mail.setBodyText("");//todo, have a message with the links to approve email or send a request to delete information
         String id = MailerPlugin.send(mail);
         return ok("Email "+id+" sent!");
-
     }
 
     public void emailVerification(User user){

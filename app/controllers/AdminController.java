@@ -23,7 +23,7 @@ public class AdminController extends Controller {
     }
 
     public static Result users() {
-        School s = School.find.all().get(1);
+        School s = School.find.all().get(0);
         Admin u = new Admin("Edgaras Liberis", "blahblah", "el398@cam.ac.uk", s);
         UserDAOImpl dao = new UserDAOImpl();
         return ok(users.render(u, dao.getSchoolUsers(s))); //gets all users for a school
@@ -112,7 +112,7 @@ public class AdminController extends Controller {
                 formUser.setEmail(formData.email);
                 formUser.setPassword(formData.password);
                 formUser.setSchool(formData.school); //do we need this? might want to restrict to Super Admin...
-                formUser.setDiscriminator(formData.discriminator); //upgrading users, again might either not want to restrict...
+                //formUser.setDiscriminator(formData.discriminator); //upgrading users, again might either not want to restrict...
             }
             formUser.save(); //save to database no matter the outcome
         }

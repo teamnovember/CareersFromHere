@@ -4,15 +4,19 @@ import com.avaje.ebean.Ebean;
 import com.avaje.ebean.ExpressionList;
 import views.forms.UserForm;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import java.util.List;
 
 /**
  * Created by biko on 05/02/15.
  */
+@Entity
+@DiscriminatorValue("admin")
 public class Admin extends User {
 
     public Admin(String name,String password,String email, School school){
-        super(name,password,email,"admin", school);
+        super(name,password,email, school);
     }
 
     public static Admin makeInstance(UserForm data) {

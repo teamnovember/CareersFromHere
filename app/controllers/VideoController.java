@@ -22,7 +22,7 @@ public class VideoController extends Controller {
             // Seed data, TEDx videos sorted by popularity
             School s = new School("Super High School");
             s.save();
-            User u = new User("Test user", "Stuff", "test@asdf.com", "alumni", s);
+            Alumni u = new Alumni("Test user", "Stuff", "test@asdf.com",s);
             u.save();
             Video v = new Video(u, "Beatbox brilliance", "Blah", "http://img.youtube.com/vi/GNZBSZD16cY/0.jpg");
             v.save();

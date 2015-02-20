@@ -2,16 +2,19 @@ package models;
 
 import views.forms.UserForm;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import java.util.List;
 
 /**
  * Created by biko on 05/02/15.
  */
+@Entity
+@DiscriminatorValue("superadmin")
 public class SuperAdmin extends Admin {
 
     public SuperAdmin(String name, String password, String email, School school){
-        super(name,password,email,school);
-        this.setDiscriminator("superadmin");
+        super(name, password, email, school);
     }
 
     public static SuperAdmin makeInstance(UserForm data) {
