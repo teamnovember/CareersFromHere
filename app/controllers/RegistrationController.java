@@ -72,7 +72,8 @@ public class RegistrationController extends Controller {
             return badRequest(login.render(loginForm));
         } else {
             session().clear();
-            //todo error here session("email",loginForm.get().email);
+            //todo do we want to be more secure than just storing the email in the session?
+            session("email",loginForm.get().login);
             return redirect("/");
         }
     }

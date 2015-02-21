@@ -11,6 +11,14 @@ import java.util.List;
 /**
  * Created by biko on 05/02/15.
  */
+
+/*
+ * NOTE: If you're adding a function to Admin that
+ * should also be accessible to SuperAdmins, remember
+ * to copy it over to SuperAdmin as SuperAdmin no
+ * longer inherits from Admin.
+ */
+
 @Entity
 @DiscriminatorValue("admin")
 public class Admin extends User {

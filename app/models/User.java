@@ -70,6 +70,10 @@ public abstract class User extends Model {
         }
     }
 
+    public void setPasswordNoHash(String password) {
+        this.password = password;
+    }
+
 
     public String getName() {
         return name;

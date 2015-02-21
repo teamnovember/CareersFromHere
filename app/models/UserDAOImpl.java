@@ -51,6 +51,11 @@ public class UserDAOImpl implements UserDAO {
         else return user; //TODO: throw an exception or something
     }
 
+    public User getUserByEmail(String email) {
+        User u = User.find.where().eq("email",email).findUnique();
+        return u;
+    }
+
     public void approveUser(Long ID) {
         User user = getUser(ID);
         user.setApproved(true);
