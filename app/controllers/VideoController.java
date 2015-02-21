@@ -107,6 +107,7 @@ public class VideoController extends Controller {
     }
 
     public static Result record() {
+        Alumni u = new Alumni("Test user", "Stuff", "test@asdf.com", null);
         ArrayList<Question> questions = new ArrayList<>();
 
         questions.add(0, new Question("People say nothing is impossible, but I do nothing every day.", 19.0, null));
@@ -133,7 +134,7 @@ public class VideoController extends Controller {
             e.printStackTrace();
         }
 
-        return ok(record.render(questions, JSONQuestionsText, JSONQuestionsDurations));
+        return ok(record.render(questions, JSONQuestionsText, JSONQuestionsDurations, u));
     }
 
 }

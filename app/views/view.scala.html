@@ -10,7 +10,7 @@
 }
 
 @main(video.getTitle + " - Careers From Here")(stylesheets)(javascripts)(user) {
-    <div class="col-md-7">
+    <div class="spacing-panel col-md-7">
             @video_player(video.getJSONPaths)(video.getJSONQuestionsText)(video.getJSONDurations)(video.getDuration)
         <div id="video-metadata" class="shadow-panel">
             <h2>@video.getTitle</h2>

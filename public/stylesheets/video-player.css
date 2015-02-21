@@ -36,10 +36,25 @@
 #video-player-container .progress-bar {
     width: 640px;
     height: 10px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     -webkit-transition: none;
     -moz-transition: none;
     -ms-transition: none;
     -o-transition: none;
     transition: none;
 }
+
+.question {
+    border-top: solid lightgray 1px;
+    padding: 5px 0;
+}
+
+.question:first-child {
+    border-top: none;
+}
+
+.question:hover {
+    background-color: #F0F0FF;
+    cursor: pointer;
+}
+

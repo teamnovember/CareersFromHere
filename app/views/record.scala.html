@@ -1,29 +1,31 @@
-@(questions: java.util.List[Question])(JSONquestions: String)(JSONdurations: String)
+@(questions: java.util.List[Question])(JSONquestions: String)(JSONdurations: String)(user: models.User)
 
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
+@stylesheets = {
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/view.css")">
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/video-player.css")" />
+}
 
-        <!-- Recorder includes -->
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")">
+@javascripts = {
     <script src="http://RecordRTC.org/latest.js"></script>
     <script src="@routes.Assets.at("javascripts/recorder.js")"></script>
-    <script src="@routes.Assets.at("javascripts/jquery-2.1.3.min.js")"></script>
-</head>
-<body>
-    @recorder(JSONquestions)(JSONdurations)
+}
 
-    <div>
-        <table border="1">
-            @for(question <- questions) {
-                <tr>
-                    <td>@question.getText()</td>
-                    <td>@question.getDuration()</td>
-                </tr>
-            }
-        </table>
+@main("Record new interview - Careers From Here")(stylesheets)(javascripts)(user) {
+    <div class="spacing-panel col-md-7">
+        @recorder(JSONquestions)(JSONdurations)
     </div>
-</body>
-</html>
+
+    <div class="spacing-panel col-md-5">
+        <div class="shadow-panel clearfix">
+            <h2>Questions</h2>
+            <div>
+                @for(question <- questions) {
+                    <div class="question clearfix"> @* onclick to recording app with question selection? *@
+                    <div class="col-xs-9">@question.getText()</div>
+                    <div class="col-xs-3">@{var s = question.getDuration.toInt; (s / 60)+ ":" + (s % 60)}</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
