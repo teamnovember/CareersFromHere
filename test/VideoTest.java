@@ -20,8 +20,8 @@ public class VideoTest {
         running(testServer(3333, fakeApplication(inMemoryDatabase())), HTMLUNIT, new Callback<TestBrowser>() {
             public void invoke(TestBrowser browser) {
                 School s = new School("School Name");
-                Student u = new Student("Name", "pass", "fake@gmail.com", s);
-                Video v = new Video(u, "Title", "Description", "thumb_path.png");
+                //Student u = new Student("Name", "pass", "fake@gmail.com", s);
+                //Video v = new Video(u, "Title", "Description", "thumb_path.png");
             }
         });
     }

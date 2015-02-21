@@ -20,7 +20,8 @@ public class Admin extends User {
     }
 
     public static Admin makeInstance(UserForm data) {
-        Admin admin = new Admin(data.name,data.email,data.password,data.school);
+        School s = (new SchoolDAO()).byName(data.school.getName());
+        Admin admin = new Admin(data.name, data.password, data.email, s);
         return admin;
     }
 

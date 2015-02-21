@@ -66,6 +66,7 @@ public class VideoController extends Controller {
         CategorySelectionForm form = Form.form(CategorySelectionForm.class).bindFromRequest().get();
         List<String> selectedNames = new ArrayList<>();
         if(form.categories != null) {
+            // form.categories contains malformed Category objects -- only name is present, no ids, etc.
             for (Category c : form.categories) {
                 selectedNames.add(c.getName());
             }

@@ -11,7 +11,9 @@ import views.forms.VideoForm;
 import views.html.admin.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AdminController extends Controller {
     //TODO: will need to authenticate the current user in these methods (replace new user creation)
@@ -62,14 +64,21 @@ public class AdminController extends Controller {
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
         UserForm data;
         if (id == null) {
-            data = new UserForm();
+            data = new UserForm(u.getSchool()); // Suggest same school as Admin by default
         } else {
             UserDAOImpl dao = new UserDAOImpl();
             User user = dao.getUser(id);
             data = new UserForm(user.getName(),user.getPassword(),user.getEmail(),user.getSchool(),user.getDiscriminator());
         }
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
-        return ok(edit_user.render(u, formdata, id));
+
+        Map<String, Boolean> schoolMap = new HashMap<String, Boolean>();
+        SchoolDAO dao = new SchoolDAO();
+        for(School school : dao.getAllSchool()) {
+            schoolMap.put(school.getName(), school.getName().equals(data.school.getName()));
+        }
+
+        return ok(edit_user.render(u, formdata, id, schoolMap));
     }
 
     public static Result postNewUser() {
@@ -81,9 +90,18 @@ public class AdminController extends Controller {
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
         Form<UserForm> data = Form.form(UserForm.class).bindFromRequest();
 
+        Map<String, Boolean> schoolMap = new HashMap<String, Boolean>();
+        SchoolDAO sdao = new SchoolDAO();
+        String userSchoolName = data.data().getOrDefault("school", ""); // "Please provide value" is "" too
+        if(userSchoolName.equals("")) userSchoolName = u.getSchool().getName();
+
+        for(School school : sdao.getAllSchool()) {
+            schoolMap.put(school.getName(), school.getName().equals(userSchoolName));
+        }
+
         if (data.hasErrors()) {
             flash("error", "Please correct errors above.");
-            return badRequest(edit_user.render(u, data, id));
+            return badRequest(edit_user.render(u, data, id, schoolMap));
         }
         else {
             UserForm formData = data.get();
@@ -111,7 +129,8 @@ public class AdminController extends Controller {
                 formUser.setName(formData.name);
                 formUser.setEmail(formData.email);
                 formUser.setPassword(formData.password);
-                formUser.setSchool(formData.school); //do we need this? might want to restrict to Super Admin...
+                formUser.setSchool(sdao.byName(formData.school.getName())); //do we need this? might want to restrict to Super Admin...
+
                 //formUser.setDiscriminator(formData.discriminator); //upgrading users, again might either not want to restrict...
             }
             formUser.save(); //save to database no matter the outcome

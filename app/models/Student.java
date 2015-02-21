@@ -13,12 +13,13 @@ import javax.persistence.Entity;
 @DiscriminatorValue("student")
 public class Student extends User{
 
-    public Student(String name, String email, String password, School school){
-        super(name,email,password, school);
+    public Student(String name, String password, String email, School school){
+        super(name, password, email, school);
     }
 
     public static Student makeInstance(UserForm data) {
-        Student student = new Student(data.name, data.email, data.password, data.school);
+        School s = (new SchoolDAO()).byName(data.school.getName());
+        Student student = new Student(data.name, data.password, data.email, s);
         return student;
     }
 

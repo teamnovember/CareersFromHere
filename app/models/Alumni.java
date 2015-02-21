@@ -18,7 +18,8 @@ public class Alumni extends User {
     }
 
     public static Alumni makeInstance(UserForm data) {
-        Alumni alumni = new Alumni(data.name,data.email,data.password,data.school);
+        School s = (new SchoolDAO()).byName(data.school.getName());
+        Alumni alumni = new Alumni(data.name, data.password, data.email, s);
         return alumni;
     }
 

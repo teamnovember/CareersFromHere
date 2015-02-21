@@ -1,6 +1,7 @@
 package views.forms;
 
 import models.School;
+import models.SchoolDAO;
 import play.data.validation.ValidationError;
 
 import java.util.ArrayList;
@@ -24,6 +25,10 @@ public class UserForm {
     public String discriminator = "student";
 
     public UserForm() {}
+
+    public UserForm(School school) {
+        this.school = school;
+    }
 
     public UserForm(String name, String password, String email, School school, String discriminator) {
         this.name = name;
@@ -62,6 +67,11 @@ public class UserForm {
                 && !discriminator.equals("admin")
                 && !discriminator.equals("superadmin")) {
             errors.add(new ValidationError("type", "Invalid user type given"));
+        }
+
+        SchoolDAO sdao = new SchoolDAO();
+        if(school == null || sdao.byName(school.getName()) == null) {
+            errors.add(new ValidationError("school", "Invalid school provided"));
         }
 
         if (errors.size() > 0) {

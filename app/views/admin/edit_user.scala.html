@@ -1,4 +1,4 @@
-@(user: models.Admin)(form: play.data.Form[views.forms.UserForm])(id: Long)
+@(user: models.Admin)(form: play.data.Form[views.forms.UserForm])(id: Long)(schoolMap: java.util.Map[String, Boolean])
 
 @import bootstrap3._
 
@@ -31,6 +31,10 @@
                         label = "Password",
                         placeholder = "",
                         help = "Please make sure you choose secure password (required).")
+                    @select(form("school"),
+                        label = "School",
+                        isMultiple = false,
+                        optionMap = schoolMap)
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
                             <button id="submit" type="submit" value="Submit" class="btn btn-primary">Submit</button>

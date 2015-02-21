@@ -18,7 +18,8 @@ public class SuperAdmin extends Admin {
     }
 
     public static SuperAdmin makeInstance(UserForm data) {
-        SuperAdmin admin = new SuperAdmin(data.name,data.email,data.password,data.school);
+        School s = (new SchoolDAO()).byName(data.school.getName());
+        SuperAdmin admin = new SuperAdmin(data.name, data.password, data.email, s);
         return admin;
     }
 

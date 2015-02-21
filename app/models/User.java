@@ -61,7 +61,7 @@ public abstract class User extends Model {
 
     public boolean setPassword(String password){
         try{
-            this.password= HashHelper.createPassword(password);
+            this.password = HashHelper.createPassword(password);
             return true;
         }catch (AppException e){
             return false;

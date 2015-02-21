@@ -20,8 +20,10 @@ public class SchoolDAO {
 
     public void deleteSchool(Long id) {
         School.find.byId(id).delete();
+    }
 
-
+    public School byName(String name) {
+        return School.find.where().eq("name", name).findUnique();
     }
 
 }
