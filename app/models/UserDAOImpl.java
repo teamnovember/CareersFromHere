@@ -1,6 +1,8 @@
 package models;
 
+import com.avaje.ebean.Ebean;
 import com.avaje.ebean.ExpressionList;
+import com.avaje.ebean.SqlUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,22 +29,38 @@ public class UserDAOImpl implements UserDAO {
         User user = User.find.byId(ID);
         if (user.getDiscriminator().equals("student")) {
             Student s = new Student(user.getName(),user.getPassword(),user.getEmail(),user.getSchool());
+            s.setId(user.getId());
+            s.setApproved(user.getApproved());
             return s;
         } else if (user.getDiscriminator().equals("alumni")) {
             Alumni a = new Alumni(user.getName(),user.getPassword(),user.getEmail(),user.getSchool());
+            a.setId(user.getId());
+            a.setApproved(user.getApproved());
             return a;
         } else if (user.getDiscriminator().equals("admin")) {
             Admin ad = new Admin(user.getName(),user.getPassword(),user.getEmail(),user.getSchool());
+            ad.setId(user.getId());
+            ad.setApproved(user.getApproved());
             return ad;
         } else if (user.getDiscriminator().equals("superadmin")) {
             SuperAdmin sa = new SuperAdmin(user.getName(),user.getPassword(),user.getEmail(),user.getSchool());
+            sa.setId(user.getId());
+            sa.setApproved(user.getApproved());
             return sa;
         }
         else return user; //TODO: throw an exception or something
     }
 
+    public void approveUser(Long ID) {
+        User user = getUser(ID);
+        user.setApproved(true);
+        user.update();
+    }
+
     public void deleteUser(Long ID){
-        User.find.byId(ID).delete();
+        SqlUpdate delete = Ebean.createSqlUpdate("DELETE FROM user WHERE id = :id");
+        delete.setParameter("id",ID);
+        delete.execute();
     }
 
 }

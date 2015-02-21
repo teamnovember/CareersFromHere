@@ -13,8 +13,8 @@ import views.forms.UserForm;
 import play.libs.Crypto;
 
 @Entity
-@DiscriminatorColumn(name="discriminator")
-@Inheritance
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(discriminatorType = DiscriminatorType.STRING, name="discriminator")
 public abstract class User extends Model {
     @Id
     private Long id;
@@ -54,6 +54,8 @@ public abstract class User extends Model {
     public Long getId(){
         return this.id;
     }
+
+    public void setId(Long id) { this.id = id; }
 
     public String getPassword(){
         return password;
@@ -95,5 +97,9 @@ public abstract class User extends Model {
     public void approved(){
         this.approved = false;
     }
+
+    public boolean getApproved() { return approved; }
+
+    public void setApproved(boolean a) { this.approved = a; }
 
 }
