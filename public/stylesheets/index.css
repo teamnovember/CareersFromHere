@@ -51,7 +51,7 @@
     border-left: white 1px solid;
 }
 
-.video-info-overlay:hover { /* Trollin' Tedi */
+.video-info-overlay:hover {
     background: rgba(255, 0, 255, 0.4);
 }
 

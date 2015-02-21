@@ -21,7 +21,7 @@
         <div id="uploader-info" class="shadow-panel clearfix">
                 <img class="profile-picture" src="@routes.Assets.at("images/placeholderProfile.png")" />
                 <h3>@video.getUser().getName()</h3>
-                <p>Future First is a service designed around trying to connect current secondary school and college students with former students. Facilitating the communication between alumni and former students is important as current students may find it helpful to seek advice from alumni close to their community and background rather than gain generic advice from an impersonal source. Students, especially those from less fortunate backgrounds, can often be confused about their future path and engaging with their former peers gives them a reliable and relatable helpline.</p>
+                <p>@video.getUser().getProfile()</p>
         </div>
     </div>
 }

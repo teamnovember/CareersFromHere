@@ -187,7 +187,7 @@ public class AdminController extends Controller {
 
         if (data.hasErrors()) {
             Map<String, Boolean> catMap = AdminHelpers.ConstructCategoryMap(video.getCategories());
-            flash("error", "Please correct errors above.");
+            flash("error", "Please correct errors below.");
             return badRequest(edit_video.render(u, data, id, catMap));
         }
         else { //don't need to check for null id because we don't create videos here
