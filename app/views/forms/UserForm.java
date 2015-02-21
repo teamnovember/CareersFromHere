@@ -60,17 +60,17 @@ public class UserForm {
             errors.add(new ValidationError("school","No school was given"));
         }
 
-        if (discriminator == null) {
-            errors.add(new ValidationError("type", "No user type was given"));
+        if (discriminator == null || discriminator.equals("")) {
+            errors.add(new ValidationError("discriminator", "No user type was given"));
         } else if (!discriminator.equals("student")
                 && !discriminator.equals("alumni")
                 && !discriminator.equals("admin")
                 && !discriminator.equals("superadmin")) {
-            errors.add(new ValidationError("type", "Invalid user type given"));
+            errors.add(new ValidationError("discriminator", "Invalid user type given"));
         }
 
         SchoolDAO sdao = new SchoolDAO();
-        if(school == null || sdao.byName(school.getName()) == null) {
+        if(sdao.byName(school.getName()) == null) {
             errors.add(new ValidationError("school", "Invalid school provided"));
         }
 

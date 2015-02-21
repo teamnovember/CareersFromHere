@@ -1,5 +1,6 @@
 package controllers;
 
+import helpers.AdminHelpers;
 import models.*;
 import play.data.Form;
 import play.data.DynamicForm;
@@ -72,13 +73,10 @@ public class AdminController extends Controller {
         }
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
 
-        Map<String, Boolean> schoolMap = new HashMap<String, Boolean>();
-        SchoolDAO dao = new SchoolDAO();
-        for(School school : dao.getAllSchool()) {
-            schoolMap.put(school.getName(), school.getName().equals(data.school.getName()));
-        }
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(data.school.getName());
+        Map<String, Boolean> discrMap = AdminHelpers.ConstructDiscriminatorMap(data.discriminator);
 
-        return ok(edit_user.render(u, formdata, id, schoolMap));
+        return ok(edit_user.render(u, formdata, id, schoolMap, discrMap));
     }
 
     public static Result postNewUser() {
@@ -90,18 +88,16 @@ public class AdminController extends Controller {
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
         Form<UserForm> data = Form.form(UserForm.class).bindFromRequest();
 
-        Map<String, Boolean> schoolMap = new HashMap<String, Boolean>();
-        SchoolDAO sdao = new SchoolDAO();
         String userSchoolName = data.data().getOrDefault("school", ""); // "Please provide value" is "" too
         if(userSchoolName.equals("")) userSchoolName = u.getSchool().getName();
-
-        for(School school : sdao.getAllSchool()) {
-            schoolMap.put(school.getName(), school.getName().equals(userSchoolName));
-        }
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(userSchoolName);
+        Map<String, Boolean> discrMap =
+                AdminHelpers.ConstructDiscriminatorMap(
+                        data.data().getOrDefault("discriminator", "student"));
 
         if (data.hasErrors()) {
             flash("error", "Please correct errors above.");
-            return badRequest(edit_user.render(u, data, id, schoolMap));
+            return badRequest(edit_user.render(u, data, id, schoolMap, discrMap));
         }
         else {
             UserForm formData = data.get();
@@ -125,6 +121,7 @@ public class AdminController extends Controller {
             }
             else { //if we have an id (aka we're editing) we want to edit the details of the user in the database already
                 UserDAOImpl dao = new UserDAOImpl();
+                SchoolDAO sdao = new SchoolDAO();
                 formUser = dao.getUser(id);
                 formUser.setName(formData.name);
                 formUser.setEmail(formData.email);
@@ -262,7 +259,7 @@ public class AdminController extends Controller {
         Form<QuestionForm> data = Form.form(QuestionForm.class).bindFromRequest();
 
         if (data.hasErrors()) {
-            flash("error", "Please correct errors above.");
+            flash("error", "Please correct errors below.");
             return badRequest(edit_question.render(u,data));
         }
         else {
@@ -320,7 +317,7 @@ public class AdminController extends Controller {
         Form<SchoolForm> data = Form.form(SchoolForm.class).bindFromRequest();
 
         if (data.hasErrors()) {
-            flash("error", "Please correct errors above.");
+            flash("error", "Please correct errors below.");
             return badRequest(edit_school.render(u,data));
         }
         else {

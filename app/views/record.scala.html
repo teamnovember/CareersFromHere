@@ -21,8 +21,8 @@
             <div>
                 @for(question <- questions) {
                     <div class="question clearfix"> @* onclick to recording app with question selection? *@
-                    <div class="col-xs-9">@question.getText()</div>
-                    <div class="col-xs-3">@{var s = question.getDuration.toInt; (s / 60)+ ":" + (s % 60)}</div>
+                        <div class="col-xs-9">@question.getText()</div>
+                        <div class="col-xs-3">@{var s = question.getDuration.toInt; (s / 60)+ ":" + (s % 60)}</div>
                     </div>
                 }
             </div>
