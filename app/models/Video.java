@@ -80,7 +80,7 @@ public class Video extends Model {
 
     public void addCategory(Category c) {
         categories.add(c);
-        c.addVideo(this);
+        //c.addVideo(this);
     }
 
     public void approve(Boolean accept) {

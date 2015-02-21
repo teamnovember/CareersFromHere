@@ -168,12 +168,14 @@ public class AdminController extends Controller {
     public static Result getVideo(Long id) {
         School s = new School("Super High School");
         Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
-        VideoForm data;
+
         VideoDAO dao = new VideoDAO();
         Video video = dao.getVideo(id);
-        data = new VideoForm(video.getTitle(),video.getDescription(),video.getCategories());
+        VideoForm data = new VideoForm(video.getTitle(),video.getDescription(),video.getCategories());
         Form<VideoForm> formdata = Form.form(VideoForm.class).fill(data);
-        return ok(edit_video.render(u,formdata,id));
+
+        Map<String, Boolean> catMap = AdminHelpers.ConstructCategoryMap(video.getCategories());
+        return ok(edit_video.render(u, formdata, id, catMap));
     }
 
     public static Result postVideo(Long id) {
@@ -184,20 +186,25 @@ public class AdminController extends Controller {
         Video video = dao.getVideo(id);
 
         if (data.hasErrors()) {
+            Map<String, Boolean> catMap = AdminHelpers.ConstructCategoryMap(video.getCategories());
             flash("error", "Please correct errors above.");
-            return badRequest(edit_video.render(u, data, id));
+            return badRequest(edit_video.render(u, data, id, catMap));
         }
         else { //don't need to check for null id because we don't create videos here
+            CategoryDAO cdao = new CategoryDAO(); // Has fully initialised Category objects
+
             VideoForm formData = data.get();
             video.setTitle(formData.title);
             video.setDescription(formData.description);
-            for (Category c : formData.categories) {
-                if (!video.getCategories().contains(c)) {
+            video.categories.clear();
+
+            for (Category c : cdao.getAllCategories()) {
+                if (AdminHelpers.CategoryContains(formData.categories, c)) {
                     video.addCategory(c);
                 }
             }
             video.update();
-            return ok(edit_video.render(u,data,id));
+            return redirect("/admin/videos");
         }
     }
 

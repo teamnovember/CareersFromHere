@@ -2,6 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import helpers.AdminHelpers;
 import models.*;
 import play.api.Routes;
 import play.data.Form;
@@ -64,18 +65,15 @@ public class VideoController extends Controller {
         List<Category> allCats = cdao.getAllCategories();
 
         CategorySelectionForm form = Form.form(CategorySelectionForm.class).bindFromRequest().get();
-        List<String> selectedNames = new ArrayList<>();
-        if(form.categories != null) {
-            // form.categories contains malformed Category objects -- only name is present, no ids, etc.
-            for (Category c : form.categories) {
-                selectedNames.add(c.getName());
-            }
-        }
 
         Map<String, Boolean> catIdNameMap = new HashMap<>();
-        for(Category c : allCats)  {
-            // TODO: for categories in selectedNames (second argument is true), add to a separate list for filtering
-            catIdNameMap.put(c.getName(), selectedNames.contains(c.getName()));
+        if(form.categories != null)
+        {
+            for (Category c : allCats) {
+                // TODO: add to a separate list for filtering
+                // form.categories contains malformed Category objects -- only name is present, no ids, etc.
+                catIdNameMap.put(c.getName(), AdminHelpers.CategoryContains(form.categories, c));
+            }
         }
 
         Form<CategorySelectionForm> catForm = form(CategorySelectionForm.class)

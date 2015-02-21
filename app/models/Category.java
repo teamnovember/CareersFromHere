@@ -34,6 +34,6 @@ public class Category extends Model {
 
     public void addVideo(Video v) {
         videos.add(v);
-        v.addCategory(this);
+        //v.addCategory(this);
     }
 }

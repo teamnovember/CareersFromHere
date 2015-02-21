@@ -1,5 +1,7 @@
 package helpers;
 
+import models.Category;
+import models.CategoryDAO;
 import models.School;
 import models.SchoolDAO;
 
@@ -27,5 +29,23 @@ public abstract class AdminHelpers {
             schoolMap.put(school.getName(), school.getName().equals(selectedSchoolName));
         }
         return schoolMap;
+    }
+
+    public static Map<String, Boolean> ConstructCategoryMap(List<Category> existingCats) {
+        Map<String, Boolean> catMap = new HashMap<String, Boolean>();
+        CategoryDAO cdao = new CategoryDAO();
+        for(Category c : cdao.getAllCategories()) {
+            catMap.put(c.getName(), existingCats.contains(c));
+        }
+        return catMap;
+    }
+
+    public static boolean CategoryContains(List<Category> cats, Category cat) {
+        if(cats == null || cat == null) return false;
+        for(Category c : cats) {
+            if(cat.getName().equals(c.getName()))
+                return true;
+        }
+        return false;
     }
 }
