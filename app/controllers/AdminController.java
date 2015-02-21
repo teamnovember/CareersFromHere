@@ -120,8 +120,8 @@ public class AdminController extends Controller {
                     default: //"student"
                         formUser = Student.makeInstance(formData);
                         break;
-
                 }
+                formUser.save();
             }
             else { //if we have an id (aka we're editing) we want to edit the details of the user in the database already
                 UserDAOImpl dao = new UserDAOImpl();
@@ -132,8 +132,8 @@ public class AdminController extends Controller {
                 formUser.setSchool(sdao.byName(formData.school.getName())); //do we need this? might want to restrict to Super Admin...
 
                 //formUser.setDiscriminator(formData.discriminator); //upgrading users, again might either not want to restrict...
+                formUser.update();
             }
-            formUser.save(); //save to database no matter the outcome
         }
         return redirect("/admin/users");
     }
@@ -160,7 +160,7 @@ public class AdminController extends Controller {
         Long id = Long.parseLong(requestData.get("id"));
 
         UserDAOImpl dao = new UserDAOImpl();
-        //TODO: dao.approveUser(id);
+        dao.approveUser(id);
 
         flash("success", "User approved!");
 
@@ -199,6 +199,7 @@ public class AdminController extends Controller {
                     video.addCategory(c);
                 }
             }
+            video.update();
             return ok(edit_video.render(u,data,id));
         }
     }
@@ -276,7 +277,7 @@ public class AdminController extends Controller {
                 q.setText(formData.text);
                 q.setDuration(formData.duration);
                 //TODO: edit the question form to allow for reordering. or to reorder normally...
-                q.save();
+                q.update();
             }
             return ok(edit_question.render(u,data));
         }
@@ -327,13 +328,14 @@ public class AdminController extends Controller {
             School sch;
             if (id == null) {
                 sch = School.makeInstance(formData);
+                sch.save();
 
             } else {
                 SchoolDAO dao = new SchoolDAO();
                 sch = dao.getSchool(id);
                 sch.setName(formData.name);
+                sch.update();
             }
-            sch.save();
             return ok(edit_school.render(u,data));
         }
     }
