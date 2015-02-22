@@ -89,7 +89,8 @@ public class VideoController extends Controller {
     //TODO: change this to view the correct video from database
     public static Result view(Long id) {
         Alumni u = new Alumni("Test user", "Stuff", "test@asdf.com", null);
-        Video v = new Video(u, "Beatbox brilliance", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sollicitudin augue et molestie tincidunt. Suspendisse eu semper diam. Maecenas pulvinar arcu rhoncus augue suscipit, vitae sodales nulla condimentum. Etiam dignissim varius massa non tristique. Integer vel dolor et purus ultrices tincidunt ut eu turpis. Pellentesque laoreet varius diam et finibus. Etiam scelerisque erat velit, quis fringilla tellus interdum varius. Praesent eu rutrum tortor. Praesent volutpat tellus a mi viverra malesuada. Donec egestas ut nisi sed interdum. In vel ex at nisl pulvinar interdum. Aenean nisl velit, lobortis sed suscipit sed, mollis id nisl. Sed iaculis lectus eu lorem dignissim accumsan.", "http://img.youtube.com/vi/GNZBSZD16cY/0.jpg");
+        VideoDAO vdao = new VideoDAO();
+        Video v = vdao.getVideo(id);
 
         Question q = new Question("RANDOM text RANDOM very", 0, null);
         VideoClip clip = new VideoClip("/assets/test1.mp4", null, q, 20.34068);
