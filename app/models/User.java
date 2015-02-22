@@ -34,6 +34,7 @@ public abstract class User extends Model {
 
     public static User authenticate(String email, String password){
         User user = find.where().eq("email",email).findUnique();
+        if(user == null) return null;
         boolean auth = HashHelper.checkPassword(password,user.password);
         if (auth) {
             return user;

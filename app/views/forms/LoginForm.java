@@ -26,10 +26,6 @@ public class LoginForm {
             errors.add(new ValidationError("password", "No password was given"));
         }
 
-        if(User.authenticate(login, password) == null) {
-            errors.add(new ValidationError("", "Invalid user email or password"));
-        }
-
         if (errors.size() > 0) {
             return errors;
         }

@@ -75,13 +75,20 @@ public class RegistrationController extends Controller {
 
     public static Result authenticate(){
         Form<LoginForm> loginForm = form(LoginForm.class).bindFromRequest();
+
         if (loginForm.hasErrors()){
             return badRequest(login.render(loginForm));
         } else {
-            session().clear();
-            //todo do we want to be more secure than just storing the email in the session?
-            session("email",loginForm.get().login);
-            return redirect("/");
+            LoginForm lf = loginForm.get();
+            if(User.authenticate(lf.login, lf.password) == null) {
+                flash("error", "Incorrect email and/or password.");
+                return badRequest(login.render(loginForm));
+            } else {
+                session().clear();
+                //todo do we want to be more secure than just storing the email in the session?
+                session("email", lf.login);
+                return redirect("/");
+            }
         }
     }
 
