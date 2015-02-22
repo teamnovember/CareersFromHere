@@ -1,5 +1,7 @@
 @(user: models.User)(qList: java.util.List[models.Question])
 
+@import scala.Predef; var order = 0
+
 @stylesheets = {
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
 }
@@ -13,37 +15,42 @@
     });</script>
 }
 
-@* <div class="col-sm-1 handle">::</div>
-<div class="col-sm-8">@q.getText</div>
-<div class="col-sm-3">
-<div class="action-button-place">
-<a class="btn btn-default action-button"
-href="@routes.AdminController.getQuestion(q.getId)">
-<span class="glyphicon glyphicon-pencil"></span> Edit</a>
-</div>
-
-<div class="action-button-place">
-@helper.form(action = routes.AdminController.deleteQuestion) {
-<input type="hidden" name="id" value="@q.getId" />
-
-<button class="btn btn-danger action-button" type="submit">
-    <span class="glyphicon glyphicon-remove"></span> Delete</button>
-    }
-    </div>
-    </div>*@
-
 @main("Admin Dashboard: Question Management - Careers From Here")(stylesheets)(javascripts)(user) {
     <div class="spacing-panel">
         <div class="shadow-panel table-responsive">
-            <a class="btn btn-default action-button"
-            href="@routes.AdminController.getNewUser()">
-                <span class="glyphicon glyphicon-plus"></span> Add question</a>
+            <div style="float: right">
+                <a class="btn btn-default action-button"
+                href="@routes.AdminController.getNewUser()">
+                    <span class="glyphicon glyphicon-plus"></span> Add question</a>
+                <button class="btn btn-success action-button" style="float: right">
+                    <span class="glyphicon glyphicon-ok"></span> Save order
+                </button>
+            </div>
+
+            <h2>Questions</h2>
+            <span class="help-block">Reorder questions by dragging on the handle, click 'Save' to save order.</span>
+            <hr>
             <ul class="sortable">
                 @for(q <- qList) {
-                    <li class="clearfix">
-                        <span class="handle">::</span>
-                        @q.getText
+                    <li class="clearfix" data-order="@{order += 1; order}">
+                        <div class="col-xs-1 handle"><span class="glyphicon glyphicon-resize-vertical"></span></div>
+                        <div class="col-xs-9">@q.getText</div>
+                        <div class="col-xs-2">
+                            <div class="action-button-place">
+                                <a class="btn btn-default action-button"
+                                href="@routes.AdminController.getQuestion(q.getId)">
+                                    <span class="glyphicon glyphicon-pencil"></span></a>
+                            </div>
 
+                            <div class="action-button-place">
+                            @helper.form(action = routes.AdminController.deleteQuestion) {
+                                <input type="hidden" name="id" value="@q.getId" />
+
+                                <button class="btn btn-danger action-button" type="submit">
+                                    <span class="glyphicon glyphicon-remove"></span></button>
+                            }
+                            </div>
+                        </div>
                     </li>
                 }
             </ul>

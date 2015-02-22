@@ -45,10 +45,11 @@ public class AdminController extends Controller {
         User user = udao.getUserFromContext();
         School s = user.getSchool();
         QuestionDAO dao = new QuestionDAO();
-        /*dao.newQuestion(new Question("Hey, what's your name?", 120.0, s));
-        dao.newQuestion(new Question("Hey, what's your name? 1", 120.0, s));
-        dao.newQuestion(new Question("Hey, what's your name? 2", 120.0, s));
-        dao.newQuestion(new Question("Hey, what's your name? Llong long long long long long long", 120.0, s));*/
+        /*dao.newQuestion(new Question("Question 1", 120.0, s));
+        dao.newQuestion(new Question("Question 2", 120.0, s));
+        dao.newQuestion(new Question("This question is not so long.", 120.0, s));
+        dao.newQuestion(new Question("This is a much much longer question that may actually span across several lines in the question view in the admin panel.", 120.0, s));
+        */
         List<Question> qs = dao.getActiveQuestions(s); //this gets all the active questions for a school
         return ok(questions.render(user, qs));
     }

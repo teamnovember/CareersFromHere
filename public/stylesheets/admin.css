@@ -13,10 +13,20 @@
     display: inline-block;
 }
 
+ul.sortable {
+    padding-left: 10px;
+}
+
+.handle {
+    width: 5%;
+}
+
 .sortable li {
     list-style: outside none none;
+    margin: 7px 0;
 }
 
 .sortable .sortable-placeholder {
     border: 1px lightgray dashed;
+    height: 43px;
 }
