@@ -42,6 +42,7 @@ mRecordRTC.media = {
     video: true
 };
 
+// TODO: trying 640x360, does not resize properly
 mRecordRTC.video = mRecordRTC.canvas = {
     width: 640,
     height: 480
@@ -221,6 +222,44 @@ function statePUBLISH() {
     // TODO: hide the recorder or switch pages
     var child = document.getElementById(recorderContainerId);
     child.parentNode.removeChild(child);
+};
+
+function publish() {
+    // TODO: this should be user specific
+    var name = "qwe";
+
+    var videoType = "video";
+    var videoExt = ".webm";
+
+    var audioType = "audio";
+    var audioExt = ".wav";
+
+    var formData = new FormData();
+
+    for (var i = 0; i < index; ++ i) {
+        formData.append(videoType + '-filename', name + i + videoExt);
+        formData.append(videoType + '-blob', videoBlobs[i]);
+
+        formData.append(audioType + '-filename', name + i + audioExt);
+        formData.append(audioType + '-blob', audioBlobs[i]);
+    }
+
+    console.log(formData);
+
+    xhr('/record/publish', formData, function (fName) {
+        window.open(location.href + fName);
+    });
+
+    function xhr(url, data, callback) {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function () {
+            if (request.readyState == 4 && request.status == 200) {
+                window.location.href = "/";
+            }
+        };
+        request.open('POST', url);
+        request.send(data);
+    }
 };
 
 // TODO: mirrored image of the camera only when recording; it goes back then; bad call;
