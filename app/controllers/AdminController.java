@@ -270,10 +270,10 @@ public class AdminController extends Controller {
         else {
             QuestionDAO dao = new QuestionDAO();
             Question q = dao.getQuestion(id);
-            data = new QuestionForm(q.getText(),q.getDuration(),q.getSchool());
+            data = new QuestionForm(q.getText(),q.getDuration());
         }
         Form<QuestionForm> formdata = Form.form(QuestionForm.class).fill(data);
-        return ok(edit_question.render(user, formdata));
+        return ok(edit_question.render(user, formdata, id));
     }
 
     public static Result postNewQuestion() {return postQuestion(null);}
@@ -285,14 +285,14 @@ public class AdminController extends Controller {
 
         if (data.hasErrors()) {
             flash("error", "Please correct errors below.");
-            return badRequest(edit_question.render(user,data));
+            return badRequest(edit_question.render(user, data, id));
         }
         else {
             QuestionForm formData = data.get();
             Question q = null;
             QuestionDAO dao = new QuestionDAO();
             if (id == null) { //if we are creating a new question
-                q = Question.makeInstance(formData);
+                q = Question.makeInstance(formData, user.getSchool());
                 dao.newQuestion(q); //this ensures we get the ordering correct
             } else {
                 q = dao.getQuestion(id);
@@ -301,7 +301,7 @@ public class AdminController extends Controller {
                 //TODO: edit the question form to allow for reordering. or to reorder normally...
                 q.update();
             }
-            return ok(edit_question.render(user,data));
+            return redirect("/admin/questions");
         }
     }
 

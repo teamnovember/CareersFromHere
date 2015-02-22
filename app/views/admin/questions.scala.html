@@ -1,7 +1,5 @@
 @(user: models.User)(qList: java.util.List[models.Question])
 
-@import scala.Predef; var order = 0
-
 @stylesheets = {
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
 }
@@ -12,6 +10,11 @@
         $(".sortable" ).sortable( {
             handle: '.handle'
         });
+        $("#save-button" ).click( function() {
+            $(".sortable li" ).each(function(i, e) {
+                console.log((i + 1) + " -> " + e.getAttribute("data-order"));
+            });
+        });
     });</script>
 }
 
@@ -20,9 +23,9 @@
         <div class="shadow-panel table-responsive">
             <div style="float: right">
                 <a class="btn btn-default action-button"
-                href="@routes.AdminController.getNewUser()">
+                href="@routes.AdminController.getNewQuestion()">
                     <span class="glyphicon glyphicon-plus"></span> Add question</a>
-                <button class="btn btn-success action-button" style="float: right">
+                <button class="btn btn-success action-button" id="save-button">
                     <span class="glyphicon glyphicon-ok"></span> Save order
                 </button>
             </div>
@@ -32,9 +35,10 @@
             <hr>
             <ul class="sortable">
                 @for(q <- qList) {
-                    <li class="clearfix" data-order="@{order += 1; order}">
+                    <li class="clearfix" data-order="@q.getOrder">
                         <div class="col-xs-1 handle"><span class="glyphicon glyphicon-resize-vertical"></span></div>
-                        <div class="col-xs-9">@q.getText</div>
+                        <div class="col-xs-8">@q.getText</div>
+                        <div class="col-xs-1">@{var s = q.getDuration.toInt; (s / 60)+ ":" + (s % 60)}</div>
                         <div class="col-xs-2">
                             <div class="action-button-place">
                                 <a class="btn btn-default action-button"

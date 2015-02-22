@@ -12,14 +12,12 @@ import java.util.List;
 public class QuestionForm {
     public String text = "";
     public double duration = 0;
-    public School school = null;
 
     public QuestionForm() {}
 
-    public QuestionForm(String text, double duration, School school) {
+    public QuestionForm(String text, double duration) {
         this.text = text;
         this.duration = duration;
-        this.school = school;
     }
 
     public List<ValidationError> validate() {
@@ -29,12 +27,8 @@ public class QuestionForm {
             errors.add(new ValidationError("text", "No question text was given"));
         }
 
-        if (duration == 0) {
-            errors.add(new ValidationError("duration","No question duration was given"));
-        }
-
-        if (school == null) {
-            errors.add(new ValidationError("school","No school was given"));
+        if (duration < 10.0) {
+            errors.add(new ValidationError("duration","Duration is too small. Give at least 10 seconds."));
         }
 
         if (errors.size() > 0) {

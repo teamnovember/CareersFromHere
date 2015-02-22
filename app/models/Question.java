@@ -26,8 +26,8 @@ public class Question extends Model implements Comparable<Question> {
         this.duration = duration;
     }
 
-    public static Question makeInstance(QuestionForm data) {
-        Question q = new Question(data.text,data.duration,data.school);
+    public static Question makeInstance(QuestionForm data, School ownerSchool) {
+        Question q = new Question(data.text,data.duration, ownerSchool);
         return q;
     }
 

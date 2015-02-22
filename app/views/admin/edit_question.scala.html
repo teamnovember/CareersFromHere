@@ -1,6 +1,6 @@
-@(user: models.User)(form: play.data.Form[views.forms.QuestionForm])
+@(user: models.User)(form: play.data.Form[views.forms.QuestionForm])(id: Long)
 
-@import helper.twitterBootstrap._
+@import bootstrap3._
 
 @stylesheets = {
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
@@ -11,5 +11,26 @@
 }
 
 @main("Admin Dashboard: Question Management - Careers From Here")(stylesheets)(javascripts)(user) {
-    <p>Welcome!</p>
+    <div class="spacing-panel">
+        <div class="shadow-panel">
+            <h2>Edit question</h2>
+            <hr>
+            @helper.form(action =
+                    if (id == null) { routes.AdminController.postNewQuestion() }
+                    else { routes.AdminController.postQuestion(id) }) {
+                <fieldset>
+                    @textarea(form("text"),
+                        label = "Question")
+                    @text(form("duration"),
+                        label = "Duration",
+                        help = "Specify time limit for a question in seconds.")
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button id="submit" type="submit" value="Submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </fieldset>
+            }
+        </div>
+    </div>
 }
