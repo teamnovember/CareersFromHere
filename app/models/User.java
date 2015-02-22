@@ -33,7 +33,13 @@ public abstract class User extends Model {
     }
 
     public static User authenticate(String email, String password){
-        return find.where().eq("email",email).eq("password",password).findUnique();
+        User user = find.where().eq("email",email).findUnique();
+        boolean auth = HashHelper.checkPassword(password,user.password);
+        if (auth) {
+            return user;
+        } else {
+            return null;
+        }
     }
 
     //hacky fix so new db structure is compatible with old code
