@@ -22,6 +22,9 @@ public class VideoController extends Controller {
 
     //TODO: what do we show on index for anonymous user?
     public static Result index() {
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+
         if (Video.find.findRowCount() == 0) {
             // Seed data, TEDx videos sorted by popularity
             School s = new School("Super High School");
@@ -41,7 +44,13 @@ public class VideoController extends Controller {
         }
 
         VideoDAO dao = new VideoDAO();
-        List<Video> videoList = dao.getAllVideos();
+        List<Video> accessibleVideos = new ArrayList<Video>();
+        try {
+            accessibleVideos = dao.getVideosBySchool(user.getSchool());
+        } catch (NullPointerException e) {
+            //do nothing as we keep the list empty
+            //we'll eventually have public videos
+        }
 
         CategoryDAO cdao = new CategoryDAO();
         List<Category> allCats = cdao.getAllCategories();
@@ -54,16 +63,22 @@ public class VideoController extends Controller {
         Form<CategorySelectionForm> catForm = form(CategorySelectionForm.class)
                 .fill(new CategorySelectionForm(allCats));
 
-        UserDAOImpl udao = new UserDAOImpl();
-        User user = udao.getUserFromContext();
-
-        return ok(index.render(videoList, catForm, catIdNameMap, user));
+        return ok(index.render(accessibleVideos, catForm, catIdNameMap, user));
     }
 
     public static Result categorySelect()
     {
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+
         VideoDAO dao = new VideoDAO();
-        List<Video> videoList = dao.getAllVideos();
+        List<Video> accessibleVideos = new ArrayList<>();
+        try {
+            accessibleVideos = dao.getVideosBySchool(user.getSchool());
+        } catch (NullPointerException e) {
+            //do nothing as we keep the list empty
+            //we'll eventually have public videos
+        }
 
         CategoryDAO cdao = new CategoryDAO();
         List<Category> allCats = cdao.getAllCategories();
@@ -83,10 +98,9 @@ public class VideoController extends Controller {
         Form<CategorySelectionForm> catForm = form(CategorySelectionForm.class)
                 .fill(new CategorySelectionForm(allCats));
 
-        UserDAOImpl udao = new UserDAOImpl();
-        User user = udao.getUserFromContext();
 
-        return ok(index.render(videoList, catForm, catIdNameMap, user));
+
+        return ok(index.render(accessibleVideos, catForm, catIdNameMap, user));
     }
 
     //TODO: change this to view the correct video from database
