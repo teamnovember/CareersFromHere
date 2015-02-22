@@ -23,6 +23,7 @@ public class SuperAdminSecured extends Security.Authenticator {
         }
     }
 
+    //TODO: redirect somewhere useful
     @Override
     public Result onUnauthorized(Http.Context ctx) {
         return redirect("/login");

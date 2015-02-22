@@ -13,12 +13,14 @@ import java.util.Map;
  * Created by el on 21/02/15.
  */
 public abstract class AdminHelpers {
-    public static Map<String, Boolean> ConstructDiscriminatorMap(String currentDiscriminator) {
+    public static Map<String, Boolean> ConstructDiscriminatorMap(String currentDiscriminator,String authorisation) {
         Map<String, Boolean> discrMap = new HashMap<String, Boolean>();
         discrMap.put("student",    "student".equals(currentDiscriminator));
         discrMap.put("alumni",     "alumni".equals(currentDiscriminator));
         discrMap.put("admin",      "admin".equals(currentDiscriminator));
-        discrMap.put("superadmin", "superadmin".equals(currentDiscriminator));
+        if(authorisation.equals("superadmin")) {
+            discrMap.put("superadmin", "superadmin".equals(currentDiscriminator));
+        }
         return discrMap;
     }
 

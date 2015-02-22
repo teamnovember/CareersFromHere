@@ -16,44 +16,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Security.Authenticated(AdminSecured.class)
 public class AdminController extends Controller {
     //TODO: will need to authenticate the current user in these methods (replace new user creation)
 
     public static Result index() {
-        School s = new School("Super High School");
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
-        return ok(dashboard.render(u));
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+        return ok(dashboard.render(user));
     }
 
     public static Result users() {
-        School s = School.find.all().get(0);
-        Admin u = new Admin("Edgaras Liberis", "blahblah", "el398@cam.ac.uk", s);
-        UserDAOImpl dao = new UserDAOImpl();
-        return ok(users.render(u, dao.getSchoolUsers(s))); //gets all users for a school
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+        School s = user.getSchool();
+        return ok(users.render(user, udao.getSchoolUsers(s))); //gets all users for a school
     }
 
     public static Result videos() {
-        School s = new School("Super High School");
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
         VideoDAO dao = new VideoDAO();
-        return ok(videos.render(u, dao.getAllVideos())); //returns all videos
+        return ok(videos.render(user, dao.getAllVideos())); //returns all videos
     }
 
     public static Result questions() {
-        School s = new School("Super High School");
-        s.save();
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+        School s = user.getSchool();
         QuestionDAO dao = new QuestionDAO();
         List<Question> qs = dao.getActiveQuestions(s); //this gets all the active questions for a school
-        return ok(questions.render(u));
+        return ok(questions.render(user));
     }
 
+    @Security.Authenticated(SuperAdminSecured.class)
     public static Result schools() {
-        School s = new School("Super High School");
-        SuperAdmin u = new SuperAdmin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s); //TODO: restrict school functions to super admin
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+        School s = user.getSchool();
         SchoolDAO dao = new SchoolDAO();
         List<School> ss = dao.getAllSchool(); //list of all current schools
-        return ok(schools.render(u));
+        return ok(schools.render(user));
     }
 
     public static Result getNewUser() {
@@ -61,22 +64,27 @@ public class AdminController extends Controller {
     }
 
     public static Result getUser(Long id) {
-        School s = new School("Super High School");
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+        School s = user.getSchool();
         UserForm data;
         if (id == null) {
-            data = new UserForm(u.getSchool()); // Suggest same school as Admin by default
+            data = new UserForm(user.getSchool()); // Suggest same school as Admin by default
         } else {
             UserDAOImpl dao = new UserDAOImpl();
-            User user = dao.getUser(id);
-            data = new UserForm(user.getName(),user.getPassword(),user.getEmail(),user.getSchool(),user.getDiscriminator());
+            User u = dao.getUser(id);
+            data = new UserForm(u.getName(),u.getPassword(),u.getEmail(),u.getSchool(),u.getDiscriminator());
         }
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
 
         Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(data.school.getName());
-        Map<String, Boolean> discrMap = AdminHelpers.ConstructDiscriminatorMap(data.discriminator);
+        Map<String, Boolean> discrMap = AdminHelpers.ConstructDiscriminatorMap(data.discriminator,user.getDiscriminator());
 
-        return ok(edit_user.render(u, formdata, id, schoolMap, discrMap));
+        boolean auth = false;
+        if (user.getDiscriminator().equals("superadmin")) {
+            auth = true;
+        }
+        return ok(edit_user.render(user, formdata, id, schoolMap, discrMap,auth));
     }
 
     public static Result postNewUser() {
@@ -84,20 +92,25 @@ public class AdminController extends Controller {
     }
 
     public static Result postUser(Long id) {
-        School s = new School("Super High School");
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
         Form<UserForm> data = Form.form(UserForm.class).bindFromRequest();
 
+        boolean auth = false;
+        if (user.getDiscriminator().equals("superadmin")) {
+            auth = true;
+        }
+
         String userSchoolName = data.data().getOrDefault("school", ""); // "Please provide value" is "" too
-        if(userSchoolName.equals("")) userSchoolName = u.getSchool().getName();
+        if(userSchoolName.equals("")) userSchoolName = user.getSchool().getName();
         Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(userSchoolName);
         Map<String, Boolean> discrMap =
                 AdminHelpers.ConstructDiscriminatorMap(
-                        data.data().getOrDefault("discriminator", "student"));
+                        data.data().getOrDefault("discriminator", "student"),user.getDiscriminator());
 
         if (data.hasErrors()) {
             flash("error", "Please correct errors above.");
-            return badRequest(edit_user.render(u, data, id, schoolMap, discrMap));
+            return badRequest(edit_user.render(user, data, id, schoolMap, discrMap,auth));
         }
         else {
             UserForm formData = data.get();
@@ -107,10 +120,10 @@ public class AdminController extends Controller {
                     case "alumni":
                         formUser = Alumni.makeInstance(formData);
                         break;
-                    case "admin": //TODO: add validation so only (Super/)Admin can do this one
+                    case "admin":
                         formUser = Admin.makeInstance(formData);
                         break;
-                    case "superadmin": //TODO: add validation so only SuperAdmin can do this one
+                    case "superadmin": //only superadmins can possibly select this option
                         formUser = SuperAdmin.makeInstance(formData);
                         break;
                     default: //"student"
@@ -126,9 +139,9 @@ public class AdminController extends Controller {
                 formUser.setName(formData.name);
                 formUser.setEmail(formData.email);
                 formUser.setPassword(formData.password);
-                formUser.setSchool(sdao.byName(formData.school.getName())); //do we need this? might want to restrict to Super Admin...
-
-                //formUser.setDiscriminator(formData.discriminator); //upgrading users, again might either not want to restrict...
+                if (user.getDiscriminator().equals("superadmin")) {
+                    formUser.setSchool(formData.school);
+                }
                 formUser.update();
             }
         }
@@ -136,8 +149,8 @@ public class AdminController extends Controller {
     }
 
     public static Result deleteUser() {
-        School s = new School("Super High School");
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
 
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
@@ -150,8 +163,8 @@ public class AdminController extends Controller {
     }
 
     public static Result approveUser() {
-        School s = new School("Super High School");
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
 
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
@@ -166,8 +179,8 @@ public class AdminController extends Controller {
 
     //dont need "new" video methods in AdminController
     public static Result getVideo(Long id) {
-        School s = new School("Super High School");
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
 
         VideoDAO dao = new VideoDAO();
         Video video = dao.getVideo(id);
@@ -175,12 +188,12 @@ public class AdminController extends Controller {
         Form<VideoForm> formdata = Form.form(VideoForm.class).fill(data);
 
         Map<String, Boolean> catMap = AdminHelpers.ConstructCategoryMap(video.getCategories());
-        return ok(edit_video.render(u, formdata, id, catMap));
+        return ok(edit_video.render(user, formdata, id, catMap));
     }
 
     public static Result postVideo(Long id) {
-        School s = new School("Super High School");
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
         Form<VideoForm> data = Form.form(VideoForm.class).bindFromRequest();
         VideoDAO dao = new VideoDAO();
         Video video = dao.getVideo(id);
@@ -188,7 +201,7 @@ public class AdminController extends Controller {
         if (data.hasErrors()) {
             Map<String, Boolean> catMap = AdminHelpers.ConstructCategoryMap(video.getCategories());
             flash("error", "Please correct errors above.");
-            return badRequest(edit_video.render(u, data, id, catMap));
+            return badRequest(edit_video.render(user, data, id, catMap));
         }
         else { //don't need to check for null id because we don't create videos here
             CategoryDAO cdao = new CategoryDAO(); // Has fully initialised Category objects
@@ -209,8 +222,8 @@ public class AdminController extends Controller {
     }
 
     public static Result deleteVideo() {
-        School s = new School("Super High School");
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
 
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
@@ -223,8 +236,8 @@ public class AdminController extends Controller {
     }
 
     public static Result approveVideo() {
-        School s = new School("Super High School");
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
 
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
@@ -242,8 +255,8 @@ public class AdminController extends Controller {
     public static Result getNewQuestion() { return getQuestion(null);}
 
     public static Result getQuestion(Long id) {
-        School s = new School("Super High School");
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
         QuestionForm data;
 
         if (id == null) {
@@ -255,19 +268,19 @@ public class AdminController extends Controller {
             data = new QuestionForm(q.getText(),q.getDuration(),q.getSchool());
         }
         Form<QuestionForm> formdata = Form.form(QuestionForm.class).fill(data);
-        return ok(edit_question.render(u, formdata));
+        return ok(edit_question.render(user, formdata));
     }
 
     public static Result postNewQuestion() {return postQuestion(null);}
 
     public static Result postQuestion(Long id) {
-        School s = new School("Super High School");
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
         Form<QuestionForm> data = Form.form(QuestionForm.class).bindFromRequest();
 
         if (data.hasErrors()) {
             flash("error", "Please correct errors below.");
-            return badRequest(edit_question.render(u,data));
+            return badRequest(edit_question.render(user,data));
         }
         else {
             QuestionForm formData = data.get();
@@ -283,25 +296,27 @@ public class AdminController extends Controller {
                 //TODO: edit the question form to allow for reordering. or to reorder normally...
                 q.update();
             }
-            return ok(edit_question.render(u,data));
+            return ok(edit_question.render(user,data));
         }
     }
 
     public static Result deleteQuestion(Long id) {
-        School s = new School("Super High School");
-        Admin u = new Admin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
 
         QuestionDAO dao = new QuestionDAO();
         dao.deleteQuestion(id);
 
-        return ok(questions.render(u));
+        return ok(questions.render(user));
     }
 
+    @Security.Authenticated(SuperAdminSecured.class)
     public static Result getNewSchool() { return getSchool(null);}
 
+    @Security.Authenticated(SuperAdminSecured.class)
     public static Result getSchool(Long id) {
-        School s = new School("Super High School");
-        SuperAdmin u = new SuperAdmin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
         SchoolForm data;
 
         if (id == null) {
@@ -313,19 +328,21 @@ public class AdminController extends Controller {
             data = new SchoolForm(sch.getName());
         }
         Form<SchoolForm> formdata = Form.form(SchoolForm.class).fill(data);
-        return ok(edit_school.render(u, formdata));
+        return ok(edit_school.render(user, formdata));
     }
 
+    @Security.Authenticated(SuperAdminSecured.class)
     public static Result postNewSchool() {return postSchool(null);}
 
+    @Security.Authenticated(SuperAdminSecured.class)
     public static Result postSchool(Long id) {
-        School s = new School("Super High School");
-        SuperAdmin u = new SuperAdmin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
         Form<SchoolForm> data = Form.form(SchoolForm.class).bindFromRequest();
 
         if (data.hasErrors()) {
             flash("error", "Please correct errors below.");
-            return badRequest(edit_school.render(u,data));
+            return badRequest(edit_school.render(user,data));
         }
         else {
             SchoolForm formData = data.get();
@@ -340,18 +357,18 @@ public class AdminController extends Controller {
                 sch.setName(formData.name);
                 sch.update();
             }
-            return ok(edit_school.render(u,data));
+            return ok(edit_school.render(user,data));
         }
     }
 
     public static Result deleteSchool(Long id) {
-        School s = new School("Super High School");
-        SuperAdmin u = new SuperAdmin("Edgaras Liberis","blahblah","el398@cam.ac.uk",s);
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
 
         SchoolDAO dao = new SchoolDAO();
         dao.deleteSchool(id);
 
-        return ok(schools.render(u));
+        return ok(schools.render(user));
     }
 
 }

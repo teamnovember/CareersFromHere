@@ -40,7 +40,6 @@ public class VideoController extends Controller {
         VideoDAO dao = new VideoDAO();
         List<Video> videoList = dao.getAllVideos();
 
-        Student u = new Student("Test user", "Stuff", "test@asdf.com", null);
         CategoryDAO cdao = new CategoryDAO();
         List<Category> allCats = cdao.getAllCategories();
 
@@ -52,7 +51,10 @@ public class VideoController extends Controller {
         Form<CategorySelectionForm> catForm = form(CategorySelectionForm.class)
                 .fill(new CategorySelectionForm(allCats));
 
-        return ok(index.render(videoList, catForm, catIdNameMap, u));
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+
+        return ok(index.render(videoList, catForm, catIdNameMap, user));
     }
 
     public static Result categorySelect()
@@ -60,7 +62,6 @@ public class VideoController extends Controller {
         VideoDAO dao = new VideoDAO();
         List<Video> videoList = dao.getAllVideos();
 
-        Student u = new Student("Test user", "Stuff", "test@asdf.com", null);
         CategoryDAO cdao = new CategoryDAO();
         List<Category> allCats = cdao.getAllCategories();
 
@@ -79,9 +80,13 @@ public class VideoController extends Controller {
         Form<CategorySelectionForm> catForm = form(CategorySelectionForm.class)
                 .fill(new CategorySelectionForm(allCats));
 
-        return ok(index.render(videoList, catForm, catIdNameMap, u));
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+
+        return ok(index.render(videoList, catForm, catIdNameMap, user));
     }
 
+    //TODO: change this to view the correct video from database
     public static Result view(Long id) {
         Alumni u = new Alumni("Test user", "Stuff", "test@asdf.com", null);
         Video v = new Video(u, "Beatbox brilliance", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sollicitudin augue et molestie tincidunt. Suspendisse eu semper diam. Maecenas pulvinar arcu rhoncus augue suscipit, vitae sodales nulla condimentum. Etiam dignissim varius massa non tristique. Integer vel dolor et purus ultrices tincidunt ut eu turpis. Pellentesque laoreet varius diam et finibus. Etiam scelerisque erat velit, quis fringilla tellus interdum varius. Praesent eu rutrum tortor. Praesent volutpat tellus a mi viverra malesuada. Donec egestas ut nisi sed interdum. In vel ex at nisl pulvinar interdum. Aenean nisl velit, lobortis sed suscipit sed, mollis id nisl. Sed iaculis lectus eu lorem dignissim accumsan.", "http://img.youtube.com/vi/GNZBSZD16cY/0.jpg");
@@ -101,11 +106,15 @@ public class VideoController extends Controller {
         q = new Question("TOC TOC", 0, null);
         clip = new VideoClip("/assets/test5.mp4", null, q, 7.941267);
         v.addClip(clip);
-        return ok(view.render(v, null));
+
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+
+        return ok(view.render(v, user));
     }
 
+    @Security.Authenticated(AlumniSecured.class)
     public static Result record() {
-        Alumni u = new Alumni("Test user", "Stuff", "test@asdf.com", null);
         ArrayList<Question> questions = new ArrayList<>();
 
         questions.add(0, new Question("People say nothing is impossible, but I do nothing every day.", 19.0, null));
@@ -132,7 +141,10 @@ public class VideoController extends Controller {
             e.printStackTrace();
         }
 
-        return ok(record.render(questions, JSONQuestionsText, JSONQuestionsDurations, u));
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+
+        return ok(record.render(questions, JSONQuestionsText, JSONQuestionsDurations, user));
     }
 
 }

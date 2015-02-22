@@ -3,6 +3,7 @@ package models;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.ExpressionList;
 import com.avaje.ebean.SqlUpdate;
+import play.mvc.Http;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,15 @@ public class UserDAOImpl implements UserDAO {
     public User getUserByEmail(String email) {
         User u = User.find.where().eq("email",email).findUnique();
         return u;
+    }
+
+    public User getUserFromContext() {
+        String email = Http.Context.current().session().get("email");
+        User user = null;
+        if (email != null) {
+            user = getUserByEmail(email);
+        }
+        return user;
     }
 
     public void approveUser(Long ID) {
