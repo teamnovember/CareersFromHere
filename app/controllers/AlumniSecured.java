@@ -16,7 +16,7 @@ public class AlumniSecured extends Security.Authenticator {
         String email = ctx.session().get("email");
         UserDAOImpl dao = new UserDAOImpl();
         User u = dao.getUserByEmail(email);
-        if (u.getDiscriminator().equals("alumni")) {
+        if (u != null && u.getDiscriminator().equals("alumni")) {
             return email;
         } else {
             return null;

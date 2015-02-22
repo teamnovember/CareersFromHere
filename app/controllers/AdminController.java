@@ -45,8 +45,12 @@ public class AdminController extends Controller {
         User user = udao.getUserFromContext();
         School s = user.getSchool();
         QuestionDAO dao = new QuestionDAO();
+        /*dao.newQuestion(new Question("Hey, what's your name?", 120.0, s));
+        dao.newQuestion(new Question("Hey, what's your name? 1", 120.0, s));
+        dao.newQuestion(new Question("Hey, what's your name? 2", 120.0, s));
+        dao.newQuestion(new Question("Hey, what's your name? Llong long long long long long long", 120.0, s));*/
         List<Question> qs = dao.getActiveQuestions(s); //this gets all the active questions for a school
-        return ok(questions.render(user));
+        return ok(questions.render(user, qs));
     }
 
     @Security.Authenticated(SuperAdminSecured.class)
@@ -300,14 +304,16 @@ public class AdminController extends Controller {
         }
     }
 
-    public static Result deleteQuestion(Long id) {
+    public static Result deleteQuestion() {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
 
+        DynamicForm requestData = Form.form().bindFromRequest();
+        Long id = Long.parseLong(requestData.get("id"));
         QuestionDAO dao = new QuestionDAO();
         dao.deleteQuestion(id);
 
-        return ok(questions.render(user));
+        return redirect("/admin/questions");
     }
 
     @Security.Authenticated(SuperAdminSecured.class)

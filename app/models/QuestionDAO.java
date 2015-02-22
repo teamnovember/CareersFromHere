@@ -33,8 +33,13 @@ public class QuestionDAO {
 
     public void newQuestion(Question q) {
         List<Question> qs = getActiveQuestions(q.getSchool()); //we haven't saved q yet so it shouldn't be in here yet
-        Question q2 = qs.get(qs.size() - 1); //get last question in the active list
-        q.setOrder(q2.getOrder() + 1);
+        if(qs.isEmpty()) {
+            q.setOrder(1);
+        } else {
+            Question q2 = qs.get(qs.size() - 1); //get last question in the active list
+            q.setOrder(q2.getOrder() + 1);
+        }
+
         q.save();
     }
 

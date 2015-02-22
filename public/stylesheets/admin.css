@@ -12,3 +12,11 @@
 .action-button-place {
     display: inline-block;
 }
+
+.sortable li {
+    list-style: outside none none;
+}
+
+.sortable .sortable-placeholder {
+    border: 1px lightgray dashed;
+}

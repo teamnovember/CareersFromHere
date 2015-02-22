@@ -16,7 +16,7 @@ public class AdminSecured extends Security.Authenticator {
         String email = ctx.session().get("email");
         UserDAOImpl dao = new UserDAOImpl();
         User u = dao.getUserByEmail(email);
-        if (u.getDiscriminator().equals("admin") || u.getDiscriminator().equals("superadmin")) {
+        if (u != null && (u.getDiscriminator().equals("admin") || u.getDiscriminator().equals("superadmin"))) {
             return email;
         } else {
             return null;
