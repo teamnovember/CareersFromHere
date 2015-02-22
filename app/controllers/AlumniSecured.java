@@ -6,6 +6,8 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 
+import static play.mvc.Controller.flash;
+
 /**
  * Created by Louise on 21/02/2015.
  */
@@ -26,6 +28,7 @@ public class AlumniSecured extends Security.Authenticator {
     //TODO: probably should redirect somewhere else...
     @Override
     public Result onUnauthorized(Http.Context ctx) {
+        flash("error","You are unauthorised to access this page, please login as an authorised user");
         return redirect("/login");
     }
 }

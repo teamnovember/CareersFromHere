@@ -17,7 +17,10 @@ import java.util.Map;
 
 import static play.data.Form.form;
 
+
 public class VideoController extends Controller {
+
+    //TODO: what do we show on index for anonymous user?
     public static Result index() {
         if (Video.find.findRowCount() == 0) {
             // Seed data, TEDx videos sorted by popularity
@@ -88,7 +91,6 @@ public class VideoController extends Controller {
 
     //TODO: change this to view the correct video from database
     public static Result view(Long id) {
-        Alumni u = new Alumni("Test user", "Stuff", "test@asdf.com", null);
         VideoDAO vdao = new VideoDAO();
         Video v = vdao.getVideo(id);
 

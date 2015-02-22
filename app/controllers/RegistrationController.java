@@ -65,6 +65,13 @@ public class RegistrationController extends Controller {
         return ok(login.render(form));
     }
 
+    public static Result logout() {
+        session().remove("email");
+        session().clear();
+        flash("success","You've have been successfully logged out.");
+        return redirect("/");
+    }
+
 
     public static Result authenticate(){
         Form<LoginForm> loginForm = form(LoginForm.class).bindFromRequest();

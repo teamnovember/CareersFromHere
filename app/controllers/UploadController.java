@@ -8,6 +8,7 @@ package controllers;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Http.MultipartFormData.FilePart;
+import play.mvc.Security;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
+@Security.Authenticated(Secured.class)
 public class UploadController extends Controller {
 
     // TODO: bad way of writing files (check /assets))
