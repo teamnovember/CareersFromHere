@@ -2,6 +2,8 @@ package models;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.ExpressionList;
+import helpers.AppException;
+import helpers.HashHelper;
 import views.forms.UserForm;
 
 import javax.persistence.DiscriminatorValue;
@@ -21,7 +23,13 @@ public class SuperAdmin extends User {
 
     public static SuperAdmin makeInstance(UserForm data) {
         School s = (new SchoolDAO()).byName(data.school.getName());
-        SuperAdmin admin = new SuperAdmin(data.name, data.password, data.email, s);
+        String password = "";
+        try {
+            password = HashHelper.createPassword(data.password);
+        } catch (AppException e) {
+            //TODO: do something useful here maybe?
+        }
+        SuperAdmin admin = new SuperAdmin(data.name, password, data.email, s);
         return admin;
     }
 

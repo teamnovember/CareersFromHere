@@ -77,12 +77,12 @@ public class AdminController extends Controller {
         } else {
             UserDAOImpl dao = new UserDAOImpl();
             User u = dao.getUser(id);
-            data = new UserForm(u.getName(),u.getPassword(),u.getEmail(),u.getSchool(),u.getDiscriminator());
+            data = new UserForm(u.getName(),"",u.getEmail(),u.getSchool(),u.getDiscriminator());
         }
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
 
         Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(data.school.getName());
-        Map<String, Boolean> discrMap = AdminHelpers.ConstructDiscriminatorMap(data.discriminator,user.getDiscriminator());
+        Map<String, Boolean> discrMap = AdminHelpers.ConstructDiscriminatorMap(data.discriminator, user.getDiscriminator());
 
         boolean auth = false;
         if (user.getDiscriminator().equals("superadmin")) {
@@ -113,7 +113,7 @@ public class AdminController extends Controller {
                         data.data().getOrDefault("discriminator", "student"),user.getDiscriminator());
 
         if (data.hasErrors()) {
-            flash("error", "Please correct errors above.");
+            flash("error", "Please correct errors below.");
             return badRequest(edit_user.render(user, data, id, schoolMap, discrMap,auth));
         }
         else {
@@ -142,10 +142,10 @@ public class AdminController extends Controller {
                 formUser = dao.getUser(id);
                 formUser.setName(formData.name);
                 formUser.setEmail(formData.email);
-                formUser.setPassword(formData.password);
-                if (user.getDiscriminator().equals("superadmin")) {
-                    formUser.setSchool(formData.school);
+                if (!formData.password.equals("")) {
+                    formUser.setPassword(formData.password);
                 }
+                formUser.setSchool(sdao.byName(formData.school.getName()));
                 formUser.update();
             }
         }

@@ -2,6 +2,8 @@ package models;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.ExpressionList;
+import helpers.AppException;
+import helpers.HashHelper;
 import views.forms.UserForm;
 
 import javax.persistence.DiscriminatorValue;
@@ -29,7 +31,13 @@ public class Admin extends User {
 
     public static Admin makeInstance(UserForm data) {
         School s = (new SchoolDAO()).byName(data.school.getName());
-        Admin admin = new Admin(data.name, data.password, data.email, s);
+        String password = "";
+        try {
+            password = HashHelper.createPassword(data.password);
+        } catch (AppException e) {
+            //TODO: do something useful here maybe?
+        }
+        Admin admin = new Admin(data.name, password, data.email, s);
         return admin;
     }
 

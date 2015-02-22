@@ -1,5 +1,7 @@
 package models;
 
+import helpers.AppException;
+import helpers.HashHelper;
 import views.forms.UserForm;
 
 import javax.persistence.DiscriminatorValue;
@@ -19,7 +21,13 @@ public class Student extends User{
 
     public static Student makeInstance(UserForm data) {
         School s = (new SchoolDAO()).byName(data.school.getName());
-        Student student = new Student(data.name, data.password, data.email, s);
+        String password = "";
+        try {
+            password = HashHelper.createPassword(data.password);
+        } catch (AppException e) {
+            //TODO: do something useful here maybe?
+        }
+        Student student = new Student(data.name, password, data.email, s);
         return student;
     }
 

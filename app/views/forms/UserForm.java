@@ -45,9 +45,7 @@ public class UserForm {
             errors.add(new ValidationError("name", "No name was given"));
         }
 
-        if (password == null || password.length() == 0) {
-            errors.add(new ValidationError("password", "No password was given"));
-        } //TODO: add more password checks
+        //TODO: add password checks? (e.g. password too short etc.)
 
         if (email == null || email.length() == 0) {
             errors.add(new ValidationError("email","No email was given"));
