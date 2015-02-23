@@ -41,7 +41,7 @@ GET         /admin/schools/manage/new          controllers.AdminController.getNe
 GET         /admin/schools/manage/:id          controllers.AdminController.getSchool(id: Long)
 POST        /admin/schools/manage/new          controllers.AdminController.postNewSchool()
 POST        /admin/schools/manage/:id          controllers.AdminController.postSchool(id: Long)
-POST        /admin/schools/delete              controllers.AdminController.deleteSchool(id: Long)
+POST        /admin/schools/delete              controllers.AdminController.deleteSchool()
 
 # Dummy page
 GET         /dummy                             controllers.Dummy.dummy_page()

@@ -60,8 +60,8 @@ public class AdminController extends Controller {
         User user = udao.getUserFromContext();
         School s = user.getSchool();
         SchoolDAO dao = new SchoolDAO();
-        List<School> ss = dao.getAllSchool(); //list of all current schools
-        return ok(schools.render(user));
+        List<School> ss = dao.getAllSchool();
+        return ok(schools.render(user, ss));
     }
 
     public static Result getNewUser() {
@@ -383,7 +383,7 @@ public class AdminController extends Controller {
             data = new SchoolForm(sch.getName());
         }
         Form<SchoolForm> formdata = Form.form(SchoolForm.class).fill(data);
-        return ok(edit_school.render(user, formdata));
+        return ok(edit_school.render(user, formdata, id));
     }
 
     @Security.Authenticated(SuperAdminSecured.class)
@@ -397,7 +397,7 @@ public class AdminController extends Controller {
 
         if (data.hasErrors()) {
             flash("error", "Please correct errors below.");
-            return badRequest(edit_school.render(user,data));
+            return badRequest(edit_school.render(user, data, id));
         }
         else {
             SchoolForm formData = data.get();
@@ -412,18 +412,20 @@ public class AdminController extends Controller {
                 sch.setName(formData.name);
                 sch.update();
             }
-            return ok(edit_school.render(user,data));
+            return redirect("/admin/schools");
         }
     }
 
-    public static Result deleteSchool(Long id) {
+    public static Result deleteSchool() {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
 
+        DynamicForm requestData = Form.form().bindFromRequest();
+        Long id = Long.parseLong(requestData.get("id"));
         SchoolDAO dao = new SchoolDAO();
         dao.deleteSchool(id);
 
-        return ok(schools.render(user));
+        return redirect("/admin/schools");
     }
 
 }
