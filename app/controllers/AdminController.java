@@ -11,8 +11,8 @@ import views.forms.UserForm;
 import views.forms.VideoForm;
 import views.html.admin.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -274,6 +274,54 @@ public class AdminController extends Controller {
         }
         Form<QuestionForm> formdata = Form.form(QuestionForm.class).fill(data);
         return ok(edit_question.render(user, formdata, id));
+    }
+
+    public static Result reorderQuestions() {
+        DynamicForm requestData = Form.form().bindFromRequest();
+        String data = requestData.get("order");
+
+        UserDAOImpl udao = new UserDAOImpl();
+        Http.Request r = request();
+        QuestionDAO dao = new QuestionDAO();
+
+        User user = udao.getUserFromContext();
+        School s = user.getSchool();
+
+        List<Question> qs = dao.getActiveQuestions(s);
+        String[] orderStr = data.split(",");
+        int[] order = new int[qs.size()];
+        try {
+            // Ensure same length
+            if(orderStr.length != qs.size())
+                throw new Exception("Wrong reorder size submitted.");
+
+            // Ensure every element is a valid integer
+            int[] orderTmp = new int[qs.size()];
+            for(int i = 0; i < order.length; ++i) {
+                order[i] =  orderTmp[i] = Integer.parseInt(orderStr[i]);
+            }
+
+            // Ensure it's a valid permutation from 1 to qs.size()
+            // By sorting newOrderTemp
+            Arrays.sort(orderTmp);
+            for(int i = 0; i < orderTmp.length; ++i) {
+                if(orderTmp[i] != i+1)
+                    throw new Exception("Invalid ordering provided.");
+            }
+        } catch(Exception e) {
+            flash("error", e.getMessage());
+            return redirect("/admin/questions");
+        }
+
+        // Apply reordering
+        for(int i = 0; i < qs.size(); ++i) {
+            int oldOrder = order[i];
+            int newOrder = i+1;
+            Question q = qs.get(oldOrder-1);
+            q.setOrder(newOrder);
+            q.update();
+        }
+        return redirect("/admin/questions");
     }
 
     public static Result postNewQuestion() {return postQuestion(null);}

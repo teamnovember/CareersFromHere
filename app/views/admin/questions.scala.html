@@ -11,14 +11,22 @@
             handle: '.handle'
         });
         $("#save-button" ).click( function() {
+            var orders = [];
             $(".sortable li" ).each(function(i, e) {
-                console.log((i + 1) + " -> " + e.getAttribute("data-order"));
+                orders.push(e.getAttribute("data-order"));
             });
+            $orderField = $("#orderField");
+            $orderField.attr("value", orders.join(","));
+            $orderField.parent().submit();
         });
     });</script>
 }
 
 @main("Admin Dashboard: Question Management - Careers From Here")(stylesheets)(javascripts)(user) {
+    @helper.form(action = routes.AdminController.reorderQuestions()) {
+        <input id="orderField" type="hidden" name="order" value="" />
+        @* add csrf *@
+    }
     <div class="spacing-panel">
         <div class="shadow-panel table-responsive">
             <div style="float: right">
@@ -38,7 +46,7 @@
                     <li class="clearfix" data-order="@q.getOrder">
                         <div class="col-xs-1 handle"><span class="glyphicon glyphicon-resize-vertical"></span></div>
                         <div class="col-xs-8">@q.getText</div>
-                        <div class="col-xs-1">@{var s = q.getDuration.toInt; (s / 60)+ ":" + (s % 60)}</div>
+                        <div class="col-xs-1">@{var s = q.getDuration.toInt; (s / 60)  + ":" + (s % 60)}</div>
                         <div class="col-xs-2">
                             <div class="action-button-place">
                                 <a class="btn btn-default action-button"
@@ -60,5 +68,4 @@
             </ul>
         </div>
     </div>
-
 }
