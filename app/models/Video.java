@@ -135,4 +135,10 @@ public class Video extends Model {
         return json;
 
     }
+
+    public int numberOfMatchesWithCategories(List<Category> categories) {
+        List<Category> combinedCategories = getCategories();
+        combinedCategories.addAll(categories);
+        return getCategories().size() + categories.size() - combinedCategories.size();
+    }
 }
