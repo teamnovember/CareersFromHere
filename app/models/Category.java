@@ -1,6 +1,8 @@
 package models;
 
 import play.db.ebean.*;
+import views.forms.CategoryForm;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -17,6 +19,11 @@ public class Category extends Model {
     private List<Video> videos;
 
     public static Model.Finder<Long,Category> find = new Model.Finder<>(Long.class, Category.class);
+
+    public static Category makeInstance(CategoryForm data) {
+        Category c = new Category(data.name);
+        return c;
+    }
 
     public Category(String name) {
         this.name = name;

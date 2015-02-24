@@ -5,10 +5,7 @@ import models.*;
 import play.data.Form;
 import play.data.DynamicForm;
 import play.mvc.*;
-import views.forms.QuestionForm;
-import views.forms.SchoolForm;
-import views.forms.UserForm;
-import views.forms.VideoForm;
+import views.forms.*;
 import views.html.admin.*;
 
 import java.util.Arrays;
@@ -67,10 +64,18 @@ public class AdminController extends Controller {
     public static Result schools() {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
-        School s = user.getSchool();
         SchoolDAO dao = new SchoolDAO();
         List<School> ss = dao.getAllSchool();
         return ok(schools.render(user, ss));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result categories() {
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+        CategoryDAO dao = new CategoryDAO();
+        List<Category> cs = dao.getAllCategories();
+        return ok(categories.render(user, cs));
     }
 
     public static Result getNewUser() {
@@ -178,9 +183,6 @@ public class AdminController extends Controller {
     }
 
     public static Result deleteUser() {
-        UserDAOImpl udao = new UserDAOImpl();
-        User user = udao.getUserFromContext();
-
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
         UserDAOImpl dao = new UserDAOImpl();
@@ -192,9 +194,6 @@ public class AdminController extends Controller {
     }
 
     public static Result approveUser() {
-        UserDAOImpl udao = new UserDAOImpl();
-        User user = udao.getUserFromContext();
-
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
 
@@ -260,9 +259,6 @@ public class AdminController extends Controller {
     }
 
     public static Result deleteVideo() {
-        UserDAOImpl udao = new UserDAOImpl();
-        User user = udao.getUserFromContext();
-
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
         VideoDAO dao = new VideoDAO();
@@ -274,9 +270,6 @@ public class AdminController extends Controller {
     }
 
     public static Result approveVideo() {
-        UserDAOImpl udao = new UserDAOImpl();
-        User user = udao.getUserFromContext();
-
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
         VideoDAO dao = new VideoDAO();
@@ -394,9 +387,6 @@ public class AdminController extends Controller {
     }
 
     public static Result deleteQuestion() {
-        UserDAOImpl udao = new UserDAOImpl();
-        User user = udao.getUserFromContext();
-
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
         QuestionDAO dao = new QuestionDAO();
@@ -464,6 +454,67 @@ public class AdminController extends Controller {
         dao.deleteSchool(id);
 
         return redirect("/admin/schools");
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result getNewCategory() { return getCategory(null);}
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result getCategory(Long id) {
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+        CategoryForm data;
+
+        if (id == null) {
+            data = new CategoryForm();
+        }
+        else {
+            CategoryDAO dao = new CategoryDAO();
+            Category cat = dao.getCategory(id);
+            data = new CategoryForm(cat.getName());
+        }
+        Form<CategoryForm> formdata = Form.form(CategoryForm.class).fill(data);
+        return ok(edit_category.render(user, formdata, id));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result postNewCategory() {return postCategory(null);}
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result postCategory(Long id) {
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+        Form<CategoryForm> data = Form.form(CategoryForm.class).bindFromRequest();
+
+        if (data.hasErrors()) {
+            flash("error", "Please correct errors below.");
+            return badRequest(edit_category.render(user, data, id));
+        }
+        else {
+            CategoryForm formData = data.get();
+            Category cat;
+            if (id == null) {
+                cat = Category.makeInstance(formData);
+                cat.save();
+
+            } else {
+                CategoryDAO dao = new CategoryDAO();
+                cat = dao.getCategory(id);
+                cat.setName(formData.name);
+                cat.update();
+            }
+            return redirect("/admin/categories");
+        }
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result deleteCategory() {
+        DynamicForm requestData = Form.form().bindFromRequest();
+        Long id = Long.parseLong(requestData.get("id"));
+        CategoryDAO dao = new CategoryDAO();
+        dao.deleteCategory(id);
+
+        return redirect("/admin/categories");
     }
 
 }
