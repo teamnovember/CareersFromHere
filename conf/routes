@@ -7,6 +7,10 @@ GET         /                                  controllers.VideoController.index
 POST        /                                  controllers.VideoController.categorySelect()
 GET         /view/:id                          controllers.VideoController.view(id: Long)
 
+# User info edit page
+GET         /edit                              controllers.RegistrationController.getUserDetails()
+POST        /edit                              controllers.RegistrationController.postUserDetails()
+
 # Admin pages
 GET         /admin                             controllers.AdminController.index()
 GET         /admin/users                       controllers.AdminController.users()

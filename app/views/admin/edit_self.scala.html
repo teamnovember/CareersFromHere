@@ -1,0 +1,42 @@
+@(user: models.User)(form: play.data.Form[views.forms.UserForm])
+
+@import bootstrap3._
+
+@stylesheets = {
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
+}
+
+@javascripts = {
+
+}
+
+@main("Edit your user details - Careers From Here")(stylesheets)(javascripts)(user) {
+    <div class="spacing-panel">
+        <div class="shadow-panel">
+            <h2>Edit your user information</h2>
+            <hr>
+            @helper.form(action = routes.RegistrationController.postUserDetails() ) {
+                <fieldset>
+                    @text(form("name"),
+                        label = "Name",
+                        placeholder = "User Name",
+                        help = "Please enter user's first and last name (required).")
+                    @text(form("email"),
+                        label = "Email",
+                        placeholder = "email@example.com",
+                        help = "Please enter user's email (required).")
+                    @password(form("password"),
+                        label = "Password",
+                        placeholder = "",
+                        help = "Input new password to change it, otherwise leave blank.")
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button id="submit" type="submit" value="Submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </fieldset>
+            }
+        </div>
+    </div>
+
+}

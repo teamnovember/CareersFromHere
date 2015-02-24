@@ -6,6 +6,8 @@ import static play.data.Form.*;
 import play.libs.mailer.*;
 import play.Play;
 import views.forms.LoginForm;
+import views.forms.UserForm;
+import views.html.admin.edit_self;
 import views.html.login;
 import play.mvc.*;
 
@@ -99,4 +101,36 @@ public class RegistrationController extends Controller {
         user.setPassword(password);
     }
 
+    //TODO: might be a better place to put this but idc. also need to add stuff for alumni profile editing etc
+    public static Result getUserDetails() {
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+        School s = user.getSchool();
+        UserForm data = new UserForm(user.getName(),"",user.getEmail(),user.getSchool(),user.getDiscriminator());
+        Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
+
+        return ok(edit_self.render(user, formdata));
+    }
+
+    public static Result postUserDetails() {
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+        Form<UserForm> data = Form.form(UserForm.class).bindFromRequest();
+
+        if (data.hasErrors()) {
+            flash("error", "Please correct errors below.");
+            return badRequest(edit_self.render(user, data));
+        }
+        else {
+            UserForm formData = data.get();
+            user.setName(formData.name);
+            user.setEmail(formData.email);
+            if (!formData.password.equals("")) {
+                user.setPassword(formData.password);
+            }
+            user.update();
+
+        }
+        return redirect("/");
+    }
 }

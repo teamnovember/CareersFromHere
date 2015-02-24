@@ -54,10 +54,6 @@ public class UserForm {
             //TODO: do better email validation
         }
 
-        if (school == null) {
-            errors.add(new ValidationError("school","No school was given"));
-        }
-
         if (discriminator == null || discriminator.equals("")) {
             errors.add(new ValidationError("discriminator", "No user type was given"));
         } else if (!discriminator.equals("student")
@@ -68,8 +64,10 @@ public class UserForm {
         }
 
         SchoolDAO sdao = new SchoolDAO();
-        if(sdao.byName(school.getName()) == null) {
-            errors.add(new ValidationError("school", "Invalid school provided"));
+        if (school != null) {
+            if(sdao.byName(school.getName()) == null) {
+                errors.add(new ValidationError("school", "Invalid school provided"));
+            }
         }
 
         if (errors.size() > 0) {

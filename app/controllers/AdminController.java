@@ -125,6 +125,9 @@ public class AdminController extends Controller {
         else {
             UserForm formData = data.get();
             User formUser = null;
+            if (formData.school == null) {
+                formData.school = user.getSchool(); //this is to allow for non-superadmins to create stuff as they always submit null schools
+            }
             if (id == null) { //aka if we're making a new user, actually make a new one
                 switch(formData.discriminator) {
                     case "alumni":
@@ -421,10 +424,8 @@ public class AdminController extends Controller {
         }
     }
 
+    @Security.Authenticated(SuperAdminSecured.class)
     public static Result deleteSchool() {
-        UserDAOImpl udao = new UserDAOImpl();
-        User user = udao.getUserFromContext();
-
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
         SchoolDAO dao = new SchoolDAO();
