@@ -20,7 +20,6 @@ import static play.data.Form.form;
 
 public class VideoController extends Controller {
 
-    //TODO: what do we show on index for anonymous user?
     public static Result index() {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
@@ -45,11 +44,11 @@ public class VideoController extends Controller {
 
         VideoDAO dao = new VideoDAO();
         List<Video> accessibleVideos = new ArrayList<Video>();
-        try {
+        if (user == null) {
+            accessibleVideos = dao.getAllPublicVideos();
+        }
+        else {
             accessibleVideos = dao.getVideosBySchool(user.getSchool());
-        } catch (NullPointerException e) {
-            //do nothing as we keep the list empty
-            //we'll eventually have public videos
         }
 
         CategoryDAO cdao = new CategoryDAO();
@@ -71,33 +70,38 @@ public class VideoController extends Controller {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
 
-        VideoDAO dao = new VideoDAO();
-        List<Video> accessibleVideos = new ArrayList<>();
-        try {
-            accessibleVideos = dao.getVideosBySchool(user.getSchool());
-        } catch (NullPointerException e) {
-            //do nothing as we keep the list empty
-            //we'll eventually have public videos
-        }
-
         CategoryDAO cdao = new CategoryDAO();
         List<Category> allCats = cdao.getAllCategories();
 
         CategorySelectionForm form = Form.form(CategorySelectionForm.class).bindFromRequest().get();
 
         Map<String, Boolean> catIdNameMap = new HashMap<>();
+        List<Category> selectedCategories = new ArrayList<>();
         if(form.categories != null)
         {
             for (Category c : allCats) {
                 // TODO: add to a separate list for filtering
                 // form.categories contains malformed Category objects -- only name is present, no ids, etc.
-                catIdNameMap.put(c.getName(), AdminHelpers.CategoryContains(form.categories, c));
+                Boolean selectedCategory = AdminHelpers.CategoryContains(form.categories, c);
+                catIdNameMap.put(c.getName(), selectedCategory);
+                if (selectedCategory) {
+                    selectedCategories.add(c);
+                }
             }
         }
 
         Form<CategorySelectionForm> catForm = form(CategorySelectionForm.class)
                 .fill(new CategorySelectionForm(allCats));
 
+        VideoDAO dao = new VideoDAO();
+        List<Video> accessibleVideos = new ArrayList<>();
+
+        if (user == null) {
+            accessibleVideos = dao.getAllPublicVideosByCategories(selectedCategories);
+        }
+        else {
+            accessibleVideos = dao.getVideosBySchoolAndCategories(user.getSchool(), selectedCategories);
+        }
 
 
         return ok(index.render(accessibleVideos, catForm, catIdNameMap, user));

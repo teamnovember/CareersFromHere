@@ -19,11 +19,12 @@ public class Video extends Model {
     @Lob
     private String description;
     private String thumbnailPath;
-    private Boolean approved = true;
+    private Boolean approved = false;
     @OneToMany(mappedBy="video", cascade=CascadeType.ALL)
     private List<VideoClip> videoClips;
     @ManyToMany(mappedBy = "videos")
     public List<Category> categories;
+    public Boolean publicAccess = false;
 
     public static Finder<Long,Video> find = new Finder<>(Long.class, Video.class);
 
@@ -36,6 +37,7 @@ public class Video extends Model {
         this.description = description;
         this.thumbnailPath = thumbnailPath;
         this.approved = false;
+        this.publicAccess = false;
     }
 
     public void addClip(VideoClip clip) {
@@ -61,6 +63,10 @@ public class Video extends Model {
     public String getDescription() { return description; }
 
     public void setDescription(String description) { this.description = description; }
+
+    public Boolean getPublicAccess() { return publicAccess; }
+
+    public void setPublicAccess(Boolean publicAccess) { this.publicAccess = publicAccess; }
 
     public String getThumbnailPath() { return thumbnailPath; }
 

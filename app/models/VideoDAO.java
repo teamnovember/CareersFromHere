@@ -31,7 +31,12 @@ public class VideoDAO {
     }
 
     public List<Video> getAllPublicVideos() {
-        return new ArrayList<Video>();
+        return Video.find.where().eq("publicAccess", true).eq("approved", true).findList();
+    }
+
+    public List<Video> getAllPublicVideosByCategories(List<Category> categories) {
+        List<Video> videos = getAllPublicVideos();
+        return filterVideosByCategories(videos, categories);
     }
 
     public List<Video> getVideosBySchool(School s) {
@@ -49,6 +54,10 @@ public class VideoDAO {
 
     public List<Video> getVideosBySchoolAndCategories(School s, List<Category> categories) {
         List<Video> videos = getVideosBySchool(s);
+        return filterVideosByCategories(videos, categories);
+    }
+
+    private List<Video> filterVideosByCategories(List<Video> videos, List<Category> categories) {
         if (categories.size() == 0) {
             return videos;
         }
