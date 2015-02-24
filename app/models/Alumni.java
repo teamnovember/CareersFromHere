@@ -28,6 +28,7 @@ public class Alumni extends User {
             //TODO: do something useful here maybe?
         }
         Alumni alumni = new Alumni(data.name, password, data.email, s);
+        alumni.setProfile(data.profile);
         return alumni;
     }
 

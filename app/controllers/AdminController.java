@@ -90,7 +90,7 @@ public class AdminController extends Controller {
             if (s.getId() != u.getSchool().getId()) {
                 return insufficientPermissions("/admin/users");
             }
-            data = new UserForm(u.getName(),"",u.getEmail(),u.getSchool(),u.getDiscriminator());
+            data = new UserForm(u.getName(),"",u.getEmail(),u.getSchool(),u.getDiscriminator(),u.getAlumniProfile());
         }
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
 
@@ -101,7 +101,7 @@ public class AdminController extends Controller {
         if (user.getDiscriminator().equals("superadmin")) {
             auth = true;
         }
-        return ok(edit_user.render(user, formdata, id, schoolMap, discrMap,auth));
+        return ok(edit_user.render(user, formdata, id, schoolMap, discrMap, auth));
     }
 
     public static Result postNewUser() {
@@ -170,6 +170,7 @@ public class AdminController extends Controller {
                     formUser.setPassword(formData.password);
                 }
                 formUser.setSchool(sdao.byName(formData.school.getName()));
+                formUser.setAlumniProfile(formData.profile);
                 formUser.update();
             }
         }

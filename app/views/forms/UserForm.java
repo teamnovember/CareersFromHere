@@ -23,6 +23,7 @@ public class UserForm {
         "superadmin" for SuperAdmin
     */
     public String discriminator = "student";
+    public String profile = null;
 
     public UserForm() {}
 
@@ -30,12 +31,13 @@ public class UserForm {
         this.school = school;
     }
 
-    public UserForm(String name, String password, String email, School school, String discriminator) {
+    public UserForm(String name, String password, String email, School school, String discriminator, String profile) {
         this.name = name;
         this.password = password;
         this.email = email;
         this.school = school;
         this.discriminator = discriminator;
+        this.profile = profile;
     }
 
     public List<ValidationError> validate() {
