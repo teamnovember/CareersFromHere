@@ -86,12 +86,15 @@ public class VideoController extends Controller {
         CategorySelectionForm form = Form.form(CategorySelectionForm.class).bindFromRequest().get();
 
         Map<String, Boolean> catIdNameMap = new HashMap<>();
+        List<Category> selectedCategories = new ArrayList<Category>();
         if(form.categories != null)
         {
             for (Category c : allCats) {
                 // TODO: add to a separate list for filtering
                 // form.categories contains malformed Category objects -- only name is present, no ids, etc.
-                catIdNameMap.put(c.getName(), AdminHelpers.CategoryContains(form.categories, c));
+                boolean cont = AdminHelpers.CategoryContains(form.categories, c);
+                if(cont) selectedCategories.add(c);
+                catIdNameMap.put(c.getName(), cont);
             }
         }
 

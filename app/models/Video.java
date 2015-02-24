@@ -83,11 +83,12 @@ public class Video extends Model {
         //c.addVideo(this);
     }
 
-    public void approve(Boolean accept) {
-        approved = accept;
-        if (!accept) {
-            delete();
-        }
+    public void setApproved(boolean approved) {
+        this.approved = approved;
+    }
+
+    public boolean getApproved() {
+        return this.approved;
     }
 
     public String getJSONPaths() {

@@ -38,8 +38,9 @@
                             @helper.form(action = routes.AdminController.approveUser) {
                                 <input type="hidden" name="id" value="@user.getId" />
                                 @* CSRF here *@
-                                <button class="btn btn-success action-button" type="submit">
-                                    <span class="glyphicon glyphicon-ok"></span> Approve</button>
+                                <button class="btn btn-success action-button @if(user.getApproved) { disabled }" type="submit">
+                                    <span class="glyphicon glyphicon-ok"></span>
+                                    @if(user.getApproved) { Approved } else { Approve }</button>
                             }
                             </div>
 

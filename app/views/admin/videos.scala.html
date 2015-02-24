@@ -33,8 +33,10 @@
                             @helper.form(action = routes.AdminController.approveVideo) {
                                 <input type="hidden" name="id" value="@video.getId" />
                                 @* CSRF here *@
-                                <button class="btn btn-success action-button" type="submit">
-                                <span class="glyphicon glyphicon-ok"></span> Approve</button>
+                                <button class="btn btn-success action-button @if(video.getApproved) { disabled }" type="submit">
+                                <span class="glyphicon glyphicon-ok"></span>
+                                    @if(video.getApproved) { Approved } else { Approve }
+                                </button>
                             }</div>
 
                             <div class="action-button-place">

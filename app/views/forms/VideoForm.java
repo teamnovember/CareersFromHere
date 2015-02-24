@@ -12,7 +12,7 @@ import java.util.List;
 public class VideoForm {
     public String title = "";
     public String description = "";
-    public List<Category> categories = new ArrayList();
+    public List<Category> categories = new ArrayList<Category>();
 
     public VideoForm() {}
 

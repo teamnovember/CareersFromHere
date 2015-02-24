@@ -261,7 +261,8 @@ public class AdminController extends Controller {
         Long id = Long.parseLong(requestData.get("id"));
         VideoDAO dao = new VideoDAO();
         Video v = dao.getVideo(id);
-        v.approve(true);
+        v.setApproved(true);
+        v.update();
 
         flash("success", "Video approved!");
 
