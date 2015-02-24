@@ -41,6 +41,8 @@ public class Admin extends User {
         return admin;
     }
 
+    public static Finder<Long,Admin> find = new Finder<>(Long.class,Admin.class);
+
     public List<Video> getUnapprovedVideos(){
         ExpressionList<Video> expList = Video.find.where().eq("approved",0);
         List<Video> videos = expList.findList();

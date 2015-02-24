@@ -58,4 +58,9 @@ public class School extends Model {
         newQuestion.save();
         this.save();
     }
+
+    public List<Admin> getAdmins(){
+        return Admin.find.where().eq("school",this).findList();
+
+    }
 }

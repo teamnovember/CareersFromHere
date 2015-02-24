@@ -9,6 +9,8 @@ import views.forms.LoginForm;
 import views.html.login;
 import play.mvc.*;
 
+import java.util.List;
+
 /**
  * Created by biko on 09/02/15.
  */
@@ -41,24 +43,26 @@ public class RegistrationController extends Controller {
         }
 
         Email mail = new Email();
-        mail.setSubject("Approve your Email for CareersFromHere");
+        mail.setSubject("Welcome to CareersFromHere");
         mail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
         mail.addTo("TO <"+email+">");
-        mail.setBodyText("");//todo, have a message with the links to approve email or send a request to delete information
+        mail.setBodyText("");//todo, nice looking welcome email
         String id = MailerPlugin.send(mail);
-        return ok("Email "+id+" sent!");
+
+
+        List<Admin> admins = school.getAdmins();
+        for (Admin x:admins){
+            Email adminMail = new Email();
+            adminMail.setSubject("CareersFromHere: New User has registered");
+            adminMail.addTo("TO <"+x.getEmail()+">");
+            adminMail.setBodyText("");//todo
+            String id2 = MailerPlugin.send(adminMail);
+
+
+        }
+        return ok("Email "+id+" sent! and admins notified");
     }
 
-    public void emailVerification(User user){
-        //todo, from verification link
-
-
-
-    }
-
-    public void bulkRegister(){
-        //todo, do this method
-    }
 
     public static Result login(){
         Form<LoginForm> form = form(LoginForm.class).fill(new LoginForm());
@@ -90,7 +94,6 @@ public class RegistrationController extends Controller {
         }
     }
 
-    // TODO: move to User class
     public static void changePassword(User user, String password){
         user.setPassword(password);
     }
