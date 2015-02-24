@@ -23,6 +23,7 @@ public class UploadController extends Controller {
 
     // TODO: bad way of writing files (check /assets))
     private static String systemPath = "/home/tdn26/video/";
+//    private static String systemPath = "";
 
     // TODO: handle upload fail
     public static Result uploadVideoClip() {
@@ -63,7 +64,7 @@ public class UploadController extends Controller {
         ArrayList<String> audioPaths = new ArrayList<String>();
         ArrayList<String> videoPaths = new ArrayList<String>();
 
-        for (int i = 0; i < count; ++ i) {
+        for (int i = 0; i < count; ++i) {
             FilePart fp = request().body().asMultipartFormData().getFiles().get(i);
             File f = fp.getFile();
 
@@ -102,23 +103,35 @@ public class UploadController extends Controller {
             }
         }
 
-        createVideo(audioPaths, videoPaths);
+        createAndUpdateVideo(audioPaths, videoPaths);
 
         // TODO: apparently redirect does not work
         return redirect("/");
     }
 
+    // TODO: does not update database
     // TODO: bad implementation; need to pass user information from record page
     // TODO: should use form submission, but it is complicated to combine 2 post methods
-    private static void createVideo(ArrayList<String> audioPaths, ArrayList<String> videoPaths) {
-        School s = new School("jas");
-        Alumni u = new Alumni("jau", "jap", "jau@jae.jat", s);
+    private static void createAndUpdateVideo(ArrayList<String> audioPaths, ArrayList<String> videoPaths) {
+//        School s = new School("jas");
+//        Alumni u = new Alumni("jau", "jap", "jau@jae.jat", s);
+        UserDAOImpl udao = new UserDAOImpl();
+        Alumni u = (Alumni) udao.getUser((long) 16);
         Video v = new Video(u, "jat", "jar", "jatp");
 
+        ArrayList<Question> questions = new ArrayList<>();
+
+        questions.add(0, new Question("People say nothing is impossible, but I do nothing every day.", 19.0, null));
+        questions.add(1, new Question("Etc. – End of Thinking Capacity.", 37.0, null));
+        questions.add(2, new Question("We live in the era of smart phones and stupid people.", 75.0, null));
+        questions.add(3, new Question("Alarm Clocks: because every morning should begin with a heart attack.", 153.0, null));
+
         for (int i = 0; i < videoPaths.size(); ++i) {
-            VideoClip c = new VideoClip(videoPaths.get(0), audioPaths.get(0), null, 200.0);
+            VideoClip c = new VideoClip(videoPaths.get(i), audioPaths.get(i), questions.get(i), 200.0);
             v.addClip(c);
         }
+
+        v.save();
     }
 
 }
