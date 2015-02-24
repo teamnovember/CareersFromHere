@@ -19,6 +19,10 @@ import java.util.Map;
 @Security.Authenticated(AdminSecured.class)
 public class AdminController extends Controller {
     //TODO: will need to authenticate the current user in these methods (replace new user creation)
+    /*private static Result insufficientPermissions(String redirUrl) {
+        flash("error", "You don't have sufficient permissions to perform requested action.");
+        return redirect(redirUrl);
+    }*/
 
     public static Result index() {
         UserDAOImpl udao = new UserDAOImpl();
@@ -37,7 +41,8 @@ public class AdminController extends Controller {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
         VideoDAO dao = new VideoDAO();
-        return ok(videos.render(user, dao.getAllVideos())); //returns all videos
+        School s = user.getSchool();
+        return ok(videos.render(user, dao.getVideosBySchool(s))); //returns all videos
     }
 
     public static Result questions() {

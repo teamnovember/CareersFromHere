@@ -43,6 +43,11 @@ public abstract class User extends Model {
         }
     }
 
+    public boolean hasAdminRights() {
+        String discr = this.getDiscriminator();
+        return discr.equals("admin") || discr.equals("superadmin");
+    }
+
     //hacky fix so new db structure is compatible with old code
     @Transient
     public String getDiscriminator(){
