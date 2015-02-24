@@ -10,6 +10,7 @@ import play.mvc.*;
 import views.forms.CategorySelectionForm;
 import views.html.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -114,21 +115,21 @@ public class VideoController extends Controller {
             return redirect("/");
         }
 
-        Question q = new Question("RANDOM text RANDOM very", 0, null);
-        VideoClip clip = new VideoClip("/assets/test1.mp4", null, q, 20.34068);
-        v.addClip(clip);
-        q = new Question("I. S. R. A. O. Y. O. T. E.", 0, null);
-        clip = new VideoClip("/assets/test2.mp4", null, q, 14.481133);
-        v.addClip(clip);
-        q = new Question("I shall remember all of you on the exams.", 0, null);
-        clip = new VideoClip("/assets/test3.mp4", null, q, 19.686333);
-        v.addClip(clip);
-        q = new Question("The great ending ...", 0, null);
-        clip = new VideoClip("/assets/test4.mp4", null, q, 16.964983);
-        v.addClip(clip);
-        q = new Question("TOC TOC", 0, null);
-        clip = new VideoClip("/assets/test5.mp4", null, q, 7.941267);
-        v.addClip(clip);
+//        Question q = new Question("RANDOM text RANDOM very", 0, null);
+//        VideoClip clip = new VideoClip("/assets/test1.mp4", null, q, 20.34068);
+//        v.addClip(clip);
+//        q = new Question("I. S. R. A. O. Y. O. T. E.", 0, null);
+//        clip = new VideoClip("/assets/test2.mp4", null, q, 14.481133);
+//        v.addClip(clip);
+//        q = new Question("I shall remember all of you on the exams.", 0, null);
+//        clip = new VideoClip("/assets/test3.mp4", null, q, 19.686333);
+//        v.addClip(clip);
+//        q = new Question("The great ending ...", 0, null);
+//        clip = new VideoClip("/assets/test4.mp4", null, q, 16.964983);
+//        v.addClip(clip);
+//        q = new Question("TOC TOC", 0, null);
+//        clip = new VideoClip("/assets/test5.mp4", null, q, 7.941267);
+//        v.addClip(clip);
 
         return ok(view.render(v, user));
     }
@@ -165,6 +166,10 @@ public class VideoController extends Controller {
         User user = udao.getUserFromContext();
 
         return ok(record.render(questions, JSONQuestionsText, JSONQuestionsDurations, user));
+    }
+
+    public static Result getVideoAt(String path) {
+        return ok(new File(path));
     }
 
 }

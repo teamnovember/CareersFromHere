@@ -25,8 +25,8 @@ import play.libs.mailer.*;
 public class UploadController extends Controller {
 
     // TODO: bad way of writing files (check /assets))
-    private static String systemPath = "/home/tdn26/video/";
-//    private static String systemPath = "";
+    //private static String systemPath = "/home/tdn26/video/";
+    private static String systemPath = "/Users/tdn/Documents/workspace-uni/group_project/videos/";
 
     // TODO: handle upload fail
     public static Result uploadVideoClip() {
