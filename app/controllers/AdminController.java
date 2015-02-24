@@ -19,10 +19,10 @@ import java.util.Map;
 @Security.Authenticated(AdminSecured.class)
 public class AdminController extends Controller {
     //TODO: will need to authenticate the current user in these methods (replace new user creation)
-    /*private static Result insufficientPermissions(String redirUrl) {
+    private static Result insufficientPermissions(String redirUrl) {
         flash("error", "You don't have sufficient permissions to perform requested action.");
         return redirect(redirUrl);
-    }*/
+    }
 
     public static Result index() {
         UserDAOImpl udao = new UserDAOImpl();
@@ -34,7 +34,11 @@ public class AdminController extends Controller {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
         School s = user.getSchool();
-        return ok(users.render(user, udao.getSchoolUsers(s))); //gets all users for a school
+        if (user.getDiscriminator().equals("superadmin")) {
+            return ok(users.render(user, udao.getSchoolUsers(s))); //gets all users for a school
+        } else {
+            return ok(users.render(user, udao.getSchoolUsersNoSA(s))); //gets all non-superadmin users for a school
+        }
     }
 
     public static Result videos() {
@@ -83,7 +87,10 @@ public class AdminController extends Controller {
         } else {
             UserDAOImpl dao = new UserDAOImpl();
             User u = dao.getUser(id);
-            data = new UserForm(u.getName(),"",u.getEmail(),u.getSchool(),u.getDiscriminator());
+            if (s.getId() != u.getSchool().getId()) {
+                return insufficientPermissions("/admin/users");
+            }
+            data = new UserForm(u.getName(),"",u.getEmail(),u.getSchool(),u.getDiscriminator(),u.getAlumniProfile());
         }
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
 
@@ -94,7 +101,7 @@ public class AdminController extends Controller {
         if (user.getDiscriminator().equals("superadmin")) {
             auth = true;
         }
-        return ok(edit_user.render(user, formdata, id, schoolMap, discrMap,auth));
+        return ok(edit_user.render(user, formdata, id, schoolMap, discrMap, auth));
     }
 
     public static Result postNewUser() {
@@ -154,12 +161,16 @@ public class AdminController extends Controller {
                 UserDAOImpl dao = new UserDAOImpl();
                 SchoolDAO sdao = new SchoolDAO();
                 formUser = dao.getUser(id);
+                if (user.getSchool().getId() != formUser.getSchool().getId()) {
+                    return insufficientPermissions("/admin/users");
+                }
                 formUser.setName(formData.name);
                 formUser.setEmail(formData.email);
                 if (!formData.password.equals("")) {
                     formUser.setPassword(formData.password);
                 }
                 formUser.setSchool(sdao.byName(formData.school.getName()));
+                formUser.setAlumniProfile(formData.profile);
                 formUser.update();
             }
         }
@@ -202,6 +213,11 @@ public class AdminController extends Controller {
 
         VideoDAO dao = new VideoDAO();
         Video video = dao.getVideo(id);
+
+        if(user.getSchool().getId() != video.getUser().getSchool().getId()) {
+            return insufficientPermissions("/admin/videos");
+        }
+
         VideoForm data = new VideoForm(video.getTitle(),video.getDescription(),video.getCategories());
         Form<VideoForm> formdata = Form.form(VideoForm.class).fill(data);
 
@@ -215,6 +231,10 @@ public class AdminController extends Controller {
         Form<VideoForm> data = Form.form(VideoForm.class).bindFromRequest();
         VideoDAO dao = new VideoDAO();
         Video video = dao.getVideo(id);
+
+        if(user.getSchool().getId() != video.getUser().getSchool().getId()) {
+            return insufficientPermissions("/admin/videos");
+        }
 
         if (data.hasErrors()) {
             Map<String, Boolean> catMap = AdminHelpers.ConstructCategoryMap(video.getCategories());
@@ -284,6 +304,9 @@ public class AdminController extends Controller {
         else {
             QuestionDAO dao = new QuestionDAO();
             Question q = dao.getQuestion(id);
+            if(user.getSchool().getId() != q.getSchool().getId()) {
+                return insufficientPermissions("/admin/questions");
+            }
             data = new QuestionForm(q.getText(),q.getDuration());
         }
         Form<QuestionForm> formdata = Form.form(QuestionForm.class).fill(data);
@@ -358,6 +381,9 @@ public class AdminController extends Controller {
                 dao.newQuestion(q); //this ensures we get the ordering correct
             } else {
                 q = dao.getQuestion(id);
+                if(user.getSchool().getId() != q.getSchool().getId()) {
+                    return insufficientPermissions("/admin/questions");
+                }
                 q.setText(formData.text);
                 q.setDuration(formData.duration);
                 //TODO: edit the question form to allow for reordering. or to reorder normally...

@@ -118,4 +118,19 @@ public abstract class User extends Model {
 
     public void setApproved(boolean a) { this.approved = a; }
 
+    public String getAlumniProfile() {
+        if (this.getDiscriminator().equals("alumni")) {
+            Alumni a = Alumni.find.byId(this.getId());
+            return a.getProfile();
+        } else {
+            return null;
+        }
+    }
+
+    public void setAlumniProfile(String s) {
+        if (this.getDiscriminator().equals("alumni")) {
+            ((Alumni) this).setProfile(s);
+        }
+    }
+
 }

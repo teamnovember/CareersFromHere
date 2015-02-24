@@ -108,7 +108,7 @@ public class RegistrationController extends Controller {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
         School s = user.getSchool();
-        UserForm data = new UserForm(user.getName(),"",user.getEmail(),user.getSchool(),user.getDiscriminator());
+        UserForm data = new UserForm(user.getName(),"",user.getEmail(),user.getSchool(),user.getDiscriminator(),user.getAlumniProfile());
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
 
         boolean auth = false;
@@ -151,6 +151,7 @@ public class RegistrationController extends Controller {
                 SchoolDAO sdao = new SchoolDAO();
                 user.setSchool(sdao.byName(formData.school.getName()));
             }
+            user.setAlumniProfile(formData.profile);
             user.update();
 
         }

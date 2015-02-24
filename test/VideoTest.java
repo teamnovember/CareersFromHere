@@ -59,7 +59,7 @@ public class VideoTest {
                 Alumni u = new Alumni("Name", "pass", "fake@gmail.com", s);
                 u.save();
                 Video v1 = new Video(u, "Title", "Description", "thumb_path.png");
-                v1.approve(true);
+                v1.setApproved(true);
                 v1.save();
                 Video v2 = new Video(u, "Another Title", "Another Description", "thumb_path2.png");
                 v2.save();
