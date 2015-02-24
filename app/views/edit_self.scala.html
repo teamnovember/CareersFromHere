@@ -1,9 +1,9 @@
-@(user: models.User)(form: play.data.Form[views.forms.UserForm])
+@(user: models.User)(form: play.data.Form[views.forms.UserForm])(schoolMap: java.util.Map[String, Boolean])(auth: Boolean)
 
 @import bootstrap3._
 
 @stylesheets = {
-    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
+    <link rel="stylesheet" href="@routes.Assets.at("../../public/stylesheets/admin.css")" />
 }
 
 @javascripts = {
@@ -27,8 +27,13 @@
                         help = "Please enter user's email (required).")
                     @password(form("password"),
                         label = "Password",
-                        placeholder = "",
+                        placeholder = "../../public",
                         help = "Input new password to change it, otherwise leave blank.")
+                    @select(form("school"),
+                        label = "School",
+                        isMultiple = false,
+                        optionMap = schoolMap,
+                        disabled = (auth == false))
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
                             <button id="submit" type="submit" value="Submit" class="btn btn-primary">Submit</button>

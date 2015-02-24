@@ -1,5 +1,6 @@
 package controllers;
 
+import helpers.AdminHelpers;
 import models.*;
 import play.data.*;
 import static play.data.Form.*;
@@ -7,11 +8,12 @@ import play.libs.mailer.*;
 import play.Play;
 import views.forms.LoginForm;
 import views.forms.UserForm;
-import views.html.admin.edit_self;
+import views.html.edit_self;
 import views.html.login;
 import play.mvc.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by biko on 09/02/15.
@@ -109,7 +111,14 @@ public class RegistrationController extends Controller {
         UserForm data = new UserForm(user.getName(),"",user.getEmail(),user.getSchool(),user.getDiscriminator());
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
 
-        return ok(edit_self.render(user, formdata));
+        boolean auth = false;
+        if (user.getDiscriminator().equals("superadmin")) {
+            auth = true;
+        }
+
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(data.school.getName());
+
+        return ok(edit_self.render(user, formdata,schoolMap,auth));
     }
 
     public static Result postUserDetails() {
@@ -117,9 +126,19 @@ public class RegistrationController extends Controller {
         User user = udao.getUserFromContext();
         Form<UserForm> data = Form.form(UserForm.class).bindFromRequest();
 
+        boolean auth = false;
+        if (user.getDiscriminator().equals("superadmin")) {
+            auth = true;
+        }
+
+        String userSchoolName = data.data().get("school");
+        if(userSchoolName == null) userSchoolName = "";  // "Please provide value" is "" too
+        if(userSchoolName.equals("")) userSchoolName = user.getSchool().getName();
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(userSchoolName);
+
         if (data.hasErrors()) {
             flash("error", "Please correct errors below.");
-            return badRequest(edit_self.render(user, data));
+            return badRequest(edit_self.render(user, data,schoolMap,auth));
         }
         else {
             UserForm formData = data.get();
@@ -127,6 +146,10 @@ public class RegistrationController extends Controller {
             user.setEmail(formData.email);
             if (!formData.password.equals("")) {
                 user.setPassword(formData.password);
+            }
+            if (user.getDiscriminator().equals("superadmin")) {
+                SchoolDAO sdao = new SchoolDAO();
+                user.setSchool(sdao.byName(formData.school.getName()));
             }
             user.update();
 
