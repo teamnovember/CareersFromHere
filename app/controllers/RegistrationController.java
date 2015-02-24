@@ -54,6 +54,7 @@ public class RegistrationController extends Controller {
         for (Admin x:admins){
             Email adminMail = new Email();
             adminMail.setSubject("CareersFromHere: New User has registered");
+            adminMail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
             adminMail.addTo("TO <"+x.getEmail()+">");
             adminMail.setBodyText("");//todo
             String id2 = MailerPlugin.send(adminMail);

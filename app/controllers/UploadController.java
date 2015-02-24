@@ -17,6 +17,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
+
+import play.libs.mailer.*;
 
 @Security.Authenticated(Secured.class)
 public class UploadController extends Controller {
@@ -119,6 +122,31 @@ public class UploadController extends Controller {
             VideoClip c = new VideoClip(videoPaths.get(0), audioPaths.get(0), null, 200.0);
             v.addClip(c);
         }
+    }
+
+
+    private Result sendUploadEmails(School school, Alumni alumni){
+        Email aluMail = new Email();
+        aluMail.setSubject("Thank you for uploading to CareersFromHere");
+        aluMail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
+        aluMail.addTo("TO <"+alumni.getEmail()+">");
+        aluMail.setBodyText("");//todo
+        String alumId = MailerPlugin.send(aluMail);
+
+        List<Admin> admins = school.getAdmins();
+        for (Admin x:admins){
+            Email adminMail = new Email();
+            adminMail.setSubject("CareersFromHere: New Video has been uploaded");
+            adminMail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
+            adminMail.addTo("TO <"+x.getEmail()+">");
+            adminMail.setBodyText("");//todo
+            String id2 = MailerPlugin.send(adminMail);
+
+
+        }
+
+        return ok("Email "+alumId+" sent! and admins notified");
+
     }
 
 }
