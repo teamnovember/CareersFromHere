@@ -8,7 +8,6 @@ POST        /                                  controllers.VideoController.categ
 GET         /view/:id                          controllers.VideoController.view(id: Long)
 GET         /assets/clips/*path                controllers.VideoController.getVideoAt(path)
 
-
 # User info edit page
 GET         /edit                               controllers.RegistrationController.getUserDetails()
 POST        /edit                               controllers.RegistrationController.postUserDetails()
@@ -66,7 +65,11 @@ GET         /record                             controllers.VideoController.reco
 POST        /record/publish                     controllers.UploadController.uploadVideo()
 
 # Map static resources from the /public folder to the /assets URL path
+<<<<<<< Updated upstream
 GET         /assets/*file                       controllers.Assets.at(path="/public", file)
+=======
+GET         /assets/*file                      controllers.Assets.at(path="/public", file)
+>>>>>>> Stashed changes
 
 #Login page
 GET         /login                              controllers.RegistrationController.login()
