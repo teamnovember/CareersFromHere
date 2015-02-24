@@ -63,6 +63,9 @@ POST        /dummy                              controllers.UploadController.upl
 GET         /record                             controllers.VideoController.record()
 POST        /record/publish                     controllers.UploadController.uploadVideo()
 
+# Registering
+GET         /register                          controllers.RegistrationController.register()
+
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                       controllers.Assets.at(path="/public", file)
 

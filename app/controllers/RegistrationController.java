@@ -9,16 +9,45 @@ import play.Play;
 import views.forms.LoginForm;
 import views.forms.UserForm;
 import views.html.edit_self;
+import views.html.emails.*;
 import views.html.login;
 import play.mvc.*;
 
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by biko on 09/02/15.
- */
 public class RegistrationController extends Controller {
+
+    public static void newRegistrationEmail(Alumni newUser) {
+        // Send email to user
+        Email mail = new Email();
+        mail.setSubject("Welcome to Careers From Here");
+        mail.setFrom("Careers From Here <careersfromhere@gmail.com>");
+        mail.addTo(newUser.getName() + " <" + newUser.getEmail() + ">");
+        mail.setBodyHtml(registration_welcome.render(newUser).toString());
+        MailerPlugin.send(mail);
+
+        // Inform all admins
+        List<Admin> admins = newUser.getSchool().getAdmins();
+        for (Admin x : admins){
+            Email adminMail = new Email();
+            adminMail.setSubject("Careers From Here: New User Registration");
+            adminMail.setFrom("Careers From Here <careersfromhere@gmail.com>");
+            adminMail.addTo(x.getName() + " <" + x.getEmail() + ">");
+            adminMail.setBodyHtml(registration_notify.render(newUser).toString());//todo
+            MailerPlugin.send(adminMail);
+        }
+    }
+
+    public static void userApprovedEmail(Alumni newUser) {
+        // Send email to user
+        Email mail = new Email();
+        mail.setSubject("Careers From Here: Account Approved");
+        mail.setFrom("Careers From Here <careersfromhere@gmail.com>");
+        mail.addTo(newUser.getName() + " <" + newUser.getEmail() + ">");
+        mail.setBodyHtml(registration_approved.render(newUser).toString());
+        MailerPlugin.send(mail);
+    }
 
     public Result invite(String email,School school, String discriminator){
         //todo, invoked by Admin to invite users via email
@@ -31,41 +60,11 @@ public class RegistrationController extends Controller {
         return ok("Email " + id + " sent!");
     }
 
-    public Result register(String name,String email,String password, School school,String discrim){
-        if (discrim.equals("student")) {
-            Student s = new Student(name, email, password, school);
-            s.setPassword(password);
-        }else if (discrim.equals("alumni")){
-            Alumni a = new Alumni(name,password,email,school);
-            a.setPassword(password);
-        }else if (discrim.equals("admin")){
-            Admin a = new Admin(name,password,email,school);
-            a.setPassword(password);
-        }else if (discrim.equals("superadmin")){
-            SuperAdmin sa = new SuperAdmin(name,password,email,school);
-            sa.setPassword(password);
-        }
-
-        Email mail = new Email();
-        mail.setSubject("Welcome to CareersFromHere");
-        mail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
-        mail.addTo("TO <"+email+">");
-        mail.setBodyText("");//todo, nice looking welcome email
-        String id = MailerPlugin.send(mail);
-
-
-        List<Admin> admins = school.getAdmins();
-        for (Admin x:admins){
-            Email adminMail = new Email();
-            adminMail.setSubject("CareersFromHere: New User has registered");
-            adminMail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
-            adminMail.addTo("TO <"+x.getEmail()+">");
-            adminMail.setBodyText("");//todo
-            String id2 = MailerPlugin.send(adminMail);
-
-
-        }
-        return ok("Email "+id+" sent! and admins notified");
+    public static Result register() {
+        School s = new School("New high school");
+        Alumni a = new Alumni("Test Alumni", "zaqwsxcde", "edgaras.liberis+cfh@gmail.com", s);
+        userApprovedEmail(a);
+        return ok("SUCCESS");
     }
 
 
