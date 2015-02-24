@@ -106,12 +106,17 @@ public class AdminController extends Controller {
             auth = true;
         }
 
-        String userSchoolName = data.data().getOrDefault("school", ""); // "Please provide value" is "" too
+        String userSchoolName = data.data().get("school");
+        if(userSchoolName == null) userSchoolName = "";  // "Please provide value" is "" too
         if(userSchoolName.equals("")) userSchoolName = user.getSchool().getName();
         Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(userSchoolName);
+        String temp = data.data().get("discriminator");
+        if(temp == null){
+            temp = "student";
+        }
         Map<String, Boolean> discrMap =
                 AdminHelpers.ConstructDiscriminatorMap(
-                        data.data().getOrDefault("discriminator", "student"),user.getDiscriminator());
+                        temp,user.getDiscriminator());
 
         if (data.hasErrors()) {
             flash("error", "Please correct errors below.");
