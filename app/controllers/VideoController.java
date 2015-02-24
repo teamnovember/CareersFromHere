@@ -108,8 +108,15 @@ public class VideoController extends Controller {
 
     //TODO: change this to view the correct video from database
     public static Result view(Long id) {
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
         VideoDAO vdao = new VideoDAO();
         Video v = vdao.getVideo(id);
+
+        if (v.getUser().getSchool().getId() != user.getSchool().getId()) {
+            flash("error", "You don't have sufficient permissions to view requested video.");
+            return redirect("/");
+        }
 
         Question q = new Question("RANDOM text RANDOM very", 0, null);
         VideoClip clip = new VideoClip("/assets/test1.mp4", null, q, 20.34068);
@@ -126,9 +133,6 @@ public class VideoController extends Controller {
         q = new Question("TOC TOC", 0, null);
         clip = new VideoClip("/assets/test5.mp4", null, q, 7.941267);
         v.addClip(clip);
-
-        UserDAOImpl udao = new UserDAOImpl();
-        User user = udao.getUserFromContext();
 
         return ok(view.render(v, user));
     }

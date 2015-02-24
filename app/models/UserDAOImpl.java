@@ -26,6 +26,12 @@ public class UserDAOImpl implements UserDAO {
         return users;
     }
 
+    public List<User> getSchoolUsersNoSA(School school) {
+        ExpressionList<User> expList = User.find.where().eq("school",school).ne("discriminator","superadmin");
+        List<User> users = expList.findList();
+        return users;
+    }
+
     public User getUser(Long ID){
         User user = User.find.byId(ID);
         if (user.getDiscriminator().equals("student")) {
