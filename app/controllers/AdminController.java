@@ -4,9 +4,12 @@ import helpers.AdminHelpers;
 import models.*;
 import play.data.Form;
 import play.data.DynamicForm;
+import play.libs.mailer.Email;
+import play.libs.mailer.MailerPlugin;
 import play.mvc.*;
 import views.forms.*;
 import views.html.admin.*;
+import views.html.emails.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -146,6 +149,11 @@ public class AdminController extends Controller {
                 formData.school = user.getSchool(); //this is to allow for non-superadmins to create stuff as they always submit null schools
             }
             if (id == null) { //aka if we're making a new user, actually make a new one
+                //Admin idiot prevention aka make sure they don't create a user with a null or blank password
+                if (formData.password == null || formData.password.equals("")) {
+                    flash("error","Password field was empty");
+                    return badRequest(edit_user.render(user, data, id, schoolMap, discrMap,auth));
+                }
                 switch(formData.discriminator) {
                     case "alumni":
                         formUser = Alumni.makeInstance(formData);
@@ -161,6 +169,14 @@ public class AdminController extends Controller {
                         break;
                 }
                 formUser.save();
+
+                //Notify the user
+                Email mail = new Email();
+                mail.setSubject("Careers From Here: Account Invitation");
+                mail.setFrom("Careers From Here <careersfromhere@gmail.com>");
+                mail.addTo(formUser.getName() + " <" + formUser.getEmail() + ">");
+                mail.setBodyHtml(registration_invite.render(formUser,formData.password).toString());
+                MailerPlugin.send(mail);
             }
             else { //if we have an id (aka we're editing) we want to edit the details of the user in the database already
                 UserDAOImpl dao = new UserDAOImpl();
