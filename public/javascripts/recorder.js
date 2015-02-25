@@ -268,6 +268,7 @@ function statePLAYBACK() {
 function statePUBLISH() {
     // TODO: camera is left on even if the user is not recording; this is bad but avoid access to camera question
     cameraStream.stop();
+    recorderVideo.removeEventListener("timeupdate", updateProgressPLAYBACK, false);
 
     // TODO: one alumni can record at most one video
     name = document.getElementById(recorderContainerId).getAttribute(nameAttr);
