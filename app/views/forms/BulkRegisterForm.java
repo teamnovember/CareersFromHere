@@ -13,6 +13,7 @@ import java.util.List;
 public class BulkRegisterForm {
     public School school = null;
     public String data = "";
+    public String discriminator = "student";
     /**
      Discriminator string for mapping form data to class it belongs to:
      "student" for Student,
@@ -27,9 +28,10 @@ public class BulkRegisterForm {
         this.school = school;
     }
 
-    public BulkRegisterForm(String data, School school) {
+    public BulkRegisterForm(String data, School school, String discriminator) {
         this.data = data;
         this.school = school;
+        this.discriminator = discriminator;
     }
 
     public List<ValidationError> validate() {
@@ -40,6 +42,15 @@ public class BulkRegisterForm {
             if(sdao.byName(school.getName()) == null) {
                 errors.add(new ValidationError("school", "Invalid school provided"));
             }
+        }
+
+        if (discriminator == null || discriminator.equals("")) {
+            errors.add(new ValidationError("discriminator", "No user type was given"));
+        } else if (!discriminator.equals("student")
+                && !discriminator.equals("alumni")
+                && !discriminator.equals("admin")
+                && !discriminator.equals("superadmin")) {
+            errors.add(new ValidationError("discriminator", "Invalid user type given"));
         }
 
         if (errors.size() > 0) {

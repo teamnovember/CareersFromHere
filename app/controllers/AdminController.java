@@ -103,7 +103,7 @@ public class AdminController extends Controller {
         }
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
 
-        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(data.school.getName());
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(data.school.getName(),false);
         Map<String, Boolean> discrMap = AdminHelpers.ConstructDiscriminatorMap(data.discriminator, user.getDiscriminator());
 
         boolean auth = false;
@@ -130,7 +130,7 @@ public class AdminController extends Controller {
         String userSchoolName = data.data().get("school");
         if(userSchoolName == null) userSchoolName = "";  // "Please provide value" is "" too
         if(userSchoolName.equals("")) userSchoolName = user.getSchool().getName();
-        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(userSchoolName);
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(userSchoolName,false);
         String temp = data.data().get("discriminator");
         if(temp == null){
             temp = "student";
@@ -236,8 +236,10 @@ public class AdminController extends Controller {
 
         Form<BulkRegisterForm> formdata = Form.form(BulkRegisterForm.class).fill(data);
 
-        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(data.school.getName());
-        return ok(bulk_register.render(user, formdata, schoolMap,auth));
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(data.school.getName(),false);
+        Map<String, Boolean> discrMap = AdminHelpers.ConstructDiscriminatorMap(data.discriminator, user.getDiscriminator());
+
+        return ok(bulk_register.render(user, formdata, schoolMap,discrMap,auth));
     }
 
     public static Result postBulkRegister() {
@@ -253,11 +255,16 @@ public class AdminController extends Controller {
         String userSchoolName = data.data().get("school");
         if(userSchoolName == null) userSchoolName = "";  // "Please provide value" is "" too
         if(userSchoolName.equals("")) userSchoolName = user.getSchool().getName();
-        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(userSchoolName);
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(userSchoolName,false);
+        String temp = data.data().get("discriminator");
+        if(temp == null){
+            temp = "student";
+        }
+        Map<String, Boolean> discrMap = AdminHelpers.ConstructDiscriminatorMap(temp, user.getDiscriminator());
 
         if (data.hasErrors()) {
             flash("error", "Please correct errors below.");
-            return badRequest(bulk_register.render(user, data, schoolMap,auth));
+            return badRequest(bulk_register.render(user, data, schoolMap,discrMap,auth));
         }
         else {
             BulkRegisterForm formData = data.get();
@@ -271,16 +278,30 @@ public class AdminController extends Controller {
             for(int i = 0; i < emailss.length; i++) {
                 //Create new user with random password
                 String pass = RandomStringUtils.randomAlphanumeric(8);
-                Student s = new Student("Default name",pass,emailss[i],sdao.byName(formData.school.getName()));
-                s.setPassword(pass);
-                s.save();
+                User formUser = null;
+                switch(formData.discriminator) {
+                    case "alumni":
+                        formUser = new Alumni("Default Alumni",pass,emailss[i],sdao.byName(formData.school.getName()));
+                        break;
+                    case "admin":
+                        formUser = new Admin("Default Admin",pass,emailss[i],sdao.byName(formData.school.getName()));
+                        break;
+                    case "superadmin": //only superadmins can possibly select this option
+                        formUser = new SuperAdmin("Default SuperAdmin",pass,emailss[i],sdao.byName(formData.school.getName()));
+                        break;
+                    default: //"student"
+                        formUser = new Student("Default Student",pass,emailss[i],sdao.byName(formData.school.getName()));
+                        break;
+                }
+                formUser.setPassword(pass);
+                formUser.save();
 
                 //Notify the user
                 Email mail = new Email();
                 mail.setSubject("Careers From Here: Account Invitation");
                 mail.setFrom("Careers From Here <careersfromhere@gmail.com>");
-                mail.addTo(s.getName() + " <" + s.getEmail() + ">");
-                mail.setBodyHtml(registration_invite.render(s,pass).toString());
+                mail.addTo(formUser.getName() + " <" + formUser.getEmail() + ">");
+                mail.setBodyHtml(registration_invite.render(formUser,pass).toString());
                 MailerPlugin.send(mail);
             }
         }

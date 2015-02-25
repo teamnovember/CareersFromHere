@@ -1,4 +1,4 @@
-@(currentUser: models.User)(form: play.data.Form[views.forms.BulkRegisterForm])(schoolMap: java.util.Map[String, Boolean])(auth: Boolean)
+@(currentUser: models.User)(form: play.data.Form[views.forms.BulkRegisterForm])(schoolMap: java.util.Map[String, Boolean])(discrMap: java.util.Map[String, Boolean])(auth: Boolean)
 
 @import bootstrap3._
 
@@ -10,10 +10,10 @@
 
 }
 
-@main("Admin Dashboard: Bulk Student Registration - Careers From Here")(stylesheets)(javascripts)(currentUser) {
+@main("Admin Dashboard: Bulk User Registration - Careers From Here")(stylesheets)(javascripts)(currentUser) {
     <div class="spacing-panel">
         <div class="shadow-panel">
-            <h2>Bulk register students</h2>
+            <h2>Bulk register users</h2>
             <hr>
             @helper.form(action =
                     routes.AdminController.postBulkRegister() ) {
@@ -23,6 +23,10 @@
                         isMultiple = false,
                         optionMap = schoolMap,
                         disabled = (auth == false))
+                    @select(form("discriminator"),
+                        label = "User type",
+                        isMultiple = false,
+                        optionMap = discrMap)
                     @textarea(form("data"),
                         label = "Enter an email address per line for each user you want to create",
                         placeholder = "e.g. teststudent@example.com",

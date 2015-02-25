@@ -21,13 +21,11 @@ public abstract class AdminHelpers {
         return discrMap;
     }
 
-    public static Map<String, Boolean> ConstructSchoolMap(String selectedSchoolName) {
-        UserDAOImpl udao = new UserDAOImpl();
-        User user = udao.getUserFromContext();
+    public static Map<String, Boolean> ConstructSchoolMap(String selectedSchoolName,boolean authorisation) {
         Map<String, Boolean> schoolMap = new HashMap<String, Boolean>();
         SchoolDAO dao = new SchoolDAO();
         for(School school : dao.getAllSchool()) {
-            if(school.getId() != 0 || user.getDiscriminator().equals("superadmin")) { //these checks are here so that school admins can't fiddle with the default school (ID = 0) but superadmins can
+            if(school.getId() != 0 || authorisation) { //this is to hide the default school when we don't want to see it (i.e everywhere where we can add users to it)
                 schoolMap.put(school.getName(), school.getName().equals(selectedSchoolName));
             }
         }

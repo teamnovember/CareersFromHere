@@ -70,33 +70,33 @@ public class RegistrationController extends Controller {
             return badRequest(login.render(loginForm));
         } else {
             LoginForm lf = loginForm.get();
-            if(User.authenticate(lf.login, lf.password) == null) {
+            User u = User.authenticate(lf.login, lf.password);
+            if(u == null) {
                 flash("error", "Incorrect email and/or password.");
                 return badRequest(login.render(loginForm));
+            } else if (u.getApproved() == false) {
+                flash("error", "Your account has not been approved yet.");
+                return badRequest(login.render(loginForm));
             } else {
-                session().clear();
-                //todo do we want to be more secure than just storing the email in the session?
-                session("email", lf.login);
-                return redirect("/");
+                    session().clear();
+                    //todo do we want to be more secure than just storing the email in the session?
+                    session("email", lf.login);
+                    return redirect("/");
             }
         }
-    }
-
-    public static void changePassword(User user, String password){
-        user.setPassword(password);
     }
 
     public static Result getAlumniRegForm() {
         AlumniRegForm data = new AlumniRegForm();
         Form<AlumniRegForm> formdata = Form.form(AlumniRegForm.class).fill(data);
 
-        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(null);
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(null,false);
         return ok(reg_alumni.render(formdata, schoolMap));
     }
 
     public static Result resetPassword(User user){
         String newpw = RandomStringUtils.randomAlphanumeric(8);
-        changePassword(user,newpw);
+        user.setPassword(newpw);
 
         //now for the emailing
         Email mail = new Email();
@@ -113,7 +113,7 @@ public class RegistrationController extends Controller {
 
         String userSchoolName = data.data().get("school");
         if(userSchoolName == null) userSchoolName = "";  // "Please provide value" is "" too
-        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(userSchoolName);
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(userSchoolName,false);
 
         if (data.hasErrors()) {
             flash("error", "Please correct errors below.");
@@ -142,7 +142,7 @@ public class RegistrationController extends Controller {
             auth = true;
         }
 
-        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(data.school.getName());
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(data.school.getName(),auth);
 
         return ok(edit_self.render(user, formdata,schoolMap,auth));
     }
@@ -160,7 +160,7 @@ public class RegistrationController extends Controller {
         String userSchoolName = data.data().get("school");
         if(userSchoolName == null) userSchoolName = "";  // "Please provide value" is "" too
         if(userSchoolName.equals("")) userSchoolName = user.getSchool().getName();
-        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(userSchoolName);
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(userSchoolName,auth);
 
         if (data.hasErrors()) {
             flash("error", "Please correct errors below.");
