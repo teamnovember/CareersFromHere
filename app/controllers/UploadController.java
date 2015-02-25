@@ -11,11 +11,7 @@ import play.mvc.Result;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Security;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,13 +21,14 @@ import play.libs.mailer.*;
 public class UploadController extends Controller {
 
     private static String prefixPath = "/assets/clips/";
-    //private static String systemPath = "/home/tdn26/video/";
-    private static String systemPath = "/Users/tdn/Documents/workspace-uni/group_project/videos/";
+    private static String systemPath = "/home/tdn26/videos/";
+    //private static String systemPath = "/Users/tdn/Documents/workspace-uni/group_project/videos/";
 
     public static Result uploadVideo() {
         int count = request().body().asMultipartFormData().getFiles().size();
 
         ArrayList<String> audioPaths = new ArrayList<String>();
+        ArrayList<String> oldVideoPaths = new ArrayList<String>();
         ArrayList<String> videoPaths = new ArrayList<String>();
         ArrayList<Integer> questionsId = new ArrayList<Integer>();
         ArrayList<Double> durationVideo = new ArrayList<Double>();
@@ -70,10 +67,16 @@ public class UploadController extends Controller {
                 name = request().body().asMultipartFormData().asFormUrlEncoded().get("audio-filename")[i / 2];
             else name = request().body().asMultipartFormData().asFormUrlEncoded().get("video-filename")[i / 2];
 
+            String oldFilePath = systemPath + "old-" + name;
             String filePath = systemPath + name;
 
             if (i % 2 == 1) audioPaths.add(filePath);
-            else videoPaths.add(filePath);
+            else {
+                oldVideoPaths.add(oldFilePath);
+                videoPaths.add(filePath);
+
+                filePath = oldFilePath;
+            }
 
             try {
                 f = new File(filePath);
@@ -87,7 +90,7 @@ public class UploadController extends Controller {
             }
         }
 
-        createAndUpdateVideo(title, description, audioPaths, videoPaths, questionsId, durationVideo);
+        createAndUpdateVideo(title, description, audioPaths, oldVideoPaths, videoPaths, questionsId, durationVideo);
 
         // TODO: redirect useless
         return redirect("/");
@@ -96,7 +99,7 @@ public class UploadController extends Controller {
     // TODO: does not update database
     // TODO: bad implementation; need to pass user information from record page
     // TODO: should use form submission, but it is complicated to combine 2 post methods
-    private static void createAndUpdateVideo(String title, String description, ArrayList<String> audioPaths, ArrayList<String> videoPaths, ArrayList<Integer> questionsId, ArrayList<Double> durationVideo) {
+    private static void createAndUpdateVideo(String title, String description, ArrayList<String> audioPaths, ArrayList<String> oldVideoPaths, ArrayList<String> videoPaths, ArrayList<Integer> questionsId, ArrayList<Double> durationVideo) {
         UserDAOImpl udao = new UserDAOImpl();
         Alumni user = (Alumni) udao.getUserFromContext();
 
@@ -106,7 +109,17 @@ public class UploadController extends Controller {
         Video v = new Video(user, title, description, "http://lorempixel.com/400/200/");
 
         for (int i = 0; i < videoPaths.size(); ++i) {
-            // TODO: add duration
+            // merge webm with wav into webm
+            // send "y" in case the file has to be replaced
+            // TODO: try to keep quality of video
+            try {
+                OutputStream os = Runtime.getRuntime().exec("ffmpeg -i " + audioPaths.get(i) + " -itsoffset -00:00:00 -i " + oldVideoPaths.get(i) + " -map 0:0 -map 1:0 " + videoPaths.get(i)).getOutputStream();
+                os.write("y".getBytes());
+                os.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             VideoClip c = new VideoClip(prefixPath + videoPaths.get(i), prefixPath + audioPaths.get(i), questions.get(questionsId.get(i)), durationVideo.get(i));
             v.addClip(c);
         }
