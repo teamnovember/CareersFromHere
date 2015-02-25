@@ -1,8 +1,8 @@
-@(JSONquestions: String)(JSONdurations: String)
+@(JSONquestions: String)(JSONdurations: String)(name: Long)
 
 <link rel="stylesheet" href="@routes.Assets.at("stylesheets/recorder.css")" />
 
-<div id="recorder-container" data-questions="@JSONquestions" data-durations="@JSONdurations">
+<div id="recorder-container" data-questions="@JSONquestions" data-durations="@JSONdurations" data-name="video@name-">
     <div id="recorder-viewport">
         <div id="overlay-top"></div>
 

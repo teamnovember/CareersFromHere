@@ -12,7 +12,7 @@
 
 @main("Record new interview - Careers From Here")(stylesheets)(javascripts)(user) {
     <div class="spacing-panel col-md-7">
-        @recorder(JSONquestions)(JSONdurations)
+        @recorder(JSONquestions)(JSONdurations)(user.getId())
     </div>
 
     Title: <input id="video-title" />

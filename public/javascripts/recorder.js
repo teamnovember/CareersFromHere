@@ -17,6 +17,7 @@ var progressBarClass = "progress-bar";
 
 var questionsAttr = "data-questions";
 var durationsAttr = "data-durations";
+var nameAttr = "data-name";
 
 var startGlyph = "glyphicon glyphicon-record";
 var stopGlyph = "glyphicon glyphicon-stop";
@@ -48,6 +49,7 @@ var leftClock;
 var rightClock;
 var progress;
 var state;
+var name;
 
 var cameraStream;
 
@@ -267,6 +269,9 @@ function statePUBLISH() {
     // TODO: camera is left on even if the user is not recording; this is bad but avoid access to camera question
     cameraStream.stop();
 
+    // TODO: one alumni can record at most one video
+    name = document.getElementById(recorderContainerId).getAttribute(nameAttr);
+
     document.getElementById(publishId).style.display = "inline";
 
     // TODO: hide the recorder or switch pages
@@ -275,9 +280,6 @@ function statePUBLISH() {
 };
 
 function publish() {
-    // TODO: this should be user specific
-    var name = "qwe";
-
     var videoType = "video";
     var videoExt = ".webm";
 
