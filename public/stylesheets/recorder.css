@@ -44,6 +44,18 @@
     -o-transition: none;
     transition: none;
 }
+
+#recorder-container .progress-bar {
+    width: 640px;
+    height: 10px;
+    position: absolute;
+    -webkit-transition: none;
+    -moz-transition: none;
+    -ms-transition: none;
+    -o-transition: none;
+    transition: none;
+}
+
 /* TODO: need to add size for progress bar also */
 #recorder-container #recorder-controls {
     padding-top: 520px;
