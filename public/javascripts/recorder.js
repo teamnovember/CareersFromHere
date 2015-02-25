@@ -241,8 +241,8 @@ function stateREC() {
     btnStartStopPlayPauseState = "stop";
     change(btnNext, "none");
 
-    leftClock.innerText = 0;
-    rightClock.innerText = durations[index];
+    leftClock.innerText = "0:0";
+    rightClock.innerText = parseInt(durations[index] / 60) + ":" + parseInt(durations[index] % 60);
     document.getElementsByClassName(progressBarClass)[0].style.width = "0%";
 };
 
@@ -260,7 +260,7 @@ function statePLAYBACK() {
     btnStartStopPlayPauseState = "play";
     change(btnNext, "inline");
 
-    leftClock.innerText = 0;
+    leftClock.innerText = "0:0";
     // right clock is done on updDurationVideo()
     document.getElementsByClassName(progressBarClass)[0].style.width = "0%";
 };
@@ -330,7 +330,7 @@ function updDurationAudio() {
 function updDurationVideo() {
     durationVideo[index] = recorderVideo.duration;
 
-    if (state == "PLAYBACK") rightClock.innerText = durationVideo[index];
+    if (state == "PLAYBACK") rightClock.innerText = parseInt(durationVideo[index] / 60) + ":" + parseInt(durationVideo[index] % 60);
 };
 
 function testDuration() {
@@ -344,8 +344,11 @@ function testDuration() {
 function updateProgressREC() {
     if (firstTimeUpdate) return;
 
-    leftClock.innerText = recorderVideo.currentTime - oldTime;
-    rightClock.innerText = durations[index] - recorderVideo.currentTime + oldTime;
+    var t = parseInt(recorderVideo.currentTime - oldTime);
+    leftClock.innerText = parseInt(t / 60) + ":" + parseInt(t % 60);
+
+    t = parseInt(durations[index] - recorderVideo.currentTime + oldTime);
+    rightClock.innerText = parseInt(t / 60) + ":" + parseInt(t % 60);
 
     var percentage = (recorderVideo.currentTime - oldTime) / durations[index] * 100;
     percentage = percentage.toString() + "%";
@@ -354,8 +357,11 @@ function updateProgressREC() {
 };
 
 function updateProgressPLAYBACK() {
-    leftClock.innerText = recorderVideo.currentTime;
-    rightClock.innerText = durationVideo[index] - recorderVideo.currentTime;
+    var t = parseInt(recorderVideo.currentTime);
+    leftClock.innerText = parseInt(t / 60) + ":" + parseInt(t % 60);
+
+    t = parseInt(durationVideo[index] - recorderVideo.currentTime);
+    rightClock.innerText = parseInt(t / 60) + ":" + parseInt(t % 60);
 
     var percentage = recorderVideo.currentTime / durationVideo[index] * 100;
     percentage = percentage.toString() + "%";
