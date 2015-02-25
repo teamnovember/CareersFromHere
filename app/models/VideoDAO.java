@@ -39,6 +39,7 @@ public class VideoDAO {
         return filterVideosByCategories(videos, categories);
     }
 
+    //This one is used by VideoController to show approved public videos and approved non-public school specific videos
     public List<Video> getVideosBySchool(School s) {
         List<Video> videos = getAllPublicVideos();
         if (s == null) {
@@ -46,7 +47,21 @@ public class VideoDAO {
         }
         List<Alumni> alumnis = Alumni.find.where().eq("school", s).eq("approved", true).findList();
         for (Alumni a : alumnis) {
-            List<Video> vids = Video.find.where().eq("user",a).eq("approved", false).findList();
+            List<Video> vids = Video.find.where().eq("user", a).eq("approved", true).eq("publicAccess",false).findList();
+            videos.addAll(vids);
+        }
+        return videos;
+    }
+
+    //This one is used by AdminController to find all videos (approved/unapproved) from all approved alumni users
+    public List<Video> getAllVideosBySchool(School s) {
+        List<Video> videos = new ArrayList<>();
+        if (s == null) {
+            return videos;
+        }
+        List<Alumni> alumnis = Alumni.find.where().eq("school", s).eq("approved", true).findList();
+        for (Alumni a : alumnis) {
+            List<Video> vids = Video.find.where().eq("user",a).findList();
             videos.addAll(vids);
         }
         return videos;

@@ -46,7 +46,7 @@ public class AdminController extends Controller {
         User user = udao.getUserFromContext();
         VideoDAO dao = new VideoDAO();
         School s = user.getSchool();
-        return ok(videos.render(user, dao.getVideosBySchool(s))); //returns all videos
+        return ok(videos.render(user, dao.getAllVideosBySchool(s))); //returns all videos
     }
 
     public static Result questions() {
