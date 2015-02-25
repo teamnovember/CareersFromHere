@@ -27,6 +27,15 @@ public class School extends Model {
 
     public static School makeInstance(SchoolForm data) {
         School s = new School(data.name);
+        s.save();
+        //adding the default questions added to the school - copy questions from default school
+        SchoolDAO sdao = new SchoolDAO();
+        School def = sdao.getSchool(0L);
+        List<Question> qs = def.getQuestions();
+        for(Question q : qs) {
+            s.addQuestion(q.getText(), q.getDuration(),q.getOrder());
+            s.update();
+        }
         return s;
     }
 
@@ -52,11 +61,11 @@ public class School extends Model {
         return this.questions;
     }
 
-    public void addQuestion(String question, double duration) {
+    public void addQuestion(String question, double duration, int order) {
         Question newQuestion = new Question(question, duration, this);
+        newQuestion.setOrder(order);
         this.questions.add(newQuestion);
         newQuestion.save();
-        this.save();
     }
 
     public List<Admin> getAdmins(){

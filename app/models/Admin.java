@@ -62,11 +62,6 @@ public class Admin extends User {
         return videos;
     }
 
-    public void addQuestion(String question, int duration){
-        School school = this.getSchool();
-        school.addQuestion(question,duration);
-    }
-
     public List<Student> getStudents() {
         School school = this.getSchool();
         List<Student> students = Student.find.where().eq("school",school).findList();

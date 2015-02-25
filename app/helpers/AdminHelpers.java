@@ -1,9 +1,6 @@
 package helpers;
 
-import models.Category;
-import models.CategoryDAO;
-import models.School;
-import models.SchoolDAO;
+import models.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,10 +22,14 @@ public abstract class AdminHelpers {
     }
 
     public static Map<String, Boolean> ConstructSchoolMap(String selectedSchoolName) {
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
         Map<String, Boolean> schoolMap = new HashMap<String, Boolean>();
         SchoolDAO dao = new SchoolDAO();
         for(School school : dao.getAllSchool()) {
-            schoolMap.put(school.getName(), school.getName().equals(selectedSchoolName));
+            if(school.getId() != 0 || user.getDiscriminator().equals("superadmin")) { //these checks are here so that school admins can't fiddle with the default school (ID = 0) but superadmins can
+                schoolMap.put(school.getName(), school.getName().equals(selectedSchoolName));
+            }
         }
         return schoolMap;
     }
