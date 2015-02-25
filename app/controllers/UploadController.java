@@ -26,6 +26,7 @@ public class UploadController extends Controller {
 
     public static Result uploadVideo() {
         int count = request().body().asMultipartFormData().getFiles().size();
+        count --;
 
         ArrayList<String> audioPaths = new ArrayList<String>();
         ArrayList<String> oldVideoPaths = new ArrayList<String>();
@@ -90,7 +91,38 @@ public class UploadController extends Controller {
             }
         }
 
-        createAndUpdateVideo(title, description, audioPaths, oldVideoPaths, videoPaths, questionsId, durationVideo);
+        // save thumbnail
+        FilePart fp = request().body().asMultipartFormData().getFiles().get(count);
+        File f = fp.getFile();
+
+        FileInputStream fis = null;
+        byte[] contents = new byte[(int) f.length()];
+        try {
+            fis = new FileInputStream(f);
+            fis.read(contents);
+            fis.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String name = request().body().asMultipartFormData().asFormUrlEncoded().get("thumbnail-filename")[0];
+        String thumbnailPath = systemPath + name;
+
+        try {
+            f = new File(thumbnailPath);
+//            if (f.exists()) f.delete();
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write(contents);
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        createAndUpdateVideo(title, description, thumbnailPath, audioPaths, oldVideoPaths, videoPaths, questionsId, durationVideo);
 
         // TODO: redirect useless
         return redirect("/");
@@ -99,14 +131,14 @@ public class UploadController extends Controller {
     // TODO: does not update database
     // TODO: bad implementation; need to pass user information from record page
     // TODO: should use form submission, but it is complicated to combine 2 post methods
-    private static void createAndUpdateVideo(String title, String description, ArrayList<String> audioPaths, ArrayList<String> oldVideoPaths, ArrayList<String> videoPaths, ArrayList<Integer> questionsId, ArrayList<Double> durationVideo) {
+    private static void createAndUpdateVideo(String title, String description, String thumbnailPath, ArrayList<String> audioPaths, ArrayList<String> oldVideoPaths, ArrayList<String> videoPaths, ArrayList<Integer> questionsId, ArrayList<Double> durationVideo) {
         UserDAOImpl udao = new UserDAOImpl();
         Alumni user = (Alumni) udao.getUserFromContext();
 
         QuestionDAO qdao = new QuestionDAO();
         List<Question> questions = qdao.getActiveQuestions(user.getSchool());
 
-        Video v = new Video(user, title, description, "http://lorempixel.com/400/200/");
+        Video v = new Video(user, title, description, prefixPath + thumbnailPath);
 
         for (int i = 0; i < videoPaths.size(); ++i) {
             // merge webm with wav into webm

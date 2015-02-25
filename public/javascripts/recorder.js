@@ -50,6 +50,8 @@ var rightClock;
 var progress;
 var state;
 var name;
+var thumbnailBlob;
+var firstVideo;
 
 var cameraStream;
 
@@ -166,6 +168,11 @@ function startStopPlayPause() {
             recorderAudio.play();
             recorderVideo.play();
 
+            if (firstVideo) {
+                takeSnapshot();
+                firstVideo = false;
+            }
+
             change(btnStartStopPlayPause, "inline", pauseGlyph);
             btnStartStopPlayPauseState = "pause";
             break;
@@ -258,6 +265,8 @@ function statePLAYBACK() {
     change(btnRetry, "inline");
     change(btnStartStopPlayPause, "inline", playGlyph);
     btnStartStopPlayPauseState = "play";
+    // autoplay is required to be able to get thumbnail
+    btnStartStopPlayPause.click();
     change(btnNext, "inline");
 
     leftClock.innerText = "0:0";
@@ -278,6 +287,19 @@ function statePUBLISH() {
     // TODO: hide the recorder or switch pages
     var child = document.getElementById(recorderContainerId);
     child.parentNode.removeChild(child);
+};
+
+// this works only on the first upload
+// should not be a problem because there is one video per alumni
+function takeSnapshot() {
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+    canvas.width = 640;
+    canvas.height = 480;
+    ctx.drawImage(recorderVideo, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob(function(blob) {
+        thumbnailBlob = blob;
+    });
 };
 
 function publish() {
@@ -304,7 +326,8 @@ function publish() {
             formData.append(audioType + "-blob", audioBlobs[i]);
         }
 
-    console.log(formData);
+    formData.append("thumbnail-blob", thumbnailBlob);
+    formData.append("thumbnail-filename", name + "tp.webp");
 
     xhr("/record/publish", formData, function (fName) {
         window.open(location.href + fName);
@@ -369,8 +392,12 @@ function updateProgressPLAYBACK() {
     document.getElementsByClassName(progressBarClass)[0].style.width = percentage;
 };
 
+function switchPauseToPlay() {
+    change(btnStartStopPlayPause, "inline", playGlyph);
+    btnStartStopPlayPauseState = "play";
+};
+
 // TODO: mirrored image of the camera only when recording; it goes back then; bad call;
-// TODO: I am losing frames with this setup; so if you click play and immediately say something, that info might get lost
 function initRecorder() {
     recorderAudio = document.getElementById(recorderAudioId);
 
@@ -380,6 +407,7 @@ function initRecorder() {
     recorderAudio.addEventListener("loadedmetadata", updDurationAudio, false);
     recorderVideo.addEventListener("loadedmetadata", updDurationVideo, false);
     recorderVideo.addEventListener("timeupdate", testDuration, false);
+    recorderVideo.addEventListener("ended", switchPauseToPlay, false);
 
     overlayFull = document.getElementById(overlayFullId);
     overlayTop = document.getElementById(overlayTopId);
@@ -402,6 +430,7 @@ function initRecorder() {
     index = 0;
     newrec = false;
     oldTime = 0;
+    firstVideo = true;
 
     durationAudio = new Array(questions.length);
     durationVideo = new Array(questions.length);
