@@ -40,13 +40,13 @@ public class VideoDAO {
     }
 
     public List<Video> getVideosBySchool(School s) {
+        List<Video> videos = getAllPublicVideos();
         if (s == null) {
-            return getAllPublicVideos();
+            return videos;
         }
         List<Alumni> alumnis = Alumni.find.where().eq("school", s).eq("approved", true).findList();
-        List<Video> videos = new ArrayList<>();
         for (Alumni a : alumnis) {
-            List<Video> vids = Video.find.where().eq("user",a).findList();
+            List<Video> vids = Video.find.where().eq("user",a).eq("approved", false).findList();
             videos.addAll(vids);
         }
         return videos;
