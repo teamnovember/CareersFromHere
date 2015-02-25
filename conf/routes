@@ -63,6 +63,10 @@ GET         /dummy                              controllers.Dummy.dummy_page()
 GET         /record                             controllers.VideoController.record()
 POST        /record/publish                     controllers.UploadController.uploadVideo()
 
+# Registering
+GET         /register                           controllers.RegistrationController.getAlumniRegForm()
+POST        /register                           controllers.RegistrationController.postAlumniRegForm()
+
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                       controllers.Assets.at(path="/public", file)
 

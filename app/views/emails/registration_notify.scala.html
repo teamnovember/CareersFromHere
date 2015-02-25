@@ -1,0 +1,23 @@
+@(newUser: models.User)
+
+@import emails.email_template
+
+@email_template {
+    <tr>
+    <td><h2>New registration</h2></td>
+    </tr>
+    <tr><td>
+        Dear Administrator,
+        <br><br>
+        A new account has been created on Careers From Here. Please review the registration and either approve or
+        delete the user.
+        <br><br>
+        @newUser.getName
+        <br>
+        @newUser.getEmail
+        <br>
+        @* @newUser.getAlumniProfile *@
+        <br><br>
+        <a href="@routes.AdminController.users().absoluteURL()">Click here to access the administrative panel.</a>
+    </td></tr>
+}
