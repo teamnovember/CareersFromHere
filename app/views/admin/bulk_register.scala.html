@@ -1,0 +1,39 @@
+@(currentUser: models.User)(form: play.data.Form[views.forms.BulkRegisterForm])(schoolMap: java.util.Map[String, Boolean])(auth: Boolean)
+
+@import bootstrap3._
+
+@stylesheets = {
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
+}
+
+@javascripts = {
+
+}
+
+@main("Admin Dashboard: Bulk Student Registration - Careers From Here")(stylesheets)(javascripts)(currentUser) {
+    <div class="spacing-panel">
+        <div class="shadow-panel">
+            <h2>Bulk register students</h2>
+            <hr>
+            @helper.form(action =
+                    routes.AdminController.postBulkRegister() ) {
+                <fieldset>
+                    @select(form("school"),
+                        label = "School",
+                        isMultiple = false,
+                        optionMap = schoolMap,
+                        disabled = (auth == false))
+                    @textarea(form("data"),
+                        label = "Enter an email address per line for each user you want to create",
+                        placeholder = "e.g. teststudent@example.com",
+                        rows = "10")
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button id="submit" type="submit" value="Submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </fieldset>
+            }
+        </div>
+    </div>
+}

@@ -52,17 +52,6 @@ public class RegistrationController extends Controller {
         MailerPlugin.send(mail);
     }
 
-    public Result invite(String email,School school, String discriminator){
-        //todo, invoked by Admin to invite users via email
-        Email mail = new Email();
-        mail.setSubject("Invitation to CareersFromHere");
-        mail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
-        mail.addTo("TO <" + email + ">");
-        mail.setBodyText(""); //TODO: create a nice looking invitation email and provide registration link depending on school + discriminator
-        String id = MailerPlugin.send(mail);
-        return ok("Email " + id + " sent!");
-    }
-
     public static Result login(){
         Form<LoginForm> form = form(LoginForm.class).fill(new LoginForm());
         return ok(login.render(form));

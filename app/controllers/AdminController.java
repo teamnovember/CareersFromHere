@@ -2,6 +2,7 @@ package controllers;
 
 import helpers.AdminHelpers;
 import models.*;
+import org.apache.commons.lang3.RandomStringUtils;
 import play.data.Form;
 import play.data.DynamicForm;
 import play.libs.mailer.Email;
@@ -218,6 +219,71 @@ public class AdminController extends Controller {
 
         flash("success", "User approved!");
 
+        return redirect("/admin/users");
+    }
+
+    public static Result getBulkRegister() {
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+        School s = user.getSchool();
+
+        boolean auth = false;
+        if (user.getDiscriminator().equals("superadmin")) {
+            auth = true;
+        }
+
+        BulkRegisterForm data = new BulkRegisterForm(user.getSchool()); // Suggest same school as Admin by default
+
+        Form<BulkRegisterForm> formdata = Form.form(BulkRegisterForm.class).fill(data);
+
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(data.school.getName());
+        return ok(bulk_register.render(user, formdata, schoolMap,auth));
+    }
+
+    public static Result postBulkRegister() {
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
+        Form<BulkRegisterForm> data = Form.form(BulkRegisterForm.class).bindFromRequest();
+
+        boolean auth = false;
+        if (user.getDiscriminator().equals("superadmin")) {
+            auth = true;
+        }
+
+        String userSchoolName = data.data().get("school");
+        if(userSchoolName == null) userSchoolName = "";  // "Please provide value" is "" too
+        if(userSchoolName.equals("")) userSchoolName = user.getSchool().getName();
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(userSchoolName);
+
+        if (data.hasErrors()) {
+            flash("error", "Please correct errors below.");
+            return badRequest(bulk_register.render(user, data, schoolMap,auth));
+        }
+        else {
+            BulkRegisterForm formData = data.get();
+            if (formData.school == null) {
+                formData.school = user.getSchool(); //this is to allow for non-superadmins to create stuff as they always submit null schools
+            }
+            String emails = formData.data;
+            String[] emailss = emails.split("\r\n|\r|\n");
+            SchoolDAO sdao = new SchoolDAO();
+
+            for(int i = 0; i < emailss.length; i++) {
+                //Create new user with random password
+                String pass = RandomStringUtils.randomAlphanumeric(8);
+                Student s = new Student("Default name",pass,emailss[i],sdao.byName(formData.school.getName()));
+                s.setPassword(pass);
+                s.save();
+
+                //Notify the user
+                Email mail = new Email();
+                mail.setSubject("Careers From Here: Account Invitation");
+                mail.setFrom("Careers From Here <careersfromhere@gmail.com>");
+                mail.addTo(s.getName() + " <" + s.getEmail() + ">");
+                mail.setBodyHtml(registration_invite.render(s,pass).toString());
+                MailerPlugin.send(mail);
+            }
+        }
         return redirect("/admin/users");
     }
 

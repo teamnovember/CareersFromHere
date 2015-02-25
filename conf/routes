@@ -3,10 +3,10 @@
 # ~~~~
 
 # Video gallery pages
-GET         /                                  controllers.VideoController.index()
-POST        /                                  controllers.VideoController.categorySelect()
-GET         /view/:id                          controllers.VideoController.view(id: Long)
-GET         /assets/clips/*path                controllers.VideoController.getVideoAt(path)
+GET         /                                   controllers.VideoController.index()
+POST        /                                   controllers.VideoController.categorySelect()
+GET         /view/:id                           controllers.VideoController.view(id: Long)
+GET         /assets/clips/*path                 controllers.VideoController.getVideoAt(path)
 
 # User info edit page
 GET         /edit                               controllers.RegistrationController.getUserDetails()
@@ -27,6 +27,8 @@ POST        /admin/users/manage/new             controllers.AdminController.post
 POST        /admin/users/manage/:id             controllers.AdminController.postUser(id: Long)
 POST        /admin/users/approve                controllers.AdminController.approveUser()
 POST        /admin/users/delete                 controllers.AdminController.deleteUser()
+GET         /admin/users/bulkregister           controllers.AdminController.getBulkRegister()
+POST        /admin/users/bulkregister           controllers.AdminController.postBulkRegister()
 
 # Admin pages: Videos
 GET         /admin/videos/manage/:id            controllers.AdminController.getVideo(id: Long)
