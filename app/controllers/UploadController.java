@@ -111,9 +111,11 @@ public class UploadController extends Controller {
         for (int i = 0; i < videoPaths.size(); ++i) {
             // merge webm with wav into webm
             // send "y" in case the file has to be replaced
+            // this runs in async mode, so there is going to be a delay before you can see the video
             // TODO: try to keep quality of video
             try {
-                OutputStream os = Runtime.getRuntime().exec("ffmpeg -i " + audioPaths.get(i) + " -itsoffset -00:00:00 -i " + oldVideoPaths.get(i) + " -map 0:0 -map 1:0 " + videoPaths.get(i)).getOutputStream();
+                OutputStream os = Runtime.getRuntime().exec("avconv -i " + audioPaths.get(i) + " -itsoffset -00:00:00 -i " + oldVideoPaths.get(i) + " -map 0:0 -map 1:0 " + videoPaths.get(i)).getOutputStream();
+                //OutputStream os = Runtime.getRuntime().exec("ffmpeg -i " + audioPaths.get(i) + " -itsoffset -00:00:00 -i " + oldVideoPaths.get(i) + " -map 0:0 -map 1:0 " + videoPaths.get(i)).getOutputStream();
                 os.write("y".getBytes());
                 os.close();
             } catch (IOException e) {
