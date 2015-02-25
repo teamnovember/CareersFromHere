@@ -24,48 +24,20 @@ import play.libs.mailer.*;
 @Security.Authenticated(Secured.class)
 public class UploadController extends Controller {
 
-    // TODO: bad way of writing files (check /assets))
+    private static String prefixPath = "/assets/clips/";
     //private static String systemPath = "/home/tdn26/video/";
     private static String systemPath = "/Users/tdn/Documents/workspace-uni/group_project/videos/";
-
-    // TODO: handle upload fail
-    public static Result uploadVideoClip() {
-        // TODO: replace getFiles
-        FilePart fp = request().body().asMultipartFormData().getFiles().get(0);
-        File f = fp.getFile();
-
-        FileInputStream fis = null;
-        byte[] contents = new byte[(int) f.length()];
-        try {
-            fis = new FileInputStream(f);
-            fis.read(contents);
-            fis.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String videoClipPath = systemPath + "-sd.webm";
-        try {
-            f = new File(videoClipPath);
-            FileOutputStream fos = new FileOutputStream(f);
-            fos.write(contents);
-            fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return ok();
-    }
 
     public static Result uploadVideo() {
         int count = request().body().asMultipartFormData().getFiles().size();
 
         ArrayList<String> audioPaths = new ArrayList<String>();
         ArrayList<String> videoPaths = new ArrayList<String>();
+        ArrayList<Integer> questionsId = new ArrayList<Integer>();
+        ArrayList<Double> durationVideo = new ArrayList<Double>();
+
+        String title = request().body().asMultipartFormData().asFormUrlEncoded().get("video-title")[0];
+        String description = request().body().asMultipartFormData().asFormUrlEncoded().get("video-description")[0];
 
         for (int i = 0; i < count; ++i) {
             FilePart fp = request().body().asMultipartFormData().getFiles().get(i);
@@ -81,6 +53,15 @@ public class UploadController extends Controller {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+
+            // TODO: do not rely on i
+            if (i % 2 == 0) {
+                Integer qid = Integer.parseInt(request().body().asMultipartFormData().asFormUrlEncoded().get("video-questionId")[i / 2]);
+                questionsId.add(qid);
+
+                Double duration = Double.parseDouble(request().body().asMultipartFormData().asFormUrlEncoded().get("video-duration")[i / 2]);
+                durationVideo.add(duration);
             }
 
             // TODO: should test on filetype and not on i (given the order of append in recorder.js)
@@ -106,31 +87,27 @@ public class UploadController extends Controller {
             }
         }
 
-        createAndUpdateVideo(audioPaths, videoPaths);
+        createAndUpdateVideo(title, description, audioPaths, videoPaths, questionsId, durationVideo);
 
-        // TODO: apparently redirect does not work
+        // TODO: redirect useless
         return redirect("/");
     }
 
     // TODO: does not update database
     // TODO: bad implementation; need to pass user information from record page
     // TODO: should use form submission, but it is complicated to combine 2 post methods
-    private static void createAndUpdateVideo(ArrayList<String> audioPaths, ArrayList<String> videoPaths) {
-//        School s = new School("jas");
-//        Alumni u = new Alumni("jau", "jap", "jau@jae.jat", s);
+    private static void createAndUpdateVideo(String title, String description, ArrayList<String> audioPaths, ArrayList<String> videoPaths, ArrayList<Integer> questionsId, ArrayList<Double> durationVideo) {
         UserDAOImpl udao = new UserDAOImpl();
-        Alumni u = (Alumni) udao.getUser((long) 16);
-        Video v = new Video(u, "jat", "jar", "jatp");
+        Alumni user = (Alumni) udao.getUserFromContext();
 
-        ArrayList<Question> questions = new ArrayList<>();
+        QuestionDAO qdao = new QuestionDAO();
+        List<Question> questions = qdao.getActiveQuestions(user.getSchool());
 
-        questions.add(0, new Question("People say nothing is impossible, but I do nothing every day.", 19.0, null));
-        questions.add(1, new Question("Etc. – End of Thinking Capacity.", 37.0, null));
-        questions.add(2, new Question("We live in the era of smart phones and stupid people.", 75.0, null));
-        questions.add(3, new Question("Alarm Clocks: because every morning should begin with a heart attack.", 153.0, null));
+        Video v = new Video(user, title, description, "http://lorempixel.com/400/200/");
 
         for (int i = 0; i < videoPaths.size(); ++i) {
-            VideoClip c = new VideoClip(videoPaths.get(i), audioPaths.get(i), questions.get(i), 200.0);
+            // TODO: add duration
+            VideoClip c = new VideoClip(prefixPath + videoPaths.get(i), prefixPath + audioPaths.get(i), questions.get(questionsId.get(i)), durationVideo.get(i));
             v.addClip(c);
         }
 
@@ -138,28 +115,27 @@ public class UploadController extends Controller {
     }
 
 
-    private Result sendUploadEmails(School school, Alumni alumni){
+    private Result sendUploadEmails(School school, Alumni alumni) {
         Email aluMail = new Email();
         aluMail.setSubject("Thank you for uploading to CareersFromHere");
         aluMail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
-        aluMail.addTo("TO <"+alumni.getEmail()+">");
+        aluMail.addTo("TO <" + alumni.getEmail() + ">");
         aluMail.setBodyText("");//todo
         String alumId = MailerPlugin.send(aluMail);
 
         List<Admin> admins = school.getAdmins();
-        for (Admin x:admins){
+        for (Admin x : admins) {
             Email adminMail = new Email();
             adminMail.setSubject("CareersFromHere: New Video has been uploaded");
             adminMail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
-            adminMail.addTo("TO <"+x.getEmail()+">");
+            adminMail.addTo("TO <" + x.getEmail() + ">");
             adminMail.setBodyText("");//todo
             String id2 = MailerPlugin.send(adminMail);
 
 
         }
 
-        return ok("Email "+alumId+" sent! and admins notified");
-
+        return ok("Email " + alumId + " sent! and admins notified");
     }
 
 }

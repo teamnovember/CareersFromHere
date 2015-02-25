@@ -7,6 +7,13 @@ var retryId = "retry-button";
 var startStopPlayPauseId = "start-stop-play-pause-button";
 var nextId = "next-button";
 var publishId = "publish";
+var titleId = "video-title";
+var descriptionId = "video-description";
+var leftClockId = "left-clock";
+var rightClockId = "right-clock";
+
+var progressClass = "progress";
+var progressBarClass = "progress-bar";
 
 var questionsAttr = "data-questions";
 var durationsAttr = "data-durations";
@@ -32,6 +39,15 @@ var audioBlobs;
 var videoBlobs;
 var btnStartStopPlayPauseState;
 var index;
+var newrec;
+var durationAudio;
+var durationVideo;
+var oldTime;
+var firstTimeUpdate;
+var leftClock;
+var rightClock;
+var progress;
+var state;
 
 var cameraStream;
 
@@ -73,13 +89,21 @@ function startStopPlayPause() {
             recorderAudio.play();
             recorderVideo.play();
 
-            setTimeout(function() {mRecordRTC.startRecording();}, 1000);
+            // setTimeout(function() {mRecordRTC.startRecording();}, 1000);
+            firstTimeUpdate = true;
+            mRecordRTC.startRecording();
+            recorderVideo.addEventListener("timeupdate", updateProgressREC, false);
 
             stateREC();
             break;
         case "stop":
+            newrec = true;
+
             var notAudio = true;
             var notVideo = true;
+
+            recorderVideo.removeEventListener("timeupdate", updateProgressREC, false);
+
             mRecordRTC.stopRecording(function(url, type) {
                 if (type == "audio") {
                     recorderAudio.pause();
@@ -91,6 +115,7 @@ function startStopPlayPause() {
                 }
 
                 if (type == "video") {
+                    //oldTime = recorderVideo.currentTime;
                     recorderVideo.pause();
                     recorderVideo.src = url;
 
@@ -159,8 +184,12 @@ function next() {
     recorderVideo.src = "";
 
     mRecordRTC.getBlob(function(blobs) {
-        audioBlobs[index] = blobs.audio;
-        videoBlobs[index] = blobs.video;
+        if (newrec) {
+            audioBlobs[index] = blobs.audio;
+            videoBlobs[index] = blobs.video;
+
+            newrec = false;
+        }
 
         // TODO: take care when index out of bounds
         index ++;
@@ -178,6 +207,9 @@ function change(button, display, className) {
 
 // TODO: some changes can be skipped because of the state transition restriction
 function stateBEGIN() {
+    state = "BEGIN";
+    recorderVideo.removeEventListener("timeupdate", updateProgressPLAYBACK, false);
+
     overlayTop.style.display = "none";
 
     overlayFull.innerHTML = questions[index];
@@ -187,9 +219,16 @@ function stateBEGIN() {
     change(btnStartStopPlayPause, "inline", startGlyph);
     btnStartStopPlayPauseState = "start";
     change(btnNext, "inline");
+
+    leftClock.innerText = "";
+    rightClock.innerText = "";
+    document.getElementsByClassName(progressBarClass)[0].style.width = "0%";
 };
 
 function stateREC() {
+    state = "REC";
+    recorderVideo.removeEventListener("timeupdate", updateProgressPLAYBACK, false);
+
     overlayTop.innerHTML = questions[index];
     overlayTop.style.display = "inline";
 
@@ -199,9 +238,16 @@ function stateREC() {
     change(btnStartStopPlayPause, "inline", stopGlyph);
     btnStartStopPlayPauseState = "stop";
     change(btnNext, "none");
+
+    leftClock.innerText = 0;
+    rightClock.innerText = durations[index];
+    document.getElementsByClassName(progressBarClass)[0].style.width = "0%";
 };
 
 function statePLAYBACK() {
+    state = "PLAYBACK";
+    recorderVideo.addEventListener("timeupdate", updateProgressPLAYBACK, false);
+
     overlayTop.innerHTML = questions[index];
     overlayTop.style.display = "inline";
 
@@ -211,6 +257,10 @@ function statePLAYBACK() {
     change(btnStartStopPlayPause, "inline", playGlyph);
     btnStartStopPlayPauseState = "play";
     change(btnNext, "inline");
+
+    leftClock.innerText = 0;
+    // right clock is done on updDurationVideo()
+    document.getElementsByClassName(progressBarClass)[0].style.width = "0%";
 };
 
 function statePUBLISH() {
@@ -236,20 +286,28 @@ function publish() {
 
     var formData = new FormData();
 
-    for (var i = 0; i < index; ++ i) {
-        formData.append(videoType + '-filename', name + i + videoExt);
-        formData.append(videoType + '-blob', videoBlobs[i]);
+    formData.append(videoType + "-title", document.getElementById(titleId).value);
+    formData.append(videoType + "-description", document.getElementById(descriptionId).value);
 
-        formData.append(audioType + '-filename', name + i + audioExt);
-        formData.append(audioType + '-blob', audioBlobs[i]);
-    }
+    for (var i = 0; i < index; ++ i)
+        if (videoBlobs[i] != undefined && audioBlobs[i] != undefined) {
+            formData.append(videoType + "-questionId", i);
+            formData.append(videoType + "-filename", name + i + videoExt);
+            formData.append(videoType + "-duration", durationVideo[i]);
+            formData.append(videoType + "-blob", videoBlobs[i]);
+
+            formData.append(audioType + "-filename", name + i + audioExt);
+            formData.append(audioType + "-duration", durationAudio[i]);
+            formData.append(audioType + "-blob", audioBlobs[i]);
+        }
 
     console.log(formData);
 
-    xhr('/record/publish', formData, function (fName) {
+    xhr("/record/publish", formData, function (fName) {
         window.open(location.href + fName);
     });
 
+    // TODO: callback useless
     function xhr(url, data, callback) {
         var request = new XMLHttpRequest();
         request.onreadystatechange = function () {
@@ -257,9 +315,49 @@ function publish() {
                 window.location.href = "/";
             }
         };
-        request.open('POST', url);
+        request.open("POST", url);
         request.send(data);
     }
+};
+
+function updDurationAudio() {
+    durationAudio[index] = recorderAudio.duration;
+};
+
+function updDurationVideo() {
+    durationVideo[index] = recorderVideo.duration;
+
+    if (state == "PLAYBACK") rightClock.innerText = durationVideo[index];
+};
+
+function testDuration() {
+    if (firstTimeUpdate) {
+        oldTime = recorderVideo.currentTime;
+        firstTimeUpdate = false;
+    }
+    if (recorderVideo.currentTime - oldTime >= durations[index]) btnStartStopPlayPause.click();
+};
+
+function updateProgressREC() {
+    if (firstTimeUpdate) return;
+
+    leftClock.innerText = recorderVideo.currentTime - oldTime;
+    rightClock.innerText = durations[index] - recorderVideo.currentTime + oldTime;
+
+    var percentage = (recorderVideo.currentTime - oldTime) / durations[index] * 100;
+    percentage = percentage.toString() + "%";
+
+    document.getElementsByClassName(progressBarClass)[0].style.width = percentage;
+};
+
+function updateProgressPLAYBACK() {
+    leftClock.innerText = recorderVideo.currentTime;
+    rightClock.innerText = durationVideo[index] - recorderVideo.currentTime;
+
+    var percentage = recorderVideo.currentTime / durationVideo[index] * 100;
+    percentage = percentage.toString() + "%";
+
+    document.getElementsByClassName(progressBarClass)[0].style.width = percentage;
 };
 
 // TODO: mirrored image of the camera only when recording; it goes back then; bad call;
@@ -269,6 +367,10 @@ function initRecorder() {
 
     recorderVideo = document.getElementById(recorderVideoId);
     recorderVideo.volume = 0;
+
+    recorderAudio.addEventListener("loadedmetadata", updDurationAudio, false);
+    recorderVideo.addEventListener("loadedmetadata", updDurationVideo, false);
+    recorderVideo.addEventListener("timeupdate", testDuration, false);
 
     overlayFull = document.getElementById(overlayFullId);
     overlayTop = document.getElementById(overlayTopId);
@@ -289,6 +391,15 @@ function initRecorder() {
     videoBlobs = new Array(questions.length);
 
     index = 0;
+    newrec = false;
+    oldTime = 0;
+
+    durationAudio = new Array(questions.length);
+    durationVideo = new Array(questions.length);
+
+    leftClock = document.getElementById(leftClockId);
+    rightClock = document.getElementById(rightClockId);
+    progress = document.getElementsByClassName(progressClass)[0];
 
     navigator.getUserMedia({
         audio: true,

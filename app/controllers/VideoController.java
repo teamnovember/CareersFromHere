@@ -134,16 +134,15 @@ public class VideoController extends Controller {
         return ok(view.render(v, user));
     }
 
+    // TODO: check if integrated correctly
     @Security.Authenticated(AlumniSecured.class)
     public static Result record() {
-        ArrayList<Question> questions = new ArrayList<>();
+        UserDAOImpl udao = new UserDAOImpl();
+        User user = udao.getUserFromContext();
 
-        questions.add(0, new Question("People say nothing is impossible, but I do nothing every day.", 19.0, null));
-        questions.add(1, new Question("Etc. – End of Thinking Capacity.", 37.0, null));
-        questions.add(2, new Question("We live in the era of smart phones and stupid people.", 75.0, null));
-        questions.add(3, new Question("Alarm Clocks: because every morning should begin with a heart attack.", 153.0, null));
+        QuestionDAO qdao = new QuestionDAO();
+        List<Question> questions = qdao.getActiveQuestions(user.getSchool());
 
-        // TODO: this might look redundant now , but it can be useful later
         ArrayList<String> questionsText = new ArrayList<>();
         for (int i = 0; i < questions.size(); ++i)
             questionsText.add(i, questions.get(i).getText());
@@ -162,12 +161,10 @@ public class VideoController extends Controller {
             e.printStackTrace();
         }
 
-        UserDAOImpl udao = new UserDAOImpl();
-        User user = udao.getUserFromContext();
-
         return ok(record.render(questions, JSONQuestionsText, JSONQuestionsDurations, user));
     }
 
+    //TODO: check if chunked responses are required
     public static Result getVideoAt(String path) {
         return ok(new File(path));
     }

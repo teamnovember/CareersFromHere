@@ -24,17 +24,19 @@
     font-weight: bold;
 }
 
-#recorder-container #recorder-video {
-    padding-top: 40px;
-    transform: rotateY(180deg);
-    -webkit-transform: rotateY(180deg);
-    -moz-transform: rotateY(180deg);
-}
+/* cancel mirror effect */
+/*#recorder-container #recorder-video {*/
+    /*padding-top: 40px;*/
+    /*transform: rotateY(180deg);*/
+    /*-webkit-transform: rotateY(180deg);*/
+    /*-moz-transform: rotateY(180deg);*/
+/*}*/
 
-#recorder-container .progress,
-#recorder-container .progress-bar {
+#recorder-container .progress {
     width: 640px;
     height: 10px;
+    position: absolute;
+    top: 520px;
     margin-bottom: 0px;
     -webkit-transition: none;
     -moz-transition: none;
@@ -45,4 +47,10 @@
 /* TODO: need to add size for progress bar also */
 #recorder-container #recorder-controls {
     padding-top: 520px;
+}
+
+#recorder-container #left-clock,
+#recorder-container #right-clock {
+    position: relative;
+    top: 520px;
 }
