@@ -2,6 +2,7 @@ package controllers;
 
 import helpers.AdminHelpers;
 import models.*;
+import org.apache.commons.lang3.RandomStringUtils;
 import play.data.*;
 import static play.data.Form.*;
 import play.libs.mailer.*;
@@ -102,6 +103,20 @@ public class RegistrationController extends Controller {
 
         Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(null);
         return ok(reg_alumni.render(formdata, schoolMap));
+    }
+
+    public static Result resetPassword(User user){
+        String newpw = RandomStringUtils.randomAlphanumeric(8);
+        changePassword(user,newpw);
+
+        //now for the emailing
+        Email mail = new Email();
+        mail.setSubject("CareersFromHere: Your password has been reset!");
+        mail.setFrom("Careers From Here FROM <careersfromhere@gmail.com");
+        mail.addTo("To <" + user.getEmail() +">");
+        mail.setBodyText("You're password has been reset. You're new password is: "+newpw); //or something along those lines
+        String id = MailerPlugin.send(mail);
+        return ok("Email "+ id + " sent!");
     }
 
     public static Result postAlumniRegForm() {
