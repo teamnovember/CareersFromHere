@@ -93,7 +93,7 @@ public class UploadController extends Controller {
         String name = request().body().asMultipartFormData().asFormUrlEncoded().get("thumbnail-filename")[0];
         String thumbnailPath = systemPath + name;
         try {
-//            String cmd = "avconv -i " + oldVideoPaths.get(0) + " -vf  thumbnail -frames:v 1 " + thumbnailPath;
+//            String cmd = "avconv -i " + oldVideoPaths.get(0) + " -vframes 1 -y " + thumbnailPath;
             String cmd = "ffmpeg -i " + oldVideoPaths.get(0) + " -vf  thumbnail -frames:v 1 " + thumbnailPath;
             OutputStream os = Runtime.getRuntime().exec(cmd).getOutputStream();
             os.write("y".getBytes());
