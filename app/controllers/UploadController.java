@@ -26,7 +26,6 @@ public class UploadController extends Controller {
 
     public static Result uploadVideo() {
         int count = request().body().asMultipartFormData().getFiles().size();
-        count --;
 
         ArrayList<String> audioPaths = new ArrayList<String>();
         ArrayList<String> oldVideoPaths = new ArrayList<String>();
@@ -91,33 +90,14 @@ public class UploadController extends Controller {
             }
         }
 
-        // save thumbnail
-        FilePart fp = request().body().asMultipartFormData().getFiles().get(count);
-        File f = fp.getFile();
-
-        FileInputStream fis = null;
-        byte[] contents = new byte[(int) f.length()];
-        try {
-            fis = new FileInputStream(f);
-            fis.read(contents);
-            fis.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         String name = request().body().asMultipartFormData().asFormUrlEncoded().get("thumbnail-filename")[0];
         String thumbnailPath = systemPath + name;
-
         try {
-            f = new File(thumbnailPath);
-//            if (f.exists()) f.delete();
-            FileOutputStream fos = new FileOutputStream(f);
-            fos.write(contents);
-            fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+//            String cmd = "avconv -i " + oldVideoPaths.get(0) + " -vf  thumbnail -frames:v 1 " + thumbnailPath;
+            String cmd = "ffmpeg -i " + oldVideoPaths.get(0) + " -vf  thumbnail -frames:v 1 " + thumbnailPath;
+            OutputStream os = Runtime.getRuntime().exec(cmd).getOutputStream();
+            os.write("y".getBytes());
+            os.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -50,8 +50,6 @@ var rightClock;
 var progress;
 var state;
 var name;
-var thumbnailBlob;
-var firstVideo;
 
 var cameraStream;
 
@@ -167,11 +165,6 @@ function startStopPlayPause() {
         case "play":
             recorderAudio.play();
             recorderVideo.play();
-
-            if (firstVideo) {
-                takeSnapshot();
-                firstVideo = false;
-            }
 
             change(btnStartStopPlayPause, "inline", pauseGlyph);
             btnStartStopPlayPauseState = "pause";
@@ -289,19 +282,6 @@ function statePUBLISH() {
     child.parentNode.removeChild(child);
 };
 
-// this works only on the first upload
-// should not be a problem because there is one video per alumni
-function takeSnapshot() {
-    var canvas = document.createElement("canvas");
-    var ctx = canvas.getContext("2d");
-    canvas.width = 640;
-    canvas.height = 480;
-    ctx.drawImage(recorderVideo, 0, 0, canvas.width, canvas.height);
-    canvas.toBlob(function(blob) {
-        thumbnailBlob = blob;
-    });
-};
-
 function publish() {
     var videoType = "video";
     var videoExt = ".webm";
@@ -326,8 +306,7 @@ function publish() {
             formData.append(audioType + "-blob", audioBlobs[i]);
         }
 
-    formData.append("thumbnail-blob", thumbnailBlob);
-    formData.append("thumbnail-filename", name + "tp.webp");
+    formData.append("thumbnail-filename", name + "tp.png");
 
     xhr("/record/publish", formData, function (fName) {
         window.open(location.href + fName);
@@ -430,7 +409,6 @@ function initRecorder() {
     index = 0;
     newrec = false;
     oldTime = 0;
-    firstVideo = true;
 
     durationAudio = new Array(questions.length);
     durationVideo = new Array(questions.length);
