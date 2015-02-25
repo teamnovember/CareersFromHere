@@ -6,12 +6,14 @@ import play.data.*;
 import static play.data.Form.*;
 import play.libs.mailer.*;
 import play.Play;
+import views.forms.AlumniRegForm;
 import views.forms.LoginForm;
 import views.forms.UserForm;
 import views.html.edit_self;
 import views.html.emails.*;
 import views.html.login;
 import play.mvc.*;
+import views.html.reg_alumni;
 
 import java.util.List;
 import java.util.Map;
@@ -60,14 +62,6 @@ public class RegistrationController extends Controller {
         return ok("Email " + id + " sent!");
     }
 
-    public static Result register() {
-        School s = new School("New high school");
-        Alumni a = new Alumni("Test Alumni", "zaqwsxcde", "edgaras.liberis+cfh@gmail.com", s);
-        userApprovedEmail(a);
-        return ok("SUCCESS");
-    }
-
-
     public static Result login(){
         Form<LoginForm> form = form(LoginForm.class).fill(new LoginForm());
         return ok(login.render(form));
@@ -100,6 +94,35 @@ public class RegistrationController extends Controller {
 
     public static void changePassword(User user, String password){
         user.setPassword(password);
+    }
+
+    public static Result getAlumniRegForm() {
+        AlumniRegForm data = new AlumniRegForm();
+        Form<AlumniRegForm> formdata = Form.form(AlumniRegForm.class).fill(data);
+
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(null);
+        return ok(reg_alumni.render(formdata, schoolMap));
+    }
+
+    public static Result postAlumniRegForm() {
+        Form<AlumniRegForm> data = Form.form(AlumniRegForm.class).bindFromRequest();
+
+        String userSchoolName = data.data().get("school");
+        if(userSchoolName == null) userSchoolName = "";  // "Please provide value" is "" too
+        Map<String, Boolean> schoolMap = AdminHelpers.ConstructSchoolMap(userSchoolName);
+
+        if (data.hasErrors()) {
+            flash("error", "Please correct errors below.");
+            return badRequest(reg_alumni.render(data, schoolMap));
+        }
+
+        AlumniRegForm formData = data.get();
+        Alumni formUser = Alumni.makeInstance(formData);
+        formUser.save();
+
+        newRegistrationEmail(formUser);
+        flash("success", "Registered. Check your inbox!");
+        return redirect("/");
     }
 
     //TODO: might be a better place to put this but idc. also need to add stuff for alumni profile editing etc

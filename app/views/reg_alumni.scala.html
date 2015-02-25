@@ -1,0 +1,44 @@
+@(form: play.data.Form[views.forms.AlumniRegForm])(schoolMap: java.util.Map[String, Boolean])
+
+@import bootstrap3._
+
+@stylesheets = {
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
+}
+
+@javascripts = {
+
+}
+
+@main("Edit your user details - Careers From Here")(stylesheets)(javascripts)(null) {
+    <div class="spacing-panel">
+        <div class="shadow-panel">
+            <h2>New alumni registration</h2>
+            <hr>
+            @helper.form(action = routes.RegistrationController.postAlumniRegForm) {
+                <fieldset>
+                    @select(form("school"),
+                        label = "School",
+                        isMultiple = false,
+                        optionMap = schoolMap)
+                    @text(form("name"),
+                        label = "Name",
+                        placeholder = "Full Name")
+                    @text(form("email"),
+                        label = "Email",
+                        placeholder = "email@example.com")
+                    @password(form("password"),
+                        label = "Password")
+                    @textarea(form("profile"),
+                        label = "Profile")
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button id="submit" type="submit" value="Submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </fieldset>
+            }
+        </div>
+    </div>
+
+}
