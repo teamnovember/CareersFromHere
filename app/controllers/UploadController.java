@@ -147,7 +147,7 @@ public class UploadController extends Controller {
         aluMail.setSubject("Thank you for uploading to CareersFromHere");
         aluMail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
         aluMail.addTo("TO <" + alumni.getEmail() + ">");
-        aluMail.setBodyText("");//todo
+        aluMail.setBodyText("Your video is now being approved by the admins");//todo
         String alumId = MailerPlugin.send(aluMail);
 
         List<Admin> admins = school.getAdmins();
@@ -156,7 +156,7 @@ public class UploadController extends Controller {
             adminMail.setSubject("CareersFromHere: New Video has been uploaded");
             adminMail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
             adminMail.addTo("TO <" + x.getEmail() + ">");
-            adminMail.setBodyText("");//todo
+            adminMail.setBodyText("There is a new video for you to approve!");//todo
             String id2 = MailerPlugin.send(adminMail);
 
 
