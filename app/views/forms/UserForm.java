@@ -2,6 +2,8 @@ package views.forms;
 
 import models.School;
 import models.SchoolDAO;
+import models.User;
+import models.UserDAOImpl;
 import play.data.validation.ValidationError;
 
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ public class UserForm {
 
     public List<ValidationError> validate() {
         List<ValidationError> errors = new ArrayList<>();
+        UserDAOImpl udao = new UserDAOImpl();
 
         if (name == null || name.length() == 0) {
             errors.add(new ValidationError("name", "No name was given"));
@@ -49,12 +52,18 @@ public class UserForm {
 
         //TODO: add password checks? (e.g. password too short etc.)
 
+        //found a nice email regex :D credit: http://www.regular-expressions.info/email.html. It's one near the bottom :P
+        java.util.regex.Pattern regex = java.util.regex.Pattern.compile("\\b[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\b");
+
         if (email == null || email.length() == 0) {
             errors.add(new ValidationError("email","No email was given"));
-        } else if (!email.contains("@")) {
+        } else if (!regex.matcher(email).matches()) {
             errors.add(new ValidationError("email","Invalid email was given"));
             //TODO: do better email validation
+        } else if (udao.getUserByEmail(email) != null) {
+            errors.add(new ValidationError("email","A user already exists with that email address"));
         }
+
 
         if (discriminator == null || discriminator.equals("")) {
             errors.add(new ValidationError("discriminator", "No user type was given"));

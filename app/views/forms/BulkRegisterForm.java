@@ -2,6 +2,7 @@ package views.forms;
 
 import models.School;
 import models.SchoolDAO;
+import models.UserDAOImpl;
 import play.data.validation.ValidationError;
 
 import java.util.ArrayList;
@@ -42,6 +43,10 @@ public class BulkRegisterForm {
             if(sdao.byName(school.getName()) == null) {
                 errors.add(new ValidationError("school", "Invalid school provided"));
             }
+        }
+
+        if (data == null || data.equals("")) {
+            errors.add(new ValidationError("data","No email addresses given"));
         }
 
         if (discriminator == null || discriminator.equals("")) {

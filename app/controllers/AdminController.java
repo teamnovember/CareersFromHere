@@ -12,10 +12,7 @@ import views.forms.*;
 import views.html.admin.*;
 import views.html.emails.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Security.Authenticated(AdminSecured.class)
 public class AdminController extends Controller {
@@ -273,36 +270,68 @@ public class AdminController extends Controller {
             }
             String emails = formData.data;
             String[] emailss = emails.split("\r\n|\r|\n");
+            java.util.regex.Pattern regex = java.util.regex.Pattern.compile("\\b[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\b");
             SchoolDAO sdao = new SchoolDAO();
 
+            List<String> errors = new ArrayList<>();
+            int success = 0;
             for(int i = 0; i < emailss.length; i++) {
+                String s = emailss[i];
                 //Create new user with random password
                 String pass = RandomStringUtils.randomAlphanumeric(8);
                 User formUser = null;
-                switch(formData.discriminator) {
-                    case "alumni":
-                        formUser = new Alumni("Default Alumni",pass,emailss[i],sdao.byName(formData.school.getName()));
-                        break;
-                    case "admin":
-                        formUser = new Admin("Default Admin",pass,emailss[i],sdao.byName(formData.school.getName()));
-                        break;
-                    case "superadmin": //only superadmins can possibly select this option
-                        formUser = new SuperAdmin("Default SuperAdmin",pass,emailss[i],sdao.byName(formData.school.getName()));
-                        break;
-                    default: //"student"
-                        formUser = new Student("Default Student",pass,emailss[i],sdao.byName(formData.school.getName()));
-                        break;
-                }
-                formUser.setPassword(pass);
-                formUser.save();
+                if (s == null || s.length() == 0) {
+                    //do nothing - it's not the end of the world if they leave a blank line in!
+                } else if (!regex.matcher(s).matches()) {
+                    errors.add(s);
+                } else if (udao.getUserByEmail(s) != null) {
+                    errors.add(s);
+                } else {
+                    System.out.println(emailss[i] + "not in db");
+                    switch(formData.discriminator) {
+                        case "alumni":
+                            formUser = new Alumni("Default Alumni",pass,s,sdao.byName(formData.school.getName()));
+                            break;
+                        case "admin":
+                            formUser = new Admin("Default Admin",pass,s,sdao.byName(formData.school.getName()));
+                            break;
+                        case "superadmin": //only superadmins can possibly select this option
+                            formUser = new SuperAdmin("Default SuperAdmin",pass,s,sdao.byName(formData.school.getName()));
+                            break;
+                        default: //"student"
+                            formUser = new Student("Default Student",pass,s,sdao.byName(formData.school.getName()));
+                            break;
+                    }
+                    formUser.setPassword(pass);
+                    formUser.save();
+                    success++;
 
-                //Notify the user
-                Email mail = new Email();
-                mail.setSubject("Careers From Here: Account Invitation");
-                mail.setFrom("Careers From Here <careersfromhere@gmail.com>");
-                mail.addTo(formUser.getName() + " <" + formUser.getEmail() + ">");
-                mail.setBodyHtml(registration_invite.render(formUser,pass).toString());
-                MailerPlugin.send(mail);
+                    //Notify the user
+                    Email mail = new Email();
+                    mail.setSubject("Careers From Here: Account Invitation");
+                    mail.setFrom("Careers From Here <careersfromhere@gmail.com>");
+                    mail.addTo(formUser.getName() + " <" + formUser.getEmail() + ">");
+                    mail.setBodyHtml(registration_invite.render(formUser,pass).toString());
+                    MailerPlugin.send(mail);
+                }
+            }
+            if (success > 0) {
+                if (success == 1) {
+                    flash("success", success + " account was created!");
+                } else {
+                    flash("success", success + " accounts were created!");
+
+                }
+            }
+            if (errors.size() != 0) {
+                flash("error", "These email addresses are either invalid email addresses or they are already associated with accounts. Please check they are correct.");
+                String ret = "";
+                for (String s : errors) {
+                    ret = ret + s + "\n";
+                }
+                formData.data = ret;
+                data =  Form.form(BulkRegisterForm.class).fill(formData);
+                return badRequest(bulk_register.render(user, data, schoolMap,discrMap,auth));
             }
         }
         return redirect("/admin/users");
