@@ -287,7 +287,6 @@ public class AdminController extends Controller {
                 } else if (udao.getUserByEmail(s) != null) {
                     errors.add(s);
                 } else {
-                    System.out.println(emailss[i] + "not in db");
                     switch(formData.discriminator) {
                         case "alumni":
                             formUser = new Alumni("Default Alumni",pass,s,sdao.byName(formData.school.getName()));
