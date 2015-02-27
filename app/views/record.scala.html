@@ -15,19 +15,38 @@
         @recorder(JSONquestions)(JSONdurations)(user.getId())
     </div>
 
-    Title: <input id="video-title" />
-    Description: <input id="video-description" />
+    <div class="col-md-5">
+        <div class="spacing-panel">
+            <div class="shadow-panel clearfix">
+                <h2>Questions</h2>
+                <div>
+                    @for(question <- questions) {
+                        <div class="question clearfix"> @* onclick to recording app with question selection? *@
+                            <div class="col-xs-9">@question.getText()</div>
+                            <div class="col-xs-3">@{var s = question.getDuration.toInt; (s / 60) + ":" + (s % 60)}</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
 
-    <div class="spacing-panel col-md-5">
-        <div class="shadow-panel clearfix">
-            <h2>Questions</h2>
-            <div>
-                @for(question <- questions) {
-                    <div class="question clearfix"> @* onclick to recording app with question selection? *@
-                        <div class="col-xs-9">@question.getText()</div>
-                        <div class="col-xs-3">@{var s = question.getDuration.toInt; (s / 60)+ ":" + (s % 60)}</div>
+        <div class="spacing-panel">
+            <div class="shadow-panel clearfix">
+                <h2>Metadata</h2>
+                <fieldset>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Title</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="video-title"/>
+                        </div>
                     </div>
-                }
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Description</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" rows="3" id="video-description"></textarea>
+                        </div>
+                    </div>
+                </fieldset>
             </div>
         </div>
     </div>

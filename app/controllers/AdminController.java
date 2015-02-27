@@ -166,6 +166,7 @@ public class AdminController extends Controller {
                         formUser = Student.makeInstance(formData);
                         break;
                 }
+                formUser.setApproved(true);
                 formUser.save();
 
                 //Notify the user

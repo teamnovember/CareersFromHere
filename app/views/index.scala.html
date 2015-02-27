@@ -7,14 +7,19 @@
 }
 
 @javascripts = {
-
+    <script>
+        $("#category-sidebar h2" ).click(function() {
+            if(isBreakpoint("xs"))
+                $("#category").toggle();
+        });
+    </script>
 }
 
 @main("Careers From Here")(stylesheets)(javascripts)(user) {
     <div id="content-wrapper">
         <div class="row">
             <div id="category-sidebar" class="col-md-3 hidden-xs hidden-sm">
-                <h2>Categories</h2>
+                <h2>Categories <span class="glyphicon glyphicon-chevron-down"></span></h2>
                 <div id="categories">
                     @helper.form(action = routes.VideoController.categorySelect) {
                         <fieldset>
