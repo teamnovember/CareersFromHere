@@ -41,8 +41,13 @@
                         isMultiple = false,
                         optionMap = discrMap,
                         disabled = (id != null))
-                    @textarea(form("profile"),
+                    @if(form("discriminator").value == "alumni") {
+                        @textarea(form("profile"),
                             label = "Alumni Profile")
+                    } else {
+                        <input type="hidden" name="@form("profile").name" value="@form("profile").value">
+                    }
+                    <input type="hidden" name="@form("id").name" value="@form("id").value">
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
                             <button id="submit" type="submit" value="Submit" class="btn btn-primary">Submit</button>

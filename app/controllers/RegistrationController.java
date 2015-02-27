@@ -16,6 +16,8 @@ import views.html.login;
 import play.mvc.*;
 import views.html.reg_alumni;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -129,12 +131,12 @@ public class RegistrationController extends Controller {
         return redirect("/");
     }
 
-    //TODO: might be a better place to put this but idc. also need to add stuff for alumni profile editing etc
     public static Result getUserDetails() {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
-        School s = user.getSchool();
-        UserForm data = new UserForm(user.getName(),"",user.getEmail(),user.getSchool(),user.getDiscriminator(),user.getAlumniProfile(),user);
+
+        UserForm data = new UserForm(user.getName(),"",user.getEmail(),user.getSchool(),user.getDiscriminator(),user.getAlumniProfile(),user.getId());
+
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
 
         boolean auth = false;

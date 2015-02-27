@@ -17,7 +17,7 @@ public class UserForm {
     public String password = "";
     public String email = "";
     public School school = null;
-    public User user = null;
+    public Long id = 0l;
     /**
         Discriminator string for mapping form data to class it belongs to:
         "student" for Student,
@@ -34,14 +34,14 @@ public class UserForm {
         this.school = school;
     }
 
-    public UserForm(String name, String password, String email, School school, String discriminator, String profile,User user) {
+    public UserForm(String name, String password, String email, School school, String discriminator, String profile,Long id) {
         this.name = name;
         this.password = password;
         this.email = email;
         this.school = school;
         this.discriminator = discriminator;
         this.profile = profile;
-        this.user = user;
+        this.id = id;
     }
 
     public List<ValidationError> validate() {
@@ -56,6 +56,8 @@ public class UserForm {
 
         //found a nice email regex :D credit: http://www.regular-expressions.info/email.html. It's one near the bottom :P
         java.util.regex.Pattern regex = java.util.regex.Pattern.compile("\\b[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\b");
+
+        User user = udao.getUser(id);
 
         if (email == null || email.length() == 0) {
             errors.add(new ValidationError("email","No email was given"));
