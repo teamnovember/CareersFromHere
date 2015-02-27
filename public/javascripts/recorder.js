@@ -241,8 +241,12 @@ function stateREC() {
     btnStartStopPlayPauseState = "stop";
     change(btnNext, "none");
 
-    leftClock.innerText = "0:0";
-    rightClock.innerText = parseInt(durations[index] / 60) + ":" + parseInt(durations[index] % 60);
+    leftClock.innerText = "00:00";
+    var h = parseInt(durations[index] / 60);
+    var m = parseInt(durations[index] % 60);
+    if (h < 10) h = "0" + h;
+    if (m < 10) m = "0" + h;
+    rightClock.innerText = h + ":" + m;
     document.getElementsByClassName(progressBarClass)[0].style.width = "0%";
 };
 
@@ -262,7 +266,7 @@ function statePLAYBACK() {
     btnStartStopPlayPause.click();
     change(btnNext, "inline");
 
-    leftClock.innerText = "0:0";
+    leftClock.innerText = "00:00";
     // right clock is done on updDurationVideo()
     document.getElementsByClassName(progressBarClass)[0].style.width = "0%";
 };
@@ -332,7 +336,13 @@ function updDurationAudio() {
 function updDurationVideo() {
     durationVideo[index] = recorderVideo.duration;
 
-    if (state == "PLAYBACK") rightClock.innerText = parseInt(durationVideo[index] / 60) + ":" + parseInt(durationVideo[index] % 60);
+    if (state == "PLAYBACK") {
+        var h = parseInt(durationVideo[index] / 60);
+        var m = parseInt(durationVideo[index] % 60);
+        if (h < 10) h = "0" + h;
+        if (m < 10) m = "0" + m;
+        rightClock.innerText = h + ":" + m;
+    }
 };
 
 function testDuration() {
@@ -347,10 +357,18 @@ function updateProgressREC() {
     if (firstTimeUpdate) return;
 
     var t = parseInt(recorderVideo.currentTime - oldTime);
-    leftClock.innerText = parseInt(t / 60) + ":" + parseInt(t % 60);
+    var h = parseInt(t / 60);
+    var m = parseInt(t % 60);
+    if (h < 10) h = "0" + h;
+    if (m < 10) m = "0" + m;
+    leftClock.innerText = h + ":" + m;
 
     t = parseInt(durations[index] - recorderVideo.currentTime + oldTime);
-    rightClock.innerText = parseInt(t / 60) + ":" + parseInt(t % 60);
+    var h = parseInt(t / 60);
+    var m = parseInt(t % 60);
+    if (h < 10) h = "0" + h;
+    if (m < 10) m = "0" + m;
+    rightClock.innerText = h + ":" + m;
 
     var percentage = (recorderVideo.currentTime - oldTime) / durations[index] * 100;
     percentage = percentage.toString() + "%";
@@ -360,10 +378,18 @@ function updateProgressREC() {
 
 function updateProgressPLAYBACK() {
     var t = parseInt(recorderVideo.currentTime);
-    leftClock.innerText = parseInt(t / 60) + ":" + parseInt(t % 60);
+    var h = parseInt(t / 60);
+    var m = parseInt(t % 60);
+    if (h < 10) h = "0" + h;
+    if (m < 10) m = "0" + m;
+    leftClock.innerText = h + ":" + m;
 
     t = parseInt(durationVideo[index] - recorderVideo.currentTime);
-    rightClock.innerText = parseInt(t / 60) + ":" + parseInt(t % 60);
+    var h = parseInt(t / 60);
+    var m = parseInt(t % 60);
+    if (h < 10) h = "0" + h;
+    if (m < 10) m = "0" + m;
+    rightClock.innerText = h + ":" + m;
 
     var percentage = recorderVideo.currentTime / durationVideo[index] * 100;
     percentage = percentage.toString() + "%";
