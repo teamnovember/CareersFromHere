@@ -96,7 +96,7 @@ public class AdminController extends Controller {
             if (s.getId() != u.getSchool().getId()) {
                 return insufficientPermissions("/admin/users");
             }
-            data = new UserForm(u.getName(),"",u.getEmail(),u.getSchool(),u.getDiscriminator(),u.getAlumniProfile());
+            data = new UserForm(u.getName(),"",u.getEmail(),u.getSchool(),u.getDiscriminator(),u.getAlumniProfile(),u);
         }
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
 

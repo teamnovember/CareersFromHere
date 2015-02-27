@@ -134,7 +134,7 @@ public class RegistrationController extends Controller {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
         School s = user.getSchool();
-        UserForm data = new UserForm(user.getName(),"",user.getEmail(),user.getSchool(),user.getDiscriminator(),user.getAlumniProfile());
+        UserForm data = new UserForm(user.getName(),"",user.getEmail(),user.getSchool(),user.getDiscriminator(),user.getAlumniProfile(),user);
         Form<UserForm> formdata = Form.form(UserForm.class).fill(data);
 
         boolean auth = false;

@@ -17,6 +17,7 @@ public class UserForm {
     public String password = "";
     public String email = "";
     public School school = null;
+    public User user = null;
     /**
         Discriminator string for mapping form data to class it belongs to:
         "student" for Student,
@@ -33,13 +34,14 @@ public class UserForm {
         this.school = school;
     }
 
-    public UserForm(String name, String password, String email, School school, String discriminator, String profile) {
+    public UserForm(String name, String password, String email, School school, String discriminator, String profile,User user) {
         this.name = name;
         this.password = password;
         this.email = email;
         this.school = school;
         this.discriminator = discriminator;
         this.profile = profile;
+        this.user = user;
     }
 
     public List<ValidationError> validate() {
@@ -60,7 +62,9 @@ public class UserForm {
         } else if (!regex.matcher(email).matches()) {
             errors.add(new ValidationError("email","Invalid email was given"));
             //TODO: do better email validation
-        } else if (udao.getUserByEmail(email) != null) {
+        } else if (user != null && !user.getEmail().equals(email) && udao.getUserByEmail(email) != null) {
+            errors.add(new ValidationError("email","A user already exists with that email address"));
+        } else if (user == null && udao.getUserByEmail(email) != null) {
             errors.add(new ValidationError("email","A user already exists with that email address"));
         }
 
