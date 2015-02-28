@@ -15,6 +15,12 @@
         <div id="video-metadata" class="shadow-panel">
             <h2>@video.getTitle</h2>
             <p>@video.getDescription</p>
+            <ul id="catlist">
+                <label>Categories: </label>
+                @for(cat <- video.getCategories) {
+                    <li>@cat.getName</li>
+                }
+            </ul>
         </div>
     </div>
     <div class="spacing-panel col-md-5">

@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import play.libs.mailer.*;
+import views.html.emails.registration_invite;
+import views.html.emails.upload_admin_notify;
+import views.html.emails.upload_alumni_notify;
 
 @Security.Authenticated(Secured.class)
 public class UploadController extends Controller {
@@ -104,7 +107,7 @@ public class UploadController extends Controller {
 
         createAndUpdateVideo(title, description, thumbnailPath, audioPaths, oldVideoPaths, videoPaths, questionsId, durationVideo);
 
-        // TODO: redirect useless
+        flash("success","You video was uploaded successfully. It has been sent to your school's admins for approval");
         return redirect("/");
     }
 
@@ -139,30 +142,28 @@ public class UploadController extends Controller {
         }
 
         v.save();
+
+        sendUploadEmails(user.getSchool(),user,v);
     }
 
     //TODO: make sure this works!
-    private Result sendUploadEmails(School school, Alumni alumni) {
+    private static void sendUploadEmails(School school, Alumni alumni, Video video) {
         Email aluMail = new Email();
-        aluMail.setSubject("Thank you for uploading to CareersFromHere");
-        aluMail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
-        aluMail.addTo("TO <" + alumni.getEmail() + ">");
-        aluMail.setBodyText("Your video is now being approved by the admins");//todo
-        String alumId = MailerPlugin.send(aluMail);
+        aluMail.setSubject("Careers From Here: Upload Confirmation");
+        aluMail.setFrom("Careers From Here <careersfromhere@gmail.com>");
+        aluMail.addTo(alumni.getName() + " <" + alumni.getEmail() + ">");
+        aluMail.setBodyHtml(upload_alumni_notify.render(alumni).toString());
+        MailerPlugin.send(aluMail);
 
         List<Admin> admins = school.getAdmins();
         for (Admin x : admins) {
             Email adminMail = new Email();
-            adminMail.setSubject("CareersFromHere: New Video has been uploaded");
-            adminMail.setFrom("Careers From Here FROM <careersfromhere@gmail.com>");
-            adminMail.addTo("TO <" + x.getEmail() + ">");
-            adminMail.setBodyText("There is a new video for you to approve!");//todo
-            String id2 = MailerPlugin.send(adminMail);
-
-
+            adminMail.setSubject("Careers From Here: New Video has been uploaded to your school");
+            adminMail.setFrom("Careers From Here <careersfromhere@gmail.com>");
+            adminMail.addTo(x.getName() + " <" + x.getEmail() + ">");
+            aluMail.setBodyHtml(upload_admin_notify.render(x,video).toString());
+            MailerPlugin.send(adminMail);
         }
-
-        return ok("Email " + alumId + " sent! and admins notified");
     }
 
 }
