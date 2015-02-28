@@ -24,8 +24,8 @@ import views.html.emails.upload_alumni_notify;
 public class UploadController extends Controller {
 
     private static String prefixPath = "/assets/clips/";
-//    private static String systemPath = "/home/tdn26/videos/";
-    private static String systemPath = "/Users/tdn/Documents/workspace-uni/group_project/videos/";
+    private static String systemPath = "/home/tdn26/videos/";
+//    private static String systemPath = "/Users/tdn/Documents/workspace-uni/group_project/videos/";
 
     public static Result uploadVideo() {
         int count = request().body().asMultipartFormData().getFiles().size();
@@ -96,8 +96,8 @@ public class UploadController extends Controller {
         String name = request().body().asMultipartFormData().asFormUrlEncoded().get("thumbnail-filename")[0];
         String thumbnailPath = systemPath + name;
         try {
-//            String cmd = "avconv -i " + oldVideoPaths.get(0) + " -vframes 1 -y " + thumbnailPath;
-            String cmd = "ffmpeg -i " + oldVideoPaths.get(0) + " -vf  thumbnail -frames:v 1 " + thumbnailPath;
+            String cmd = "avconv -i " + oldVideoPaths.get(0) + " -vframes 1 -y " + thumbnailPath;
+//            String cmd = "ffmpeg -i " + oldVideoPaths.get(0) + " -vf  thumbnail -frames:v 1 " + thumbnailPath;
             OutputStream os = Runtime.getRuntime().exec(cmd).getOutputStream();
             os.write("y".getBytes());
             os.close();
@@ -129,8 +129,8 @@ public class UploadController extends Controller {
             // this runs in async mode, so there is going to be a delay before you can see the video
             // TODO: try to keep quality of video
             try {
-//                OutputStream os = Runtime.getRuntime().exec("avconv -i " + audioPaths.get(i) + " -itsoffset -00:00:00 -i " + oldVideoPaths.get(i) + " -map 0:0 -map 1:0 " + videoPaths.get(i)).getOutputStream();
-                OutputStream os = Runtime.getRuntime().exec("ffmpeg -i " + audioPaths.get(i) + " -itsoffset -00:00:00 -i " + oldVideoPaths.get(i) + " -map 0:0 -map 1:0 " + videoPaths.get(i)).getOutputStream();
+                OutputStream os = Runtime.getRuntime().exec("avconv -i " + audioPaths.get(i) + " -itsoffset -00:00:00 -i " + oldVideoPaths.get(i) + " -map 0:0 -map 1:0 " + videoPaths.get(i)).getOutputStream();
+//                OutputStream os = Runtime.getRuntime().exec("ffmpeg -i " + audioPaths.get(i) + " -itsoffset -00:00:00 -i " + oldVideoPaths.get(i) + " -map 0:0 -map 1:0 " + videoPaths.get(i)).getOutputStream();
                 os.write("y".getBytes());
                 os.close();
             } catch (IOException e) {
