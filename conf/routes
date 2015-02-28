@@ -9,14 +9,14 @@ GET         /view/:id                           controllers.VideoController.view
 GET         /assets/clips/*path                 controllers.VideoController.getVideoAt(path)
 
 # User info edit page
-GET         /edit                               controllers.RegistrationController.getUserDetails()
-POST        /edit                               controllers.RegistrationController.postUserDetails()
+GET         /edit                               controllers.UserController.getUserDetails()
+POST        /edit                               controllers.UserController.postUserDetails()
 
 # Alumni video edit page
-GET         /yourvideos                         controllers.RegistrationController.videos()
-GET         /yourvideos/manage/:id              controllers.RegistrationController.getVideo(id: Long)
-POST        /yourvideos/manage/:id              controllers.RegistrationController.postVideo(id: Long)
-POST        /yourvideos/delete                  controllers.RegistrationController.deleteVideo()
+GET         /myvideos                           controllers.UserController.videos()
+GET         /myvideos/manage/:id                controllers.UserController.getVideo(id: Long)
+POST        /myvideos/manage/:id                controllers.UserController.postVideo(id: Long)
+POST        /myvideos/delete                    controllers.UserController.deleteVideo()
 
 # Admin pages
 GET         /admin                              controllers.AdminController.index()

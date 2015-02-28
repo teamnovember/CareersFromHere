@@ -15,7 +15,7 @@
         <div class="shadow-panel">
             <h2>Edit your user information</h2>
             <hr>
-            @helper.form(action = routes.RegistrationController.postUserDetails() ) {
+            @helper.form(action = routes.UserController.postUserDetails() ) {
                 <fieldset>
                     @text(form("name"),
                         label = "Name",

@@ -17,7 +17,7 @@
         <div class="shadow-panel">
             <h2>Edit video metadata</h2>
             <hr>
-            @helper.form(action = routes.RegistrationController.postVideo(id)) {
+            @helper.form(action = routes.UserController.postVideo(id)) {
                 <fieldset>
                     @text(form("title"),
                         label = "Title")

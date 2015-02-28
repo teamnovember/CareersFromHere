@@ -191,7 +191,7 @@ public class AdminController extends Controller {
     }
 
     /**
-     * A UserForm is created from the request and if it has errors then a badRequest Result is returned or the data is bound to a User. If ID is null then a User is created based upon the data found in
+     * A UserForm is created from the request and if it has errors then a badRequest Result is returned. If ID is null then a User is created based upon the data found in
      * the form (with a password randomly generated if password was left blank) and the User is emailed their login details. If ID is not null then the User is found in the database by ID.
      * If the logged in User does not have permission to edit the User then they are redirected back to the users page without the data being saved to the database. If the User doesn't exist then they are redirected also.
      * Otherwise the data is saved to the database.
@@ -461,7 +461,7 @@ public class AdminController extends Controller {
      * If the logged in User doesn't have the permission to edit the Video corresponding to id (i.e the Schools do not match) then they are redirected to the main users page. If the Video doesn't exist they are also redirected.
      * Otherwise, a new VideoForm is created with values retrieved from the database from the User with the ID of id.
      * @param id the ID of the Video being edited
-     * @return an ok Result that renders the edit_video html (which goes to the admin/video/manage/id) if the User has permission to edit and the Video exists otherwise a redirect Result to the main video page.
+     * @return an ok Result that renders the edit_video html (which goes to the admin/video/manage/id) if the User has permission to edit the Video exists otherwise a redirect Result to the main video page.
      */
     public static Result getVideo(Long id) {
         UserDAOImpl udao = new UserDAOImpl();

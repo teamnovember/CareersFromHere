@@ -9,32 +9,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Louise on 25/02/2015.
+ * Holds the data when doing bulk registation functions
  */
 public class BulkRegisterForm {
-    public School school = null;
-    public String data = "";
-    public String discriminator = "student";
     /**
-     Discriminator string for mapping form data to class it belongs to:
-     "student" for Student,
-     "alumni" for Alumni,
-     "admin" for Admin,
-     "superadmin" for SuperAdmin
+     * The School we will be adding the users to
      */
+    public School school = null;
+    /**
+     * The list of emails (seperated by new line literals) of the Users we want to register
+     */
+    public String data = "";
+    /**
+     * The type of user we want to create in bulk
+     */
+    public String discriminator = "student";
 
-    public BulkRegisterForm() {}
-
+    /**
+     * Contructor for BulkRegisterForm.
+     * @param school The School we want to bulk register Users for
+     */
     public BulkRegisterForm(School school) {
         this.school = school;
     }
 
-    public BulkRegisterForm(String data, School school, String discriminator) {
-        this.data = data;
-        this.school = school;
-        this.discriminator = discriminator;
-    }
-
+    /**
+     * Validate function. This is called when we bind a form from the request. It checks the form fields for any errors.
+     * If there is an error then it is added to the errors list which can be used to help the User know what they
+     * did incorrectly
+     * @return A List of ValidationErrors if there were errors in the form, otherwise null.
+     */
     public List<ValidationError> validate() {
         List<ValidationError> errors = new ArrayList<>();
 
