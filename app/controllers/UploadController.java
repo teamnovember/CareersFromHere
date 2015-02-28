@@ -161,7 +161,7 @@ public class UploadController extends Controller {
             adminMail.setSubject("Careers From Here: New Video has been uploaded to your school");
             adminMail.setFrom("Careers From Here <careersfromhere@gmail.com>");
             adminMail.addTo(x.getName() + " <" + x.getEmail() + ">");
-            aluMail.setBodyHtml(upload_admin_notify.render(x,video).toString());
+            adminMail.setBodyHtml(upload_admin_notify.render(x,video).toString());
             MailerPlugin.send(adminMail);
         }
     }
