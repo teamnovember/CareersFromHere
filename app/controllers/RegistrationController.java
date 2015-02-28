@@ -90,18 +90,30 @@ public class RegistrationController extends Controller {
         return ok(reg_alumni.render(formdata, schoolMap));
     }
 
-    public static Result resetPassword(User user){
+    public static Result getResetPassword(){
+        Form<String> form = form(String.class);
+
+        return ok(reset_password.render(form));
+    }
+
+    public static Result resetPassword(){
+        DynamicForm requestData = Form.form().bindFromRequest();
+        String email = requestData.get("email");
+        UserDAOImpl dao = new UserDAOImpl();
+        User user = dao.getUserByEmail(email);
         String newpw = RandomStringUtils.randomAlphanumeric(8);
         user.setPassword(newpw);
 
         //now for the emailing
         Email mail = new Email();
-        mail.setSubject("CareersFromHere: Your password has been reset!");
-        mail.setFrom("Careers From Here FROM <careersfromhere@gmail.com");
-        mail.addTo("To <" + user.getEmail() +">");
-        mail.setBodyText("You're password has been reset. You're new password is: "+newpw); //or something along those lines
-        String id = MailerPlugin.send(mail);
-        return ok("Email "+ id + " sent!");
+        mail.setSubject("Careers From Here: Your password has been reset");
+        mail.setFrom("Careers From Here <careersfromhere@gmail.com>");
+        mail.addTo(user.getName() + " <" + user.getEmail() +">");
+        mail.setBodyHtml(reset_password_email.render(user,newpw).toString());
+        MailerPlugin.send(mail);
+
+        flash("success","Your password has been reset. Check your inbox!");
+        return redirect("/login");
     }
 
     public static Result postAlumniRegForm() {

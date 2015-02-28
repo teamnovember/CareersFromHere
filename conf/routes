@@ -84,3 +84,5 @@ GET         /assets/*file                       controllers.Assets.at(path="/pub
 GET         /login                              controllers.RegistrationController.login()
 POST        /login                              controllers.RegistrationController.authenticate()
 GET         /logout                             controllers.RegistrationController.logout()
+GET         /resetpassword                      controllers.RegistrationController.getResetPassword()
+POST        /resetpassword                      controllers.RegistrationController.resetPassword()

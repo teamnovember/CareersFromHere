@@ -20,4 +20,6 @@ public class CategorySelectionForm {
     public CategorySelectionForm(List<Category> categories) {
         this.categories = categories;
     }
+
+    public CategorySelectionForm() {}
 }
