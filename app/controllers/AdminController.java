@@ -52,30 +52,46 @@ public class AdminController extends Controller {
     /**
      * Backend function that codes the admin panel users page. The users page has a list of Users for a School with options to approve, edit or delete the Users
      * and the page also has buttons that allow to add Users in single or in bulk. Will display all Users for a School if the User is a SuperAdmin
-     * or all the non-SuperAdmin Users for a School if the User is an Admin.
+     * or all the non-SuperAdmin Users for a School if the User is an Admin. We also pass a "boolean" int that allows us to filter by unapproved Users only
+     * or to view all Users.
+     * @param unapprovedonly 1 if we want to view unapproved Users only, otherwise it is 0.
      * @return An ok Result that renders the users page.
      */
-    public static Result users() {
+    public static Result users(int unapprovedonly) {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
         School s = user.getSchool();
         if (user.getDiscriminator().equals("superadmin")) {
-            return ok(users.render(user, udao.getSchoolUsers(s))); //gets all Users for a School
+            if (unapprovedonly == 1) {
+                return ok(users.render(user, udao.getUnapprovedSchoolUsers(s)));
+            } else {
+                return ok(users.render(user, udao.getSchoolUsers(s)));
+            }
         } else {
-            return ok(users.render(user, udao.getSchoolUsersNoSA(s))); //gets all non-superadmin Users for a School
+            if (unapprovedonly == 1) {
+                return ok(users.render(user, udao.getUnapprovedSchoolUsersNoSA(s)));
+            } else {
+                return ok(users.render(user, udao.getSchoolUsersNoSA(s)));
+            }
         }
     }
 
     /**
      * Backend function that codes the admin panel video page. The video page has a list of all Videos for a School with options to approve, edit or delete Videos.
+     * We also pass a "boolean" int that allows us to filter by unapproved Users only or to view all Users.
+     * @param unapprovedonly 1 if we want to view unapproved Videos only, otherwise it is 0.
      * @return An ok Result that renders the video page.
      */
-    public static Result videos() {
+    public static Result videos(int unapprovedonly) {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
         VideoDAO dao = new VideoDAO();
         School s = user.getSchool();
-        return ok(videos.render(user, dao.getAllVideosBySchool(s))); //returns all Videos
+        if (unapprovedonly == 1) {
+            return ok(videos.render(user, dao.getUnapprovedVideosBySchool(s)));
+        } else {
+            return ok(videos.render(user, dao.getAllVideosBySchool(s)));
+        }
     }
 
     /**
@@ -268,8 +284,9 @@ public class AdminController extends Controller {
     }
 
     /**
-     * Removes the User selected from the database. The User is retrieved using a dynamic form to retrieve the id.
-     * @return A redirect Result back to the users page
+     * Removes the User selected from the database. The User is retrieved using a dynamic form to retrieve the id. It also detects the page we were directed from from the header.
+     * If we were directed here from the "unapproved Users only" page then we redirect back there.
+     * @return A redirect Result back to the users page (unapproved only or all users)
      */
     public static Result deleteUser() {
         DynamicForm requestData = Form.form().bindFromRequest();
@@ -279,12 +296,19 @@ public class AdminController extends Controller {
 
         flash("User deleted!");
 
-        return redirect("/admin/users");
+        String refererUrl = request().getHeader("referer");
+        String host = request().host();
+        if (refererUrl.equals("http://" + host + "/admin/users?unapprovedonly=1")){
+            return redirect("/admin/users?unapprovedonly=1");
+        } else {
+            return redirect("/admin/users");
+        }
     }
 
     /**
-     * Sets the approved boolean field for a User to true. The User is retrieved using a dynamic form to retrieve the id.
-     * @return A redirect Result back to the users page
+     * Sets the approved boolean field for a User to true. The User is retrieved using a dynamic form to retrieve the id. It also detects the page we were directed from from the header.
+     * If we were directed here from the "unapproved Users only" page then we redirect back there.
+     * @return A redirect Result back to the users page (unapproved only or all users)
      */
     public static Result approveUser() {
         DynamicForm requestData = Form.form().bindFromRequest();
@@ -295,8 +319,13 @@ public class AdminController extends Controller {
 
         flash("success", "User approved!");
 
-        return redirect("/admin/users");
-    }
+        String refererUrl = request().getHeader("referer");
+        String host = request().host();
+        if (refererUrl.equals("http://" + host + "/admin/users?unapprovedonly=1")){
+            return redirect("/admin/users?unapprovedonly=1");
+        } else {
+            return redirect("/admin/users");
+        }    }
 
     /**
      * Creates an empty BulkRegisterForm with the School set to the same as the User by default.
@@ -497,8 +526,9 @@ public class AdminController extends Controller {
     }
 
     /**
-     * Removes the Video selected from the database. The Video is retrieved using a dynamic form to retrieve the id.
-     * @return A redirect Result back to the video page
+     * Removes the Video selected from the database. The Video is retrieved using a dynamic form to retrieve the id. It also detects the page we were directed from from the header.
+     * If we were directed here from the "unapproved Videos only" page then we redirect back there.
+     * @return A redirect Result back to the video page (unapproved only or all)
      */
     public static Result deleteVideo() {
         DynamicForm requestData = Form.form().bindFromRequest();
@@ -508,12 +538,19 @@ public class AdminController extends Controller {
 
         flash("success", "Video deleted!");
 
-        return redirect("/admin/videos");
+        String refererUrl = request().getHeader("referer");
+        String host = request().host();
+        if (refererUrl.equals("http://" + host + "/admin/videos?unapprovedonly=1")){
+            return redirect("/admin/videos?unapprovedonly=1");
+        } else {
+            return redirect("/admin/videos");
+        }
     }
 
     /**
-     * Sets the approved boolean field for a User to true. The User is retrieved using a dynamic form to retrieve the id.
-     * @return A redirect Result back to the users page
+     * Sets the approved boolean field for a User to true. The User is retrieved using a dynamic form to retrieve the id. It also detects the page we were directed from from the header.
+     * If we were directed here from the "unapproved Videos only" page then we redirect back there.
+     * @return A redirect Result back to the users page (unapproved only or all)
      */
     public static Result approveVideo() {
         DynamicForm requestData = Form.form().bindFromRequest();
@@ -525,7 +562,13 @@ public class AdminController extends Controller {
 
         flash("success", "Video approved!");
 
-        return redirect("/admin/videos");
+        String refererUrl = request().getHeader("referer");
+        String host = request().host();
+        if (refererUrl.equals("http://" + host + "/admin/videos?unapprovedonly=1")){
+            return redirect("/admin/videos?unapprovedonly=1");
+        } else {
+            return redirect("/admin/videos");
+        }
     }
 
     /**

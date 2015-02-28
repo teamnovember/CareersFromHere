@@ -14,8 +14,10 @@ POST        /edit                               controllers.RegistrationControll
 
 # Admin pages
 GET         /admin                              controllers.AdminController.index()
-GET         /admin/users                        controllers.AdminController.users()
-GET         /admin/videos                       controllers.AdminController.videos()
+GET         /admin/users                        controllers.AdminController.users(unapprovedonly:Int ?= 0)
+GET         /admin/users                        controllers.AdminController.users(unapprovedonly:Int ?= 1)
+GET         /admin/videos                       controllers.AdminController.videos(unapprovedonly:Int ?= 0)
+GET         /admin/videos                       controllers.AdminController.videos(unapprovedonly:Int ?= 1)
 GET         /admin/questions                    controllers.AdminController.questions()
 GET         /admin/schools                      controllers.AdminController.schools()
 GET         /admin/categories                   controllers.AdminController.categories()

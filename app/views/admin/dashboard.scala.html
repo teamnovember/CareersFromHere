@@ -11,7 +11,7 @@
 @main("Admin Dashboard - Careers From Here")(stylesheets)(javascripts)(user) {
     <div class="spacing-panel col-md-6">
         <div id="actions-links" class="shadow-panel">
-          <div><a class="btn btn-primary choice-button" href="@routes.AdminController.users">
+          <div><a class="btn btn-primary choice-button" href="@routes.AdminController.users(0)">
               <h3><span class="glyphicon glyphicon-user"></span> Manage users</h3>
               <p>Click here to:
               <ul>
@@ -22,7 +22,7 @@
               </ul>
               </p>
           </a></div>
-          <div><a class="btn btn-primary choice-button" href="@routes.AdminController.videos">
+          <div><a class="btn btn-primary choice-button" href="@routes.AdminController.videos(0)">
               <h3><span class="glyphicon glyphicon-facetime-video"></span> Manage Videos</h3>
               <p>Click here to:
               <ul>

@@ -1,5 +1,6 @@
 package views.forms;
 
+import models.SchoolDAO;
 import play.data.validation.ValidationError;
 
 import java.util.ArrayList;
@@ -10,7 +11,6 @@ import java.util.List;
  */
 public class SchoolForm {
     public String name = "";
-
     public SchoolForm() {}
 
     public SchoolForm(String name) {
@@ -20,8 +20,12 @@ public class SchoolForm {
     public List<ValidationError> validate() {
         List<ValidationError> errors = new ArrayList<ValidationError>();
 
+        SchoolDAO sdao = new SchoolDAO();
+
         if (name == null || name.length() == 0) {
             errors.add(new ValidationError("name", "No name was given"));
+        } if (sdao.byName(name) != null) {
+            errors.add(new ValidationError("name","A school with that name already exists"));
         }
 
         if (errors.size() > 0) {

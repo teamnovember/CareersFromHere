@@ -67,6 +67,19 @@ public class VideoDAO {
         return videos;
     }
 
+    public List<Video> getUnapprovedVideosBySchool(School s) {
+        List<Video> videos = new ArrayList<>();
+        if (s == null) {
+            return videos;
+        }
+        List<Alumni> alumnis = Alumni.find.where().eq("school", s).eq("approved", true).findList();
+        for (Alumni a : alumnis) {
+            List<Video> vids = Video.find.where().eq("user",a).eq("approved",false).findList();
+            videos.addAll(vids);
+        }
+        return videos;
+    }
+
     public List<Video> getVideosBySchoolAndCategories(School s, List<Category> categories) {
         List<Video> videos = getVideosBySchool(s);
         return filterVideosByCategories(videos, categories);

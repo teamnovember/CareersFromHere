@@ -17,6 +17,12 @@
             <a class="btn btn-default action-button"
             href="@routes.AdminController.getBulkRegister()">
                 <span class="glyphicon glyphicon-plus"></span> Bulk register users by email</a>
+            <a class="btn btn-default action-button"
+            href="@routes.AdminController.users(1)">
+                <span class="glyphicon glyphicon-filter"></span> Show unapproved users only</a>
+            <a class="btn btn-default action-button"
+            href="@routes.AdminController.users(0)">
+                <span class="glyphicon glyphicon-filter"></span> Show all users</a>
             <table class="table">
                 <thead>
                     <tr>
