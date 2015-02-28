@@ -109,7 +109,10 @@ public class VideoController extends Controller {
         User user = udao.getUserFromContext();
         VideoDAO vdao = new VideoDAO();
         Video v = vdao.getVideo(id);
-
+        if (v == null) {
+            flash("error","The video with the requested ID does not exist");
+            return redirect("/");
+        }
         if (v.getUser().getSchool().getId() != user.getSchool().getId()) {
             flash("error", "You don't have sufficient permissions to view requested video.");
             return redirect("/");

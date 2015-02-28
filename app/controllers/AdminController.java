@@ -13,54 +13,90 @@ import views.html.admin.*;
 import views.html.emails.*;
 
 import java.util.*;
-
+/**
+ * Controller for all of the admin specific functions found in the admin panel. The entire class is secured using a @Security.Authenticated(AdminSecured.class) annotation,
+ * which means only Admin or SuperAdmin Users can use the functions in this class.
+ */
 @Security.Authenticated(AdminSecured.class)
 public class AdminController extends Controller {
-    //TODO: will need to authenticate the current user in these methods (replace new user creation)
+    /**
+     * Helper function to throw an error and a redirect if the User doesn't have permission
+     * @param redirUrl Relative URL to redirect to if a User doesn't have permission
+     * @return A redirect Result to the specified URL
+     */
     private static Result insufficientPermissions(String redirUrl) {
         flash("error", "You don't have sufficient permissions to perform requested action.");
         return redirect(redirUrl);
     }
 
+    /**
+     * Helper function to throw an error and a redirect if the database does not have the object requested.
+     * @param redirUrl Relative URL to redirect to if an object doesn't exist
+     * @return A redirect Result to the specified URL
+     */
+    private static Result doesNotExist(String redirUrl) {
+        flash("error","The object with that ID does not exist");
+        return redirect(redirUrl);
+    }
+
+    /**
+     * Backend function that codes the admin panel index page
+     * @return An ok Result that renders the index page. This page contains links to the other admin pages.
+     */
     public static Result index() {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
         return ok(dashboard.render(user));
     }
 
+    /**
+     * Backend function that codes the admin panel users page. The users page has a list of Users for a School with options to approve, edit or delete the Users
+     * and the page also has buttons that allow to add Users in single or in bulk. Will display all Users for a School if the User is a SuperAdmin
+     * or all the non-SuperAdmin Users for a School if the User is an Admin.
+     * @return An ok Result that renders the users page.
+     */
     public static Result users() {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
         School s = user.getSchool();
         if (user.getDiscriminator().equals("superadmin")) {
-            return ok(users.render(user, udao.getSchoolUsers(s))); //gets all users for a school
+            return ok(users.render(user, udao.getSchoolUsers(s))); //gets all Users for a School
         } else {
-            return ok(users.render(user, udao.getSchoolUsersNoSA(s))); //gets all non-superadmin users for a school
+            return ok(users.render(user, udao.getSchoolUsersNoSA(s))); //gets all non-superadmin Users for a School
         }
     }
 
+    /**
+     * Backend function that codes the admin panel video page. The video page has a list of all Videos for a School with options to approve, edit or delete Videos.
+     * @return An ok Result that renders the video page.
+     */
     public static Result videos() {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
         VideoDAO dao = new VideoDAO();
         School s = user.getSchool();
-        return ok(videos.render(user, dao.getAllVideosBySchool(s))); //returns all videos
+        return ok(videos.render(user, dao.getAllVideosBySchool(s))); //returns all Videos
     }
 
+    /**
+     * Backend function that codes the admin panel question page. The question page has a list of all active Questions for a School with options to approve, edit or delete individual Questions.
+     * Questions can also be reordered and new Questions can be added from this page.
+     * @return An ok Result that renders the question page.
+     */
     public static Result questions() {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
         School s = user.getSchool();
         QuestionDAO dao = new QuestionDAO();
-        /*dao.newQuestion(new Question("Question 1", 120.0, s));
-        dao.newQuestion(new Question("Question 2", 120.0, s));
-        dao.newQuestion(new Question("This question is not so long.", 120.0, s));
-        dao.newQuestion(new Question("This is a much much longer question that may actually span across several lines in the question view in the admin panel.", 120.0, s));
-        */
-        List<Question> qs = dao.getActiveQuestions(s); //this gets all the active questions for a school
+        List<Question> qs = dao.getActiveQuestions(s); //this gets all the active Questions for a School
         return ok(questions.render(user, qs));
     }
 
+    /**
+     * Backend function that codes the admin panel school page. This function is annotated with @Security.Authenticated(SuperAdminSecured.class) which means this function can only be used by SuperAdmin Users.
+     * The school page has a list of all Schools with options to edit or delete individual Schools. New Schools can also be created, which when created are populated with Questions found in the 'Default' School.
+     * @return An ok Result that renders the school page.
+     */
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result schools() {
         UserDAOImpl udao = new UserDAOImpl();
@@ -70,6 +106,11 @@ public class AdminController extends Controller {
         return ok(schools.render(user, ss));
     }
 
+    /**
+     * Backend function that codes the admin panel category page. This function is annotated with @Security.Authenticated(SuperAdminSecured.class) which means this function can only be used by SuperAdmin Users.
+     * The category page has a list of all categories with options to edit or delete individual categories. New categories can also be created.
+     * @return An ok Result that renders the category page.
+     */
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result categories() {
         UserDAOImpl udao = new UserDAOImpl();
@@ -79,20 +120,35 @@ public class AdminController extends Controller {
         return ok(categories.render(user, cs));
     }
 
+    /**
+     * Calls getUser with null as the id, meaning a new User is being created.
+     * @return An ok Result that renders the edit_user html (which goes to the admin/users/manage/new/) with an empty UserForm with the School set as the same as the User logged in.
+     */
     public static Result getNewUser() {
         return getUser(null);
     }
 
+    /**
+     * Either creates a new UserForm with empty values except for School, which is the same as the current User, or creates a UserForm filled with data from the User in the database with the matching id.
+     * The logged in User (Admin/SuperAdmin) must have permission to edit the User they are trying to edit, which means they must have the same School as the User they are trying to edit, otherwise they
+     * they are redirected. The User must also exist, and if it doesn't then they are redirected.
+     * @param id the ID of the User that is being edited or null if a User is being created.
+     * @return Either an ok Result that renders the edit_user html (which goes to the admin/users/manage/id/ or the admin/users/manage/new/) with a UserForm filled with the current data of the User being edited.
+     * or a redirect to the main users page if they don't have permission or the User doesn't exist.
+     */
     public static Result getUser(Long id) {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
         School s = user.getSchool();
         UserForm data;
         if (id == null) {
-            data = new UserForm(user.getSchool()); // Suggest same school as Admin by default
+            data = new UserForm(user.getSchool()); // Suggest same School as Admin by default
         } else {
             UserDAOImpl dao = new UserDAOImpl();
             User u = dao.getUser(id);
+            if (u == null) {
+                return doesNotExist("/admin/users");
+            }
             if (s.getId() != u.getSchool().getId()) {
                 return insufficientPermissions("/admin/users");
             }
@@ -110,10 +166,22 @@ public class AdminController extends Controller {
         return ok(edit_user.render(user, formdata, id, schoolMap, discrMap, auth));
     }
 
+    /**
+     * Calls postUser with null as the id, meaning a new User is created.
+     * @return Either a badRequest Result if the UserForm has errors or a redirect Result back to the main users page.
+     */
     public static Result postNewUser() {
         return postUser(null);
     }
 
+    /**
+     * A UserForm is created from the request and if it has errors then a badRequest Result is returned or the data is bound to a User. If ID is null then a User is created based upon the data found in
+     * the form (with a password randomly generated if password was left blank) and the User is emailed their login details. If ID is not null then the User is found in the database by ID.
+     * If the logged in User does not have permission to edit the User then they are redirected back to the users page without the data being saved to the database. If the User doesn't exist then they are redirected also.
+     * Otherwise the data is saved to the database.
+     * @param id the ID of the User that is being edited or null if a User is being created.
+     * @return Either a badRequest Result if the UserForm has errors a redirect Result back to the main users page.
+     */
     public static Result postUser(Long id) {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
@@ -144,14 +212,9 @@ public class AdminController extends Controller {
             UserForm formData = data.get();
             User formUser = null;
             if (formData.school == null) {
-                formData.school = user.getSchool(); //this is to allow for non-superadmins to create stuff as they always submit null schools
+                formData.school = user.getSchool(); //this is to allow for non-superadmins to create stuff as they always submit null Schools
             }
-            if (id == null) { //aka if we're making a new user, actually make a new one
-                //Admin idiot prevention aka make sure they don't create a user with a null or blank password
-                if (formData.password == null || formData.password.equals("")) {
-                    flash("error","Password field was empty");
-                    return badRequest(edit_user.render(user, data, id, schoolMap, discrMap,auth));
-                }
+            if (id == null) { //aka if we're making a new User, actually make a new one
                 switch(formData.discriminator) {
                     case "alumni":
                         formUser = Alumni.makeInstance(formData);
@@ -166,21 +229,28 @@ public class AdminController extends Controller {
                         formUser = Student.makeInstance(formData);
                         break;
                 }
+                if (formData.password == null || formData.password.equals("")) {
+                    String pass = RandomStringUtils.randomAlphanumeric(8);
+                    formUser.setPassword(pass);
+                }
                 formUser.setApproved(true);
                 formUser.save();
 
-                //Notify the user
+                //Notify the User
                 Email mail = new Email();
                 mail.setSubject("Careers From Here: Account Invitation");
                 mail.setFrom("Careers From Here <careersfromhere@gmail.com>");
-                mail.addTo(formUser.getName() + " <" + formUser.getEmail() + ">");
+                mail.addTo(formUser.getEmail() + " <" + formUser.getEmail() + ">");
                 mail.setBodyHtml(registration_invite.render(formUser,formData.password).toString());
                 MailerPlugin.send(mail);
             }
-            else { //if we have an id (aka we're editing) we want to edit the details of the user in the database already
+            else { //if we have an id (aka we're editing) we want to edit the details of the User in the database already
                 UserDAOImpl dao = new UserDAOImpl();
                 SchoolDAO sdao = new SchoolDAO();
                 formUser = dao.getUser(id);
+                if (formUser == null) {
+                    return doesNotExist("/admin/users");
+                }
                 if (user.getSchool().getId() != formUser.getSchool().getId()) {
                     return insufficientPermissions("/admin/users");
                 }
@@ -197,6 +267,10 @@ public class AdminController extends Controller {
         return redirect("/admin/users");
     }
 
+    /**
+     * Removes the User selected from the database. The User is retrieved using a dynamic form to retrieve the id.
+     * @return A redirect Result back to the users page
+     */
     public static Result deleteUser() {
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
@@ -208,6 +282,10 @@ public class AdminController extends Controller {
         return redirect("/admin/users");
     }
 
+    /**
+     * Sets the approved boolean field for a User to true. The User is retrieved using a dynamic form to retrieve the id.
+     * @return A redirect Result back to the users page
+     */
     public static Result approveUser() {
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
@@ -220,6 +298,10 @@ public class AdminController extends Controller {
         return redirect("/admin/users");
     }
 
+    /**
+     * Creates an empty BulkRegisterForm with the School set to the same as the User by default.
+     * @return An ok Result that renders the bulk_register html (which goes to the admin/users/bulkregister) with an empty BulkRegisterForm with School set to the same as the logged in User.
+     */
     public static Result getBulkRegister() {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
@@ -230,7 +312,7 @@ public class AdminController extends Controller {
             auth = true;
         }
 
-        BulkRegisterForm data = new BulkRegisterForm(user.getSchool()); // Suggest same school as Admin by default
+        BulkRegisterForm data = new BulkRegisterForm(user.getSchool()); // Suggest same School as Admin by default
 
         Form<BulkRegisterForm> formdata = Form.form(BulkRegisterForm.class).fill(data);
 
@@ -240,6 +322,15 @@ public class AdminController extends Controller {
         return ok(bulk_register.render(user, formdata, schoolMap,discrMap,auth));
     }
 
+    /**
+     * Retrieves a BulkRegisterForm from the request and parses the data within it. If the form has errors then a badRequest is returned. Otherwise, the data field is parsed so that it is split into an array of
+     * Strings based on new line characters. Each String in this list is compared so that it is not empty/null, matches an email regex and that a User in the database doesn't already have the email dictated in the
+     * String. If the String doesn't cause an error then a new User is created with a default name and a random password and the User is emailed their login details. The successful account creations are counted
+     * and returned in a flash so the User knows how many accounts were successfully created. If there were Strings that caused errors then a badRequest Result is returned and a new BulkRegisterForm is created with
+     * the same fields as the current BulkRegisterForm but with the data field now only filled with the concatenated Strings (with new line characters seperating them) that caused errors. If there were no errors
+     * then a redirect Result takes them to the main users page.
+     * @return Either a badRequest Result if the form had errors or if certain emails entered were invalid or a redirect back to the main users page.
+     */
     public static Result postBulkRegister() {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
@@ -267,7 +358,7 @@ public class AdminController extends Controller {
         else {
             BulkRegisterForm formData = data.get();
             if (formData.school == null) {
-                formData.school = user.getSchool(); //this is to allow for non-superadmins to create stuff as they always submit null schools
+                formData.school = user.getSchool(); //this is to allow for non-superadmins to create stuff as they always submit null Schools
             }
             String emails = formData.data;
             String[] emailss = emails.split("\r\n|\r|\n");
@@ -278,7 +369,7 @@ public class AdminController extends Controller {
             int success = 0;
             for(int i = 0; i < emailss.length; i++) {
                 String s = emailss[i];
-                //Create new user with random password
+                //Create new User with random password
                 String pass = RandomStringUtils.randomAlphanumeric(8);
                 User formUser = null;
                 if (s == null || s.length() == 0) {
@@ -306,7 +397,7 @@ public class AdminController extends Controller {
                     formUser.save();
                     success++;
 
-                    //Notify the user
+                    //Notify the User
                     Email mail = new Email();
                     mail.setSubject("Careers From Here: Account Invitation");
                     mail.setFrom("Careers From Here <careersfromhere@gmail.com>");
@@ -337,14 +428,21 @@ public class AdminController extends Controller {
         return redirect("/admin/users");
     }
 
-    //dont need "new" video methods in AdminController
+    /**
+     * If the logged in User doesn't have the permission to edit the Video corresponding to id (i.e the Schools do not match) then they are redirected to the main users page. If the Video doesn't exist they are also redirected.
+     * Otherwise, a new VideoForm is created with values retrieved from the database from the User with the ID of id.
+     * @param id the ID of the Video being edited
+     * @return an ok Result that renders the edit_video html (which goes to the admin/video/manage/id) if the User has permission to edit and the Video exists otherwise a redirect Result to the main video page.
+     */
     public static Result getVideo(Long id) {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
 
         VideoDAO dao = new VideoDAO();
         Video video = dao.getVideo(id);
-
+        if (video == null) {
+            return doesNotExist("/admin/videos");
+        }
         if(user.getSchool().getId() != video.getUser().getSchool().getId()) {
             return insufficientPermissions("/admin/videos");
         }
@@ -356,13 +454,21 @@ public class AdminController extends Controller {
         return ok(edit_video.render(user, formdata, id, catMap));
     }
 
+    /**
+     * A VideoForm is created from the request. If the User doesn't have sufficient permissions then they are redirected to the main video page. Otheriwse the VideoForm is checked for errors. If it has errors then
+     * a badRequest is returned. Otherwise, the Video in the database with an ID id is updated to have the same information found in the VideoForm and a redirect to the main video page is returned.
+     * @param id the ID of the Video being edited
+     * @return A redirect Result to the main video page if the User doesn't have permission to edit, the Video didn't exist or if the edit was successful or a badRequest Result if the form had errors.
+     */
     public static Result postVideo(Long id) {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
         Form<VideoForm> data = Form.form(VideoForm.class).bindFromRequest();
         VideoDAO dao = new VideoDAO();
         Video video = dao.getVideo(id);
-
+        if (video == null) {
+            return doesNotExist("/admin/videos");
+        }
         if(user.getSchool().getId() != video.getUser().getSchool().getId()) {
             return insufficientPermissions("/admin/videos");
         }
@@ -372,7 +478,7 @@ public class AdminController extends Controller {
             flash("error", "Please correct errors below.");
             return badRequest(edit_video.render(user, data, id, catMap));
         }
-        else { //don't need to check for null id because we don't create videos here
+        else { //don't need to check for null id because we don't create Videos here
             CategoryDAO cdao = new CategoryDAO(); // Has fully initialised Category objects
 
             VideoForm formData = data.get();
@@ -390,6 +496,10 @@ public class AdminController extends Controller {
         }
     }
 
+    /**
+     * Removes the Video selected from the database. The Video is retrieved using a dynamic form to retrieve the id.
+     * @return A redirect Result back to the video page
+     */
     public static Result deleteVideo() {
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
@@ -401,6 +511,10 @@ public class AdminController extends Controller {
         return redirect("/admin/videos");
     }
 
+    /**
+     * Sets the approved boolean field for a User to true. The User is retrieved using a dynamic form to retrieve the id.
+     * @return A redirect Result back to the users page
+     */
     public static Result approveVideo() {
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
@@ -414,10 +528,18 @@ public class AdminController extends Controller {
         return redirect("/admin/videos");
     }
 
-    //TODO: need a method/way for admins to preview video before they decide to approve or delete
-
+    /**
+     * Calls getQuestion with a null ID.
+     * @return Either a redirect if the User had insufficient permissions or an ok Result that renders the edit_question html (which is the URL /admin/questions/manage/new)
+     */
     public static Result getNewQuestion() { return getQuestion(null);}
 
+    /**
+     * Creates a QuestionForm based on the id. If the id is null then an empty QuestionForm is created, otherwise it is filled with data from the Question with the matching id in the database. If the User does not
+     * have permission to edit the Question then they are redirected to the main questions page. If the Question doesn't exist they are also redirected. Otherwise an ok Result is returned.
+     * @param id the ID of the Question being edited or null if a Question is being created.
+     * @return A redirect Result to the main question page if the User had insufficient permissions or the Question doesn't exist or an ok Result that renders the edit_question html (which is the URL /admin/questions/manage/new or /admin/questions/manage/id)
+     */
     public static Result getQuestion(Long id) {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
@@ -429,6 +551,9 @@ public class AdminController extends Controller {
         else {
             QuestionDAO dao = new QuestionDAO();
             Question q = dao.getQuestion(id);
+            if (q == null) {
+                return doesNotExist("/admin/questions");
+            }
             if(user.getSchool().getId() != q.getSchool().getId()) {
                 return insufficientPermissions("/admin/questions");
             }
@@ -438,6 +563,12 @@ public class AdminController extends Controller {
         return ok(edit_question.render(user, formdata, id));
     }
 
+    /**
+     * Creates a DynamicForm from the request and retrieves the order String from it. Based in this String an array is created, split by commas. This array is then checked for validity against
+     * the size of the active Question list, each element is checked to be an integer and it is checked so that is it a valid permutation of numbers from  1 to the size of the active Question list.
+     * If an error is found then a redirect to the main question page is returned. Otherwise the Questions in database are updated with the new order and a redirect to the main questions page is returned.
+     * @return A redirect Result to the main question page.
+     */
     public static Result reorderQuestions() {
         DynamicForm requestData = Form.form().bindFromRequest();
         String data = requestData.get("order");
@@ -486,8 +617,19 @@ public class AdminController extends Controller {
         return redirect("/admin/questions");
     }
 
+    /**
+     * Calls postQuestion with a null id.
+     * @return A redirect Result to the main questions page if the User has insufficient permissions or the operation is successful or a badRequest Result if the form has errors.
+     */
     public static Result postNewQuestion() {return postQuestion(null);}
 
+    /**
+     * Retrieves a QuestionForm from the request. If this form has errors then a badRequest is returned. Otherwise, if id is null then a new Question is created from the form data. If the id is not null then
+     * the User is checked for permission. If the School of the Question does not match the School of the User then redirect back to tha main questions page. If the Question doesn't exist then also redirect.
+     * Otherwise, update the Question in the database with the data from the form.
+     * @param id the ID of the Question being edited or null if a Question is being created
+     * @return A redirect Result to the main questions page if the User has insufficient permissions, the Question doesn't exist or the operation is successful or a badRequest Result if the form has errors.
+     */
     public static Result postQuestion(Long id) {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
@@ -499,25 +641,32 @@ public class AdminController extends Controller {
         }
         else {
             QuestionForm formData = data.get();
-            Question q = null;
+            Question q;
             QuestionDAO dao = new QuestionDAO();
-            if (id == null) { //if we are creating a new question
+            if (id == null) { //if we are creating a new Question
                 q = Question.makeInstance(formData, user.getSchool());
                 dao.newQuestion(q); //this ensures we get the ordering correct
             } else {
                 q = dao.getQuestion(id);
+                if (q == null) {
+                    return doesNotExist("/admin/questions");
+                }
                 if(user.getSchool().getId() != q.getSchool().getId()) {
                     return insufficientPermissions("/admin/questions");
                 }
                 q.setText(formData.text);
                 q.setDuration(formData.duration);
-                //TODO: edit the question form to allow for reordering. or to reorder normally...
                 q.update();
             }
             return redirect("/admin/questions");
         }
     }
 
+    /**
+     * Retrieves an id from the request using a DynamicForm and calls deleteQuestion on the id. This sets the active field on the Question to 0 rather than deleting the Question to ensure backwards compatibility with
+     * old Videos.
+     * @return A redirect Result to the main question page.
+     */
     public static Result deleteQuestion() {
         DynamicForm requestData = Form.form().bindFromRequest();
         Long id = Long.parseLong(requestData.get("id"));
@@ -527,9 +676,20 @@ public class AdminController extends Controller {
         return redirect("/admin/questions");
     }
 
+    /**
+     * Calls getSchool with a null id parameter. This method is annotated with @Security.Authenticated(SuperAdminSecured.class) which means it can only be called by SuperAdmin Users.
+     * @return An ok Result which renders the edit school html (which is /admin/schools/manage/new)
+     */
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result getNewSchool() { return getSchool(null);}
 
+    /**
+     * Creates a SchoolForm based on the id parameter. If id is null then an empty SchoolForm is created, otherwise a SchoolForm is created and filled with data from the School in the database with the ID id. If
+     * the School doesn't exist then the logged in User is redirected to the main schools page.
+     * This method is annotated with @Security.Authenticated(SuperAdminSecured.class) which means it can only be called by SuperAdmin Users.
+     * @param id the ID of the School we are editing or null if we are creating a School.
+     * @return An ok Result which renders the edit school html (which is either /admin/schools/manage/id or /admin/schools/manage/new) or a redirect if the School doesn't exist.
+     */
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result getSchool(Long id) {
         UserDAOImpl udao = new UserDAOImpl();
@@ -542,15 +702,29 @@ public class AdminController extends Controller {
         else {
             SchoolDAO dao = new SchoolDAO();
             School sch = dao.getSchool(id);
+            if (sch == null) {
+                return doesNotExist("/admin/schools");
+            }
             data = new SchoolForm(sch.getName());
         }
         Form<SchoolForm> formdata = Form.form(SchoolForm.class).fill(data);
         return ok(edit_school.render(user, formdata, id));
     }
 
+    /**
+     * Calls postSchool with a null id parameter. This method is annotated with @Security.Authenticated(SuperAdminSecured.class) which means it can only be called by SuperAdmin Users.
+     * @return A badRequest Result if the form has errors or a redirect Result back to the main school page.
+     */
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result postNewSchool() {return postSchool(null);}
 
+    /**
+     * Retrieves a School form from the request. If this form has errors then it returns a badRequest Result. Otherwise, either a new School is created with the data from the form (if id is null) or
+     * the School with the matching ID in the database is updated with the data in the form. If School doesn't exist then they are redirected before any saves can be made.
+     * This method is annotated with @Security.Authenticated(SuperAdminSecured.class) which means it can only be called by SuperAdmin Users.
+     * @param id the ID of the School being edited or null if a School is being created.
+     * @return A badRequest Result if the form has errors or a redirect Result back to the main school page.
+     */
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result postSchool(Long id) {
         UserDAOImpl udao = new UserDAOImpl();
@@ -571,6 +745,9 @@ public class AdminController extends Controller {
             } else {
                 SchoolDAO dao = new SchoolDAO();
                 sch = dao.getSchool(id);
+                if (sch == null) {
+                    return doesNotExist("/admin/schools");
+                }
                 sch.setName(formData.name);
                 sch.update();
             }
@@ -578,6 +755,10 @@ public class AdminController extends Controller {
         }
     }
 
+    /**
+     * Deletes a School using an ID retrieved from a DynamicForm. This method is annotated with @Security.Authenticated(SuperAdminSecured.class) which means it can only be called by SuperAdmin Users.
+     * @return A redirect Result back to the main school page
+     */
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result deleteSchool() {
         DynamicForm requestData = Form.form().bindFromRequest();
@@ -588,9 +769,19 @@ public class AdminController extends Controller {
         return redirect("/admin/schools");
     }
 
+    /**
+     * Calls getCategory with a null id parameter. This method is annotated with @Security.Authenticated(SuperAdminSecured.class) which means it can only be called by SuperAdmin Users.
+     * @return An ok Result that renders the edit category html (which is at /admin/categories/manage/new)
+     */
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result getNewCategory() { return getCategory(null);}
 
+    /**
+     * Creates either a new empty CategoryForm if id is null or a new CategoryForm filled with the data retrieved from the database Category with the ID matching the parameter id. If the Category doesn't exist then
+     * they are redirected to the main categories page. This method is annotated with @Security.Authenticated(SuperAdminSecured.class) which means it can only be called by SuperAdmin Users.
+     * @param id the ID of the Category being edited or null if a Category is being created.
+     * @return An ok Result that renders the edit category html (which is at /admin/categories/manage/id or /admin/categories/manage/new) or a redirect to the main categories page.
+     */
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result getCategory(Long id) {
         UserDAOImpl udao = new UserDAOImpl();
@@ -603,15 +794,29 @@ public class AdminController extends Controller {
         else {
             CategoryDAO dao = new CategoryDAO();
             Category cat = dao.getCategory(id);
+            if (cat == null) {
+                return doesNotExist("/admin/categories");
+            }
             data = new CategoryForm(cat.getName());
         }
         Form<CategoryForm> formdata = Form.form(CategoryForm.class).fill(data);
         return ok(edit_category.render(user, formdata, id));
     }
 
+    /**
+     * Calls postCategory with a null id parameter. This method is annotated with @Security.Authenticated(SuperAdminSecured.class) which means it can only be called by SuperAdmin Users.
+     * @return
+     */
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result postNewCategory() {return postCategory(null);}
 
+    /**
+     * Retrieves a CategoryForm from the request. If this form has errors then a badRequest Result is returned. Otherwise, based on the id parameter, either a new Category is created from the data contained in
+     * the CategoryForm (if id is null) or an existing Category in the database is updated with the data contained in the CategoryForm (if id is not null). If the Category doesn't exist then a redirect is returned
+     * before any saves can be made. This method is annotated with @Security.Authenticated(SuperAdminSecured.class) which means it can only be called by SuperAdmin Users.
+     * @param id the ID of the Category being edited or null if a Category is being created.
+     * @return A redirect Result back to the main category page if it was successful or a badRequest Result if the form had errors.
+     */
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result postCategory(Long id) {
         UserDAOImpl udao = new UserDAOImpl();
@@ -632,6 +837,9 @@ public class AdminController extends Controller {
             } else {
                 CategoryDAO dao = new CategoryDAO();
                 cat = dao.getCategory(id);
+                if (cat == null) {
+                    return doesNotExist("/admin/categories");
+                }
                 cat.setName(formData.name);
                 cat.update();
             }
@@ -639,6 +847,10 @@ public class AdminController extends Controller {
         }
     }
 
+    /**
+     * Deletes a Category using an ID retrieved from a DynamicForm. This method is annotated with @Security.Authenticated(SuperAdminSecured.class) which means it can only be called by SuperAdmin Users.
+     * @return A redirect Result back to the main category page.
+     */
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result deleteCategory() {
         DynamicForm requestData = Form.form().bindFromRequest();

@@ -34,7 +34,9 @@ public class UserDAOImpl implements UserDAO {
 
     public User getUser(Long ID){
         User user = User.find.byId(ID);
-        if (user.getDiscriminator().equals("student")) {
+        if (user == null) {
+            return null;
+        } else if (user.getDiscriminator().equals("student")) {
             Student s = new Student(user.getName(),user.getPassword(),user.getEmail(),user.getSchool());
             s.setId(user.getId());
             s.setApproved(user.getApproved());
@@ -55,7 +57,7 @@ public class UserDAOImpl implements UserDAO {
             sa.setApproved(user.getApproved());
             return sa;
         }
-        else return user; //TODO: throw an exception or something
+        else return user;
     }
 
     public User getUserByEmail(String email) {
