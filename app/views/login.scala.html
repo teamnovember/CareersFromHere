@@ -17,7 +17,7 @@
             <hr>
             <fieldset>
                 @helper.form(action = routes.RegistrationController.authenticate) {
-                        @text(loginForm("login"), label = "Email")
+                        @text(loginForm("email"), label = "Email")
                         @password(loginForm("password"), label = "Password")
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
@@ -29,8 +29,8 @@
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
                         @helper.form(action = routes.RegistrationController.getResetPassword()) {
-                            <button id="reset" type="submit" value="Reset" class="btn btn-primary">Forgot your password?</button>
-                        }
+                        <button id="reset" type="submit" value="Reset" class="btn btn-primary">Forgot your password?</button>
+                    }
                     </div>
                 </div>
             </fieldset>
