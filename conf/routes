@@ -12,6 +12,12 @@ GET         /assets/clips/*path                 controllers.VideoController.getV
 GET         /edit                               controllers.RegistrationController.getUserDetails()
 POST        /edit                               controllers.RegistrationController.postUserDetails()
 
+# Alumni video edit page
+GET         /yourvideos                         controllers.RegistrationController.videos()
+GET         /yourvideos/manage/:id              controllers.RegistrationController.getVideo(id: Long)
+POST        /yourvideos/manage/:id              controllers.RegistrationController.postVideo(id: Long)
+POST        /yourvideos/delete                  controllers.RegistrationController.deleteVideo()
+
 # Admin pages
 GET         /admin                              controllers.AdminController.index()
 GET         /admin/users                        controllers.AdminController.users(unapprovedonly:Int ?= 0)

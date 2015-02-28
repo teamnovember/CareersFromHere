@@ -80,6 +80,10 @@ public class VideoDAO {
         return videos;
     }
 
+    public List<Video> getVideosByUser(User u) {
+        return Video.find.where().eq("user",u).findList();
+    }
+
     public List<Video> getVideosBySchoolAndCategories(School s, List<Category> categories) {
         List<Video> videos = getVideosBySchool(s);
         return filterVideosByCategories(videos, categories);

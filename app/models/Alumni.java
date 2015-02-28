@@ -44,10 +44,4 @@ public class Alumni extends User {
     public String getProfile(){
         return profile;
     }
-
-    public void uploadVideo(Video video){
-        //todo see how this will be done
-    }
-
-
 }

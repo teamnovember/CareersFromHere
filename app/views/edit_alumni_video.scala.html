@@ -12,12 +12,12 @@
     <script>$(function() { $("#categories").chosen();  });</script>
 }
 
-@main("Admin Dashboard: Video Management - Careers From Here")(stylesheets)(javascripts)(user) {
+@main("Your Video Management Page - Careers From Here")(stylesheets)(javascripts)(user) {
     <div class="spacing-panel">
         <div class="shadow-panel">
             <h2>Edit video metadata</h2>
             <hr>
-            @helper.form(action = routes.AdminController.postVideo(id)) {
+            @helper.form(action = routes.RegistrationController.postVideo(id)) {
                 <fieldset>
                     @text(form("title"),
                         label = "Title")
@@ -29,9 +29,9 @@
                         isMultiple = true,
                         optionMap = catMap)
                     @select(form("publicaccess"),
-                        label = "Public Access",
                         isMultiple = false,
-                        optionMap = publicAccessMap)
+                        optionMap = publicAccessMap,
+                        label = "Public Access")
                     <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
                             <button id="submit" type="submit" value="Submit" class="btn btn-primary">Submit</button>

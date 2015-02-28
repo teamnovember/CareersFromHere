@@ -52,6 +52,9 @@
                                 @if(user.hasAdminRights) {
                                     <li><a href="@routes.AdminController.index">Admin panel</a></li>
                                 }
+                                @if(user.getDiscriminator == "alumni") {
+                                    <li><a href="@routes.RegistrationController.videos">Manage your videos</a></li>
+                                }
                                 <li class="divider"></li>
                                 <li><a href="@routes.RegistrationController.logout">Logout</a></li>
                             </ul>

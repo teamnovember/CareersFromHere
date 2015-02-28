@@ -476,11 +476,19 @@ public class AdminController extends Controller {
             return insufficientPermissions("/admin/videos");
         }
 
-        VideoForm data = new VideoForm(video.getTitle(),video.getDescription(),video.getCategories());
+        VideoForm data = new VideoForm(video.getTitle(),video.getDescription(),video.getCategories(),video.getPublicAccess());
         Form<VideoForm> formdata = Form.form(VideoForm.class).fill(data);
 
         Map<String, Boolean> catMap = AdminHelpers.ConstructCategoryMap(video.getCategories());
-        return ok(edit_video.render(user, formdata, id, catMap));
+        Map<String, Boolean> publicMap = new HashMap<>();
+        if (video.getPublicAccess() == false) {
+            publicMap.put("No",true);
+            publicMap.put("Yes",false);
+        } else {
+            publicMap.put("Yes",true);
+            publicMap.put("No",false);
+        }
+        return ok(edit_video.render(user, formdata, id, catMap, publicMap));
     }
 
     /**
@@ -504,8 +512,16 @@ public class AdminController extends Controller {
 
         if (data.hasErrors()) {
             Map<String, Boolean> catMap = AdminHelpers.ConstructCategoryMap(video.getCategories());
+            Map<String, Boolean> publicMap = new HashMap<>();
+            if (video.getPublicAccess() == false) {
+                publicMap.put("No",true);
+                publicMap.put("Yes",false);
+            } else {
+                publicMap.put("Yes",true);
+                publicMap.put("No",false);
+            }
             flash("error", "Please correct errors below.");
-            return badRequest(edit_video.render(user, data, id, catMap));
+            return badRequest(edit_video.render(user, data, id, catMap,publicMap));
         }
         else { //don't need to check for null id because we don't create Videos here
             CategoryDAO cdao = new CategoryDAO(); // Has fully initialised Category objects
@@ -514,6 +530,11 @@ public class AdminController extends Controller {
             video.setTitle(formData.title);
             video.setDescription(formData.description);
             video.categories.clear();
+            if(formData.publicaccess.equals("Yes")) {
+                video.setPublicAccess(true);
+            } else {
+                video.setPublicAccess(false);
+            }
 
             for (Category c : cdao.getAllCategories()) {
                 if (AdminHelpers.CategoryContains(formData.categories, c)) {
