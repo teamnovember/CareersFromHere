@@ -30,8 +30,8 @@ public class CategoryDAO {
     }
 
     /**
-     * Gives a List of all of the School objects in the database.
-     * @return A List of all School objects in the database.
+     * Gives a List of all of the Category objects in the database.
+     * @return A List of all Category objects in the database.
      */
     public List<Category> getAllCategories() {
         return Category.find.all();
