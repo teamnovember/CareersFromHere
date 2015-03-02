@@ -6,7 +6,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import play.data.*;
 import static play.data.Form.*;
 import play.libs.mailer.*;
-import play.Play;
 import views.forms.AlumniRegForm;
 import views.forms.LoginForm;
 import views.html.*;
@@ -17,6 +16,11 @@ import java.util.Map;
 
 public class RegistrationController extends Controller {
 
+    /**
+     * Creates and sends emails with the purpose to notify the admins of newUser's that someone is waiting for approval
+     * and emails the newUser that they are awaiting approval
+     * @param newUser the Alumni user being registered
+     */
     public static void newRegistrationEmail(Alumni newUser) {
         // Send email to user
         Email mail = new Email();
@@ -38,6 +42,10 @@ public class RegistrationController extends Controller {
         }
     }
 
+    /**
+     * Email that is sent to the newUser once their registration has been approved
+     * @param newUser the user being approved
+     */
     public static void userApprovedEmail(Alumni newUser) {
         // Send email to user
         Email mail = new Email();
@@ -48,17 +56,30 @@ public class RegistrationController extends Controller {
         MailerPlugin.send(mail);
     }
 
+
+    /**
+     *
+     * @return A new LoginForm with empty values
+     */
     public static Result login(){
         Form<LoginForm> form = form(LoginForm.class).fill(new LoginForm());
         return ok(login.render(form));
     }
 
+    /**
+     * Used to log out the user, removes their email from the session
+     * @return returns a redirect back to the homepage
+     */
     public static Result logout() {
         session().remove("email");
         session().clear();
         return redirect("/");
     }
 
+    /**
+     * Used to check that the user exists and is approved before storing their email in the session and redirecting.
+     * @return either a badREquest if there are errors in the LoginForm or a redirect result back to the homepage
+     */
     public static Result authenticate(){
         Form<LoginForm> loginForm = form(LoginForm.class).bindFromRequest();
 
@@ -70,18 +91,21 @@ public class RegistrationController extends Controller {
             if(u == null) {
                 flash("error", "Incorrect email and/or password.");
                 return badRequest(login.render(loginForm));
-            } else if (u.getApproved() == false) {
+            } else if (!u.getApproved()) {
                 flash("error", "Your account has not been approved yet.");
                 return badRequest(login.render(loginForm));
             } else {
                     session().clear();
-                    //todo do we want to be more secure than just storing the email in the session?
                     session("email", lf.email);
                     return redirect("/");
             }
         }
     }
 
+    /**
+     *
+     * @return An ok Result that renders the alumni registration page
+     */
     public static Result getAlumniRegForm() {
         AlumniRegForm data = new AlumniRegForm();
         Form<AlumniRegForm> formdata = Form.form(AlumniRegForm.class).fill(data);
@@ -90,11 +114,20 @@ public class RegistrationController extends Controller {
         return ok(reg_alumni.render(formdata, schoolMap));
     }
 
+    /**
+     *
+     * @return an ok Result that renders the reset_password page
+     */
     public static Result getResetPassword(){
         Form<String> form = form(String.class);
         return ok(reset_password.render(form));
     }
 
+
+    /**
+     * Resets the password to a random AlphaNumeric 8 character string and emails the user concerned to notify them of their new password
+     * @return a redirect Result that redirects to /login
+     */
     public static Result resetPassword(){
         DynamicForm requestData = Form.form().bindFromRequest();
         String email = requestData.get("email");
@@ -102,6 +135,7 @@ public class RegistrationController extends Controller {
         User user = dao.getUserByEmail(email);
         String newpw = RandomStringUtils.randomAlphanumeric(8);
         user.setPassword(newpw);
+        user.save();
 
         //now for the emailing
         Email mail = new Email();
@@ -115,6 +149,10 @@ public class RegistrationController extends Controller {
         return redirect("/login");
     }
 
+    /**
+     * Attempts to process a registration request, if there are no errors it creates a new Alumni and invokes newRegistrationEmail
+     * @return badRequest Result if there are errors in the data. A redirect Result to the homepage if there are no errors.
+     */
     public static Result postAlumniRegForm() {
         Form<AlumniRegForm> data = Form.form(AlumniRegForm.class).bindFromRequest();
 
