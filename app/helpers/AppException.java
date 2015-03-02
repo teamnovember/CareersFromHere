@@ -3,7 +3,9 @@ package helpers;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * Created by biko on 12/02/15.
+ * Used for errors in the HashHelper Class. Refer to the parent class NoSuchAlgorithmException for documentation
+ *
+ *
  */
 public class AppException extends NoSuchAlgorithmException {
     public AppException(){
