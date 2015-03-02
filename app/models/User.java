@@ -26,7 +26,13 @@ public abstract class User extends Model {
     private School school;
 
 
-
+    /**
+     * Constructor for Userclass
+     * @param name of the user being created
+     * @param password of the user being created
+     * @param email of the user being created
+     * @param school of the user being created
+     */
     public User(String name, String password, String email, School school){
         this.name=name;
         this.email=email;
@@ -81,7 +87,7 @@ public abstract class User extends Model {
     public static Finder<Long,User> find = new Finder<>(Long.class,User.class);
 
     /**
-     *
+     *getter for id
      * @return id
      */
     public Long getId(){
@@ -89,7 +95,7 @@ public abstract class User extends Model {
     }
 
     /**
-     *
+     * setter for id
      * @param id you want it to be set to
      */
     public void setId(Long id) { this.id = id; }
@@ -125,7 +131,7 @@ public abstract class User extends Model {
     }
 
     /**
-     *
+     * getter for Name of user
      * @return name of the user
      */
     public String getName() {
@@ -133,7 +139,7 @@ public abstract class User extends Model {
     }
 
     /**
-     *
+     * setter for name of user
      * @param name that the user's will be set to
      */
     public void setName(String name) {
@@ -141,7 +147,7 @@ public abstract class User extends Model {
     }
 
     /**
-     *
+     * getter for email of user
      * @return email of the user
      */
     public String getEmail(){
@@ -149,7 +155,7 @@ public abstract class User extends Model {
     }
 
     /**
-     *
+     * setter for email of user
      * @param email that the user's will be set to
      */
     public void setEmail(String email){
@@ -157,7 +163,7 @@ public abstract class User extends Model {
     }
 
     /**
-     *
+     * getter for school of the user
      * @return school of the user
      */
     public School getSchool(){
@@ -165,7 +171,7 @@ public abstract class User extends Model {
     }
 
     /**
-     *
+     * setter for school of the user
      * @param school the user's will be set to
      */
     public void setSchool(School school){
@@ -180,19 +186,19 @@ public abstract class User extends Model {
     }
 
     /**
-     *
+     * getter for the approved state (true/false)
      * @return the approved state of the user
      */
     public boolean getApproved() { return approved; }
 
     /**
-     *
+     * setter for the approved state of the user
      * @param a approved of the user is set to a
      */
     public void setApproved(boolean a) { this.approved = a; }
 
     /**
-     *
+     * getter for the Alumni profile
      * @return the profile of the alumni - if not an alumni then it returns null instead
      */
     public String getAlumniProfile() {
@@ -205,7 +211,7 @@ public abstract class User extends Model {
     }
 
     /**
-     *
+     * Setter for the Alumni profile
      * @param s the profile of the alumni is set to s
      */
     public void setAlumniProfile(String s) {

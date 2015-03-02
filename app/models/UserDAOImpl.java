@@ -15,35 +15,64 @@ public class UserDAOImpl implements UserDAO {
 
     public UserDAOImpl() {}
 
+    /**
+     *
+     * @return a list of all users
+     */
     public List<User> getAllUsers(){
         List<User> users = User.find.all();
         return users;
     }
 
+    /**
+     *
+     * @param school the school you wish to get the users for
+     * @return a list of all users associated with the school
+     */
     public List<User> getSchoolUsers(School school) {
         ExpressionList<User> expList = User.find.where().eq("school",school);
         List<User> users = expList.findList();
         return users;
     }
 
+    /**
+     * same as getSchoolUsers but now no SuperAdmin's will be present
+     * @param school the school you wish to get the users for
+     * @return a list of all users associated with the school without Super Admin's
+     */
     public List<User> getSchoolUsersNoSA(School school) {
         ExpressionList<User> expList = User.find.where().eq("school",school).ne("discriminator","superadmin");
         List<User> users = expList.findList();
         return users;
     }
 
+    /**
+     *
+     * @param school the school you want to get the unapproved users from
+     * @return a list of all the users that are unapproved associated with the school
+     */
     public List<User> getUnapprovedSchoolUsers(School school) {
         ExpressionList<User> expList = User.find.where().eq("school",school).eq("approved",false);
         List<User> users = expList.findList();
         return users;
     }
 
+    /**
+     * same as getUnapprovedSchoolUsers but now without Super Admins
+     * @param school the school you want to get the unapproved users from
+     * @return a list of all the unapproved users associated with the school not including Super Admins
+     */
     public List<User> getUnapprovedSchoolUsersNoSA(School school) {
         ExpressionList<User> expList = User.find.where().eq("school",school).ne("discriminator","superadmin").eq("approved",false);
         List<User> users = expList.findList();
         return users;
     }
 
+    /**
+     * gets a user associated with the ID
+     * @param ID the ID of the user you want to get
+     * @return the user associated with the id - null if none do
+     */
     public User getUser(Long ID){
         User user = User.find.byId(ID);
         if (user == null) {
@@ -72,11 +101,20 @@ public class UserDAOImpl implements UserDAO {
         else return user;
     }
 
+    /**
+     *
+     * @param email of the user you want to get
+     * @return the user associated with email
+     */
     public User getUserByEmail(String email) {
         User u = User.find.where().eq("email",email).findUnique();
         return u;
     }
 
+    /**
+     * gets the User from the HTTP context
+     * @return the user associated with email in the session
+     */
     public User getUserFromContext() {
         String email = Http.Context.current().session().get("email");
         User user = null;
@@ -86,12 +124,20 @@ public class UserDAOImpl implements UserDAO {
         return user;
     }
 
+    /**
+     * approves the user with ID
+     * @param ID of the user
+     */
     public void approveUser(Long ID) {
         User user = getUser(ID);
         user.setApproved(true);
         user.update();
     }
 
+    /**
+     * deletes the user with ID
+     * @param ID of the user you want to delete
+     */
     public void deleteUser(Long ID){
         SqlUpdate delete = Ebean.createSqlUpdate("DELETE FROM user WHERE id = :id");
         delete.setParameter("id",ID);
