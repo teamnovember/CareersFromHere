@@ -1,5 +1,7 @@
 @(user: models.User)(qList: java.util.List[models.Question])
 
+@import helpers.FormatHelper.SecToMMSS
+
 @stylesheets = {
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
 }
@@ -46,7 +48,7 @@
                     <li class="clearfix" data-order="@q.getOrder">
                         <div class="col-xs-1 handle"><span class="glyphicon glyphicon-resize-vertical"></span></div>
                         <div class="col-xs-8">@q.getText</div>
-                        <div class="col-xs-1">@{var s = q.getDuration.toInt; (s / 60)  + ":" + (s % 60)}</div>
+                        <div class="col-xs-1">@SecToMMSS(q.getDuration.toInt)</div>
                         <div class="col-xs-2">
                             <div class="action-button-place">
                                 <a class="btn btn-default action-button"
