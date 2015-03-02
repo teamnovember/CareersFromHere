@@ -26,6 +26,11 @@ public class BulkRegisterForm {
     public String discriminator = "student";
 
     /**
+     * Constructor for BulkRegisterForm
+     */
+    public BulkRegisterForm() {}
+
+    /**
      * Contructor for BulkRegisterForm.
      * @param school The School we want to bulk register Users for
      */

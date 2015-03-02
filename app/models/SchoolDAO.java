@@ -1,5 +1,8 @@
 package models;
 
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.SqlUpdate;
+
 import java.util.List;
 
 /**
@@ -35,7 +38,9 @@ public class SchoolDAO {
      * @param id The ID of the School we want to delete.
      */
     public void deleteSchool(Long id) {
-        School.find.byId(id).delete();
+        SqlUpdate delete = Ebean.createSqlUpdate("DELETE FROM school WHERE school_id = :id");
+        delete.setParameter("id",id);
+        delete.execute();
     }
 
     /**

@@ -60,22 +60,20 @@ create table category_video (
   video_id                       bigint not null,
   constraint pk_category_video primary key (category_id, video_id))
 ;
-alter table question add constraint fk_question_school_1 foreign key (SCHOOL) references school (school_id) on delete restrict on update restrict;
+alter table question add constraint fk_question_school_1 foreign key (SCHOOL) references school (school_id) on delete cascade on update cascade;
 create index ix_question_school_1 on question (SCHOOL);
-alter table user add constraint fk_user_school_2 foreign key (school_school_id) references school (school_id) on delete restrict on update restrict;
+alter table user add constraint fk_user_school_2 foreign key (school_school_id) references school (school_id) on delete cascade on update cascade;
 create index ix_user_school_2 on user (school_school_id);
-alter table video add constraint fk_video_user_3 foreign key (user_id) references user (id) on delete restrict on update restrict;
+alter table video add constraint fk_video_user_3 foreign key (user_id) references user (id) on delete cascade on update cascade;
 create index ix_video_user_3 on video (user_id);
-alter table video_clip add constraint fk_video_clip_video_4 foreign key (video_id) references video (id) on delete restrict on update restrict;
+alter table video_clip add constraint fk_video_clip_video_4 foreign key (video_id) references video (id) on delete cascade on update cascade;
 create index ix_video_clip_video_4 on video_clip (video_id);
-alter table video_clip add constraint fk_video_clip_question_5 foreign key (question_question_id) references question (question_id) on delete restrict on update restrict;
+alter table video_clip add constraint fk_video_clip_question_5 foreign key (question_question_id) references question (question_id) on delete cascade on update cascade;
 create index ix_video_clip_question_5 on video_clip (question_question_id);
 
+alter table category_video add constraint fk_category_video_category_01 foreign key (category_id) references category (id) on delete cascade on update cascade;
 
-
-alter table category_video add constraint fk_category_video_category_01 foreign key (category_id) references category (id) on delete restrict on update restrict;
-
-alter table category_video add constraint fk_category_video_video_02 foreign key (video_id) references video (id) on delete restrict on update restrict;
+alter table category_video add constraint fk_category_video_video_02 foreign key (video_id) references video (id) on delete cascade on update cascade;
 
 # --- !Downs
 

@@ -29,6 +29,12 @@ public class VideoForm {
      */
     public String publicaccess = "";
 
+
+    /**
+     * Constructor for VideoForm
+     */
+    public VideoForm() {}
+
     /**
      * Constructor for VideoForm
      * @param title The title of the Video we are creating/editing with this form

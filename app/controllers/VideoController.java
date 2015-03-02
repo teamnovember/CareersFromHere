@@ -25,24 +25,6 @@ public class VideoController extends Controller {
         UserDAOImpl udao = new UserDAOImpl();
         User user = udao.getUserFromContext();
 
-        if (Video.find.findRowCount() == 0) {
-            // Seed data, TEDx videos sorted by popularity
-            School s = new School("Super High School");
-            s.save();
-            Alumni u = new Alumni("Test user", "Stuff", "test@asdf.com",s);
-            u.save();
-            Video v = new Video(u, "Beatbox brilliance", "Blah", "http://img.youtube.com/vi/GNZBSZD16cY/0.jpg");
-            v.save();
-            v = new Video(u, "Hackschooling makes me happy", "Blah", "http://img.youtube.com/vi/h11u3vtcpaY/0.jpg");
-            v.save();
-            v = new Video(u, "My philosophy for a happy life", "Blah", "http://img.youtube.com/vi/36m1o-tM05g/0.jpg");
-            v.save();
-            v = new Video(u, "Why I stopped watching porn", "Blah", "http://img.youtube.com/vi/gRJ_QfP2mhU/0.jpg");
-            v.save();
-            v = new Video(u, "Coming out of your closet", "Blah", "http://img.youtube.com/vi/kSR4xuU07sc/0.jpg");
-            v.save();
-        }
-
         VideoDAO dao = new VideoDAO();
         List<Video> accessibleVideos = new ArrayList<Video>();
         if (user == null) {

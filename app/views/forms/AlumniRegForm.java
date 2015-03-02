@@ -11,6 +11,11 @@ import java.util.List;
 public class AlumniRegForm extends UserForm {
 
     /**
+     * Constructor for AlumniRegForm
+     */
+    public AlumniRegForm() {}
+
+    /**
      * Validate function. This is called when we bind a form from the request. It checks the form fields for any errors.
      * If there is an error then it is added to the errors list which can be used to help the User know what they
      * did incorrectly
