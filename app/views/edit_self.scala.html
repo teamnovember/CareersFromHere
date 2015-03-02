@@ -1,5 +1,21 @@
 @(user: models.User)(form: play.data.Form[views.forms.UserForm])(schoolMap: java.util.Map[String, Boolean])(selectSchools: Boolean)
 
+@*
+    Display a form, that allows editing a own user information
+    UserForm with a multiple fields:
+        @name - name of the user
+        @email - email
+        @password - password
+        @school - school (only superadmins can select a value here)
+        @discriminator - what type of user should user be (only available on creation)
+        @profile - alumni profile information (only for alumni)
+    Expected input:
+        @user - currently logged-in user
+        @form - UserForm with mentioned fields
+        @schoolMap - 'school name' to 'selected' (bool) map
+        @selectSchools - true if user is authorised to select the school (i.e. superadmin)
+*@
+
 @import bootstrap3._
 
 @stylesheets = {

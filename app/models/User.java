@@ -25,6 +25,14 @@ public abstract class User extends Model {
     @ManyToOne
     private School school;
 
+
+    /**
+     * Constructor for Userclass
+     * @param name of the user being created
+     * @param password of the user being created
+     * @param email of the user being created
+     * @param school of the user being created
+     */
     public User(String name, String password, String email, School school){
         this.name=name;
         this.email=email;
@@ -32,6 +40,12 @@ public abstract class User extends Model {
         this.school = school;
     }
 
+    /**
+     * Used for matching an email and password with a user
+     * @param email email of the user being authenticated
+     * @param password password of the user being authenticated
+     * @return User that matched the username and password, null if none match
+     */
     public static User authenticate(String email, String password){
         User user = find.where().eq("email",email).findUnique();
         if(user == null) return null;
@@ -43,12 +57,19 @@ public abstract class User extends Model {
         }
     }
 
+    /**
+     * used to test if the user has admin rights (ie discriminator = "admin" or "superadmin")
+     * @return true if the user is an admin or superadmin, false otherwise
+     */
     public boolean hasAdminRights() {
         String discr = this.getDiscriminator();
         return discr.equals("admin") || discr.equals("superadmin");
     }
 
-    //hacky fix so new db structure is compatible with old code
+    /**
+     * hacky fix so new db structure is compatible with old code
+     * @return the discriminator of the class
+     */
     @Transient
     public String getDiscriminator(){
         DiscriminatorValue val = this.getClass().getAnnotation( DiscriminatorValue.class );
@@ -60,19 +81,38 @@ public abstract class User extends Model {
         }
     }
 
-
+    /**
+     * used to search the database for Users
+     */
     public static Finder<Long,User> find = new Finder<>(Long.class,User.class);
 
+    /**
+     *getter for id
+     * @return id
+     */
     public Long getId(){
         return this.id;
     }
 
+    /**
+     * setter for id
+     * @param id you want it to be set to
+     */
     public void setId(Long id) { this.id = id; }
 
+    /**
+     * shouldn't really be used as now the passwords are encrypted, but kept for compatability with old code
+     * @return password of a user
+     */
     public String getPassword(){
         return password;
     }
 
+    /**
+     * sets (and encrypts) a regular string password
+     * @param password the password you want it to be set to
+     * @return true if the password is set, false otherwise - so this should be checked to be certain the password is set
+     */
     public boolean setPassword(String password){
         try{
             this.password = HashHelper.createPassword(password);
@@ -82,42 +122,85 @@ public abstract class User extends Model {
         }
     }
 
+    /**
+     * sets the password without the Hash if it was needed
+     * @param password password that the user's will be set to
+     */
     public void setPasswordNoHash(String password) {
         this.password = password;
     }
 
-
+    /**
+     * getter for Name of user
+     * @return name of the user
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * setter for name of user
+     * @param name that the user's will be set to
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * getter for email of user
+     * @return email of the user
+     */
     public String getEmail(){
         return email;
     }
 
+    /**
+     * setter for email of user
+     * @param email that the user's will be set to
+     */
     public void setEmail(String email){
         this.email=email;
     }
 
+    /**
+     * getter for school of the user
+     * @return school of the user
+     */
     public School getSchool(){
         return this.school;
     }
+
+    /**
+     * setter for school of the user
+     * @param school the user's will be set to
+     */
     public void setSchool(School school){
         this.school = school;
     }
 
+    /**
+     * don't use this, use setApproved instead. Not sure if it is semantically correct
+     */
     public void approved(){
         this.approved = false;
     }
 
+    /**
+     * getter for the approved state (true/false)
+     * @return the approved state of the user
+     */
     public boolean getApproved() { return approved; }
 
+    /**
+     * setter for the approved state of the user
+     * @param a approved of the user is set to a
+     */
     public void setApproved(boolean a) { this.approved = a; }
 
+    /**
+     * getter for the Alumni profile
+     * @return the profile of the alumni - if not an alumni then it returns null instead
+     */
     public String getAlumniProfile() {
         if (this.getDiscriminator().equals("alumni")) {
             Alumni a = Alumni.find.byId(this.getId());
@@ -127,6 +210,10 @@ public abstract class User extends Model {
         }
     }
 
+    /**
+     * Setter for the Alumni profile
+     * @param s the profile of the alumni is set to s
+     */
     public void setAlumniProfile(String s) {
         if (this.getDiscriminator().equals("alumni")) {
             ((Alumni) this).setProfile(s);

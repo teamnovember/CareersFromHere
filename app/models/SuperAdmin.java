@@ -11,7 +11,7 @@ import javax.persistence.Entity;
 import java.util.List;
 
 /**
- * Created by biko on 05/02/15.
+ * Refer to Admin class for documentation - There is no difference between the two at this level
  */
 @Entity
 @DiscriminatorValue("superadmin")
