@@ -116,7 +116,7 @@ public class UserController extends Controller {
             flash("error","Video does not exist.");
             redirect("/myvideos");
         }
-        if(user.getId() != video.getUser().getId()) {
+        if(!user.getId().equals(video.getUser().getId())) {
             flash("error","You do not have permission to edit that video");
             redirect("/myvideos");
         }
@@ -125,7 +125,7 @@ public class UserController extends Controller {
 
         Map<String, Boolean> catMap = AdminHelpers.ConstructCategoryMap(video.getCategories());
         Map<String, Boolean> publicMap = new HashMap<>();
-        if (video.getPublicAccess() == false) {
+        if (!video.getPublicAccess()) {
             publicMap.put("No",true);
             publicMap.put("Yes",false);
         } else {
@@ -152,7 +152,7 @@ public class UserController extends Controller {
             flash("error","Video does not exist.");
             redirect("/myvideos");
         }
-        if(user.getId() != video.getUser().getId()) {
+        if(!user.getId().equals(video.getUser().getId())) {
             flash("error","You do not have permission to edit that video");
             redirect("/myvideos");
         }
@@ -160,7 +160,7 @@ public class UserController extends Controller {
         if (data.hasErrors()) {
             Map<String, Boolean> catMap = AdminHelpers.ConstructCategoryMap(video.getCategories());
             Map<String, Boolean> publicMap = new HashMap<>();
-            if (video.getPublicAccess() == false) {
+            if (!video.getPublicAccess()) {
                 publicMap.put("No",true);
                 publicMap.put("Yes",false);
             } else {

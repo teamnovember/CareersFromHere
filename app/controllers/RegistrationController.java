@@ -92,7 +92,6 @@ public class RegistrationController extends Controller {
 
     public static Result getResetPassword(){
         Form<String> form = form(String.class);
-
         return ok(reset_password.render(form));
     }
 

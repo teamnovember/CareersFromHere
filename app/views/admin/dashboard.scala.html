@@ -9,9 +9,9 @@
 }
 
 @main("Admin Dashboard - Careers From Here")(stylesheets)(javascripts)(user) {
-    <div class="spacing-panel col-md-6">
-        <div id="actions-links" class="shadow-panel">
-          <div><a class="btn btn-primary choice-button" href="@routes.AdminController.users(0)">
+    <div class="spacing-panel">
+        <div id="actions-links" class="shadow-panel clearfix">
+          <div><a class="btn btn-primary choice-button col-md-6" href="@routes.AdminController.users(0)">
               <h3><span class="glyphicon glyphicon-user"></span> Manage users</h3>
               <p>Click here to:
               <ul>
@@ -22,7 +22,7 @@
               </ul>
               </p>
           </a></div>
-          <div><a class="btn btn-primary choice-button" href="@routes.AdminController.videos(0)">
+          <div><a class="btn btn-primary choice-button col-md-6" href="@routes.AdminController.videos(0)">
               <h3><span class="glyphicon glyphicon-facetime-video"></span> Manage Videos</h3>
               <p>Click here to:
               <ul>
@@ -33,7 +33,7 @@
               </ul>
               </p>
           </a></div>
-            <div><a class="btn btn-primary choice-button" href="@routes.AdminController.questions">
+            <div><a class="btn btn-primary choice-button col-md-6" href="@routes.AdminController.questions">
                 <h3><span class="glyphicon glyphicon-question-sign"></span> Manage Questions</h3>
                 <p>Click here to:
             <ul>
@@ -43,7 +43,7 @@
             </ul>
                 </p>
             </a></div>
-            <div><a class="btn btn-primary choice-button" href="@routes.AdminController.schools">
+            <div><a class="btn btn-primary choice-button col-md-6" href="@routes.AdminController.schools">
                 <h3><span class="glyphicon glyphicon-education"></span> Manage Schools</h3>
                 <p>Click here to:
                 <ul>
@@ -53,7 +53,7 @@
                 </ul>
                 </p>
             </a></div>
-            <div><a class="btn btn-primary choice-button" href="@routes.AdminController.categories">
+            <div><a class="btn btn-primary choice-button col-md-6" href="@routes.AdminController.categories">
                 <h3><span class="glyphicon glyphicon-list"></span> Manage categories</h3>
                 <p>Click here to:
             <ul>
@@ -63,11 +63,6 @@
             </ul>
                 </p>
             </a></div>
-        </div>
-    </div>
-    <div class="spacing-panel col-md-6">
-        <div id="admin-stats" class=" shadow-panel">
-            <p>Some admin stats, maybe list of unapproved videos</p>
         </div>
     </div>
 }
