@@ -1,5 +1,10 @@
 @(user: models.User)(qList: java.util.List[models.Question])
 
+@*
+    Question Listing page -- lists all questions and provides links with common actions, as well as saving new order
+*@
+
+
 @import helpers.FormatHelper.SecToMMSS
 
 @stylesheets = {
@@ -12,6 +17,10 @@
         $(".sortable" ).sortable( {
             handle: '.handle'
         });
+
+        /* Gets a permutation of 1..N (number of questions), that
+         * describes new ordering, formats the numbers as comma separated list
+         * and submits it to the server. */
         $("#save-button" ).click( function() {
             var orders = [];
             $(".sortable li" ).each(function(i, e) {
@@ -27,7 +36,7 @@
 @main("Admin Dashboard: Question Management - Careers From Here")(stylesheets)(javascripts)(user) {
     @helper.form(action = routes.AdminController.reorderQuestions()) {
         <input id="orderField" type="hidden" name="order" value="" />
-        @* add csrf *@
+        @* Add CSRF *@
     }
     <div class="spacing-panel">
         <div class="shadow-panel table-responsive">

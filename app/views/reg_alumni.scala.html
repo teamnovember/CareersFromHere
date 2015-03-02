@@ -1,5 +1,18 @@
 @(form: play.data.Form[views.forms.AlumniRegForm])(schoolMap: java.util.Map[String, Boolean])
 
+@*
+    Alumni Registration Form
+    Displays fields:
+    @school - school, alumni wants to be involved with
+    @name - name of the alumni
+    @email - email
+    @password - password
+    @profile - profile in text
+    Requires:
+    @form - AlumniRegForm with mentioned fields
+    @schoolMap - 'school name' to 'selected' (bool)
+*@
+
 @import bootstrap3._
 
 @stylesheets = {

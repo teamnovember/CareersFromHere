@@ -1,5 +1,20 @@
 @(user: models.User)(form: play.data.Form[views.forms.VideoForm])(id: Long)(catMap: java.util.Map[String, Boolean])(publicAccessMap: java.util.Map[String, Boolean])
 
+@*
+    Display a form, that allows editing metadata of a video
+    VideoForm with a multiple fields:
+        @title - title of the video
+        @description - description of the video
+        @categories - categories, video belongs to
+        @publicaccess - whether video is public or not
+    Expected input:
+        @user - currently logged-in user
+        @form - VideoForm with mentioned fields
+        @id - id of the video, that is being edited
+        @catMap - 'category name' to 'selected' (bool) map
+        @publicAccessMap - {'Yes'/'No'} string to 'selected' (bool) map
+*@
+
 @import bootstrap3._
 
 @stylesheets = {

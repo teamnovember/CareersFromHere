@@ -1,5 +1,13 @@
 @(questions: java.util.List[Question])(JSONquestions: String)(JSONdurations: String)(user: models.User)
 
+@*
+    Interview Recording page.
+    @questions - list of questions to answer
+    @JSONquestions - question list, formatted as JSON
+    @JSONdurations - question duration list, formatted as JSON
+    @user - currently logged in user
+*@
+
 @import helpers.FormatHelper.SecToMMSS
 
 @stylesheets = {
@@ -23,7 +31,7 @@
                 <h2>Questions</h2>
                 <div>
                     @for(question <- questions) {
-                        <div class="question clearfix"> @* onclick to recording app with question selection? *@
+                        <div class="question clearfix">
                             <div class="col-xs-9">@question.getText()</div>
                             <div class="col-xs-3">@SecToMMSS(question.getDuration.toInt)</div>
                         </div>
