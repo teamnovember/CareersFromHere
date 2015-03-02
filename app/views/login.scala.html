@@ -22,17 +22,10 @@
                         <div class="form-group">
                             <div class="col-sm-offset-2 col-sm-10">
                                 <button id="submit" type="submit" value="Submit" class="btn btn-primary">Login</button>
-
+                                <a id="forgot-link" href="@routes.RegistrationController.getResetPassword()">Forgot your password?</a>
                             </div>
                         </div>
                 }
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        @helper.form(action = routes.RegistrationController.getResetPassword()) {
-                        <button id="reset" type="submit" value="Reset" class="btn btn-primary">Forgot your password?</button>
-                    }
-                    </div>
-                </div>
             </fieldset>
 
         </div>

@@ -66,9 +66,6 @@ POST        /admin/categories/manage/new        controllers.AdminController.post
 POST        /admin/categories/manage/:id        controllers.AdminController.postCategory(id: Long)
 POST        /admin/categories/delete            controllers.AdminController.deleteCategory()
 
-# Dummy page
-GET         /dummy                              controllers.Dummy.dummy_page()
-
 # Recording
 GET         /record                             controllers.VideoController.record()
 POST        /record/publish                     controllers.UploadController.uploadVideo()

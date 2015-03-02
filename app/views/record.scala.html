@@ -1,5 +1,7 @@
 @(questions: java.util.List[Question])(JSONquestions: String)(JSONdurations: String)(user: models.User)
 
+@import helpers.FormatHelper.SecToMMSS
+
 @stylesheets = {
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/view.css")">
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/video-player.css")" />
@@ -23,7 +25,7 @@
                     @for(question <- questions) {
                         <div class="question clearfix"> @* onclick to recording app with question selection? *@
                             <div class="col-xs-9">@question.getText()</div>
-                            <div class="col-xs-3">@{var s = question.getDuration.toInt; (s / 60) + ":" + (s % 60)}</div>
+                            <div class="col-xs-3">@SecToMMSS(question.getDuration.toInt)</div>
                         </div>
                     }
                 </div>

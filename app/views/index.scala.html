@@ -1,6 +1,7 @@
 @(videos: java.util.List[models.Video])(catForm: Form[views.forms.CategorySelectionForm])(categoryMap: Map[String, Boolean])(user: models.User)
 
 @import bootstrap3._
+@import helpers.FormatHelper.SecToMMSS
 
 @stylesheets = {
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/index.css")">
@@ -8,9 +9,29 @@
 
 @javascripts = {
     <script>
-        $("#category-sidebar h2" ).click(function() {
-            if(isBreakpoint("xs"))
-                $("#category").toggle();
+        $(function() {
+            $("#category-section-name" ).click(function() {
+                if(isBreakpoint("xs"))
+                    $("#categories").slideToggle();
+            });
+
+            var resizeFn = function() {
+                if(isBreakpoint("xs")) {
+                    $("#category-sidebar").css("display", "block");
+                    $("#video-grid").css("display", "block");
+                    $("#categories").hide();
+                    // remove css, collapse bar
+                } else {
+                    $("#category-sidebar").css("display", "table-cell");
+                    $("#video-grid").css("display", "table-cell");
+                    $("#categories").show();
+                    // add css, expand the bar
+                }
+            };
+
+            $(window).resize(resizeFn);
+            resizeFn();
+
         });
     </script>
 }
@@ -18,8 +39,11 @@
 @main("Careers From Here")(stylesheets)(javascripts)(user) {
     <div id="content-wrapper">
         <div class="row">
-            <div id="category-sidebar" class="col-md-3 hidden-xs hidden-sm">
-                <h2>Categories <span class="glyphicon glyphicon-chevron-down"></span></h2>
+            <div id="category-sidebar" class="col-md-3 col-sm-4">
+                <div id="category-section-name">
+                    <h2>Categories <span class="glyphicon glyphicon-chevron-down"></span></h2>
+                </div>
+
                 <div id="categories">
                     @helper.form(action = routes.VideoController.categorySelect) {
                         <fieldset>
@@ -31,14 +55,14 @@
                     }
                 </div>
             </div>
-            <div id="video-grid" class="col-md-9">
+            <div id="video-grid" class="col-md-9 col-sm-8">
                 @for(video <- videos) {
                     <a href="@routes.VideoController.view(video.getId)">
                         <div class="video-grid-element col-sm-6 col-md-4"
                             style="background-image: url(@video.getThumbnailPath)">
                             <div class="video-info-overlay">
                                 <h2>@video.getTitle</h2>
-                                <span>@{var s = video.getDuration.toInt; s / 60 + ":" + s % 60}</span>
+                                <span>@SecToMMSS(video.getDuration.toInt)</span>
                             </div>
                         </div>
                     </a>
