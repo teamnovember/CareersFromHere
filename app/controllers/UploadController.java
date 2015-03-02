@@ -1,8 +1,3 @@
-/*
-    TODO: move code to VideoController
-    (no one is allowed to move it !!)
- */
-
 package controllers;
 
 import models.*;
@@ -24,9 +19,14 @@ import views.html.emails.upload_alumni_notify;
 public class UploadController extends Controller {
 
     private static String prefixPath = "/assets/clips/";
-    private static String systemPath = "/home/tdn26/videos/";
-//    private static String systemPath = "/Users/tdn/Documents/workspace-uni/group_project/videos/";
+//    private static String systemPath = "/home/tdn26/videos/";
+    private static String systemPath = "/Users/tdn/Documents/workspace-uni/group_project/videos/";
 
+    /**
+     * Parses the data from an upload request and creates a Video object that is saved into the database.
+     * Upload makes use of the avconv tool to merge wav with webm files.
+     * @return Redirect to main page
+     */
     public static Result uploadVideo() {
         int count = request().body().asMultipartFormData().getFiles().size();
 
@@ -55,7 +55,6 @@ public class UploadController extends Controller {
                 e.printStackTrace();
             }
 
-            // TODO: do not rely on i
             if (i % 2 == 0) {
                 Integer qid = Integer.parseInt(request().body().asMultipartFormData().asFormUrlEncoded().get("video-questionId")[i / 2]);
                 questionsId.add(qid);
@@ -64,7 +63,6 @@ public class UploadController extends Controller {
                 durationVideo.add(duration);
             }
 
-            // TODO: should test on filetype and not on i (given the order of append in recorder.js)
             String name = "";
             if (i % 2 == 1)
                 name = request().body().asMultipartFormData().asFormUrlEncoded().get("audio-filename")[i / 2];
@@ -96,8 +94,8 @@ public class UploadController extends Controller {
         String name = request().body().asMultipartFormData().asFormUrlEncoded().get("thumbnail-filename")[0];
         String thumbnailPath = systemPath + name;
         try {
-            String cmd = "avconv -i " + oldVideoPaths.get(0) + " -vframes 1 -y " + thumbnailPath;
-//            String cmd = "ffmpeg -i " + oldVideoPaths.get(0) + " -vf  thumbnail -frames:v 1 " + thumbnailPath;
+//            String cmd = "avconv -i " + oldVideoPaths.get(0) + " -vframes 1 -y " + thumbnailPath;
+            String cmd = "ffmpeg -i " + oldVideoPaths.get(0) + " -vf  thumbnail -frames:v 1 " + thumbnailPath;
             OutputStream os = Runtime.getRuntime().exec(cmd).getOutputStream();
             os.write("y".getBytes());
             os.close();
@@ -105,16 +103,24 @@ public class UploadController extends Controller {
             e.printStackTrace();
         }
 
-        createAndUpdateVideo(title, description, thumbnailPath, audioPaths, oldVideoPaths, videoPaths, questionsId, durationVideo);
+        createAndSaveVideo(title, description, thumbnailPath, audioPaths, oldVideoPaths, videoPaths, questionsId, durationVideo);
 
-        flash("success","You video was uploaded successfully. It has been sent to your school's admins for approval");
+        flash("success", "You video was uploaded successfully. It has been sent to your school's admins for approval");
         return redirect("/");
     }
 
-    // TODO: does not update database
-    // TODO: bad implementation; need to pass user information from record page
-    // TODO: should use form submission, but it is complicated to combine 2 post methods
-    private static void createAndUpdateVideo(String title, String description, String thumbnailPath, ArrayList<String> audioPaths, ArrayList<String> oldVideoPaths, ArrayList<String> videoPaths, ArrayList<Integer> questionsId, ArrayList<Double> durationVideo) {
+    /**
+     * Creates a Video object from the set of arguments and saves it to the database.
+     * @param title Title of video (metadata)
+     * @param description Description of video (metadata)
+     * @param thumbnailPath File system path for the video thumbnail
+     * @param audioPaths File system paths for audio files (wav)
+     * @param oldVideoPaths File system paths for old(no sound) video files (webm)
+     * @param videoPaths File system paths for video files (webm after merge with wav)
+     * @param questionsId Ids of the questions corresponding to each pair of audio and video files
+     * @param durationVideo Total duration of the recording
+     */
+    private static void createAndSaveVideo(String title, String description, String thumbnailPath, ArrayList<String> audioPaths, ArrayList<String> oldVideoPaths, ArrayList<String> videoPaths, ArrayList<Integer> questionsId, ArrayList<Double> durationVideo) {
         UserDAOImpl udao = new UserDAOImpl();
         Alumni user = (Alumni) udao.getUserFromContext();
 
@@ -126,11 +132,9 @@ public class UploadController extends Controller {
         for (int i = 0; i < videoPaths.size(); ++i) {
             // merge webm with wav into webm
             // send "y" in case the file has to be replaced
-            // this runs in async mode, so there is going to be a delay before you can see the video
-            // TODO: try to keep quality of video
             try {
-                OutputStream os = Runtime.getRuntime().exec("avconv -i " + audioPaths.get(i) + " -itsoffset -00:00:00 -i " + oldVideoPaths.get(i) + " -map 0:0 -map 1:0 " + videoPaths.get(i)).getOutputStream();
-//                OutputStream os = Runtime.getRuntime().exec("ffmpeg -i " + audioPaths.get(i) + " -itsoffset -00:00:00 -i " + oldVideoPaths.get(i) + " -map 0:0 -map 1:0 " + videoPaths.get(i)).getOutputStream();
+//                OutputStream os = Runtime.getRuntime().exec("avconv -i " + audioPaths.get(i) + " -itsoffset -00:00:00 -i " + oldVideoPaths.get(i) + " -map 0:0 -map 1:0 " + videoPaths.get(i)).getOutputStream();
+                OutputStream os = Runtime.getRuntime().exec("ffmpeg -i " + audioPaths.get(i) + " -itsoffset -00:00:00 -i " + oldVideoPaths.get(i) + " -map 0:0 -map 1:0 " + videoPaths.get(i)).getOutputStream();
                 os.write("y".getBytes());
                 os.close();
             } catch (IOException e) {
@@ -143,10 +147,9 @@ public class UploadController extends Controller {
 
         v.save();
 
-        sendUploadEmails(user.getSchool(),user,v);
+        sendUploadEmails(user.getSchool(), user, v);
     }
 
-    //TODO: make sure this works!
     private static void sendUploadEmails(School school, Alumni alumni, Video video) {
         Email aluMail = new Email();
         aluMail.setSubject("Careers From Here: Upload Confirmation");
@@ -161,7 +164,7 @@ public class UploadController extends Controller {
             adminMail.setSubject("Careers From Here: New Video has been uploaded to your school");
             adminMail.setFrom("Careers From Here <careersfromhere@gmail.com>");
             adminMail.addTo(x.getName() + " <" + x.getEmail() + ">");
-            aluMail.setBodyHtml(upload_admin_notify.render(x,video).toString());
+            aluMail.setBodyHtml(upload_admin_notify.render(x, video).toString());
             MailerPlugin.send(adminMail);
         }
     }

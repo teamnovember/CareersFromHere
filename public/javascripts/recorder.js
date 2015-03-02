@@ -60,19 +60,11 @@ mRecordRTC.media = {
     video: true
 };
 
-// TODO: trying 640x360, does not resize properly
 mRecordRTC.video = mRecordRTC.canvas = {
     width: 640,
     height: 480
 };
 
-//navigator.getUserMedia =
-//    navigator.getUserMedia ||
-//    navigator.webkitGetUserMedia ||
-//    navigator.mozGetUserMedia ||
-//    navigator.msGetUserMedia;
-
-// TODO: check if it is better to go directly into startRecording
 function retry() {
     recorderAudio.src = "";
     recorderVideo.src = "";
@@ -80,10 +72,8 @@ function retry() {
     stateBEGIN();
 };
 
-// TODO: must never use the HTML5 default video controls
 function startStopPlayPause() {
     switch (btnStartStopPlayPauseState) {
-        // TODO: check onAudioProcessStarted to solve delay between audio and video
         case "start":
             recorderVideo.src = window.URL.createObjectURL(cameraStream);
             mRecordRTC.addStream(cameraStream);
@@ -91,7 +81,6 @@ function startStopPlayPause() {
             recorderAudio.play();
             recorderVideo.play();
 
-            // setTimeout(function() {mRecordRTC.startRecording();}, 1000);
             firstTimeUpdate = true;
             mRecordRTC.startRecording();
             recorderVideo.addEventListener("timeupdate", updateProgressREC, false);
@@ -117,7 +106,6 @@ function startStopPlayPause() {
                 }
 
                 if (type == "video") {
-                    //oldTime = recorderVideo.currentTime;
                     recorderVideo.pause();
                     recorderVideo.src = url;
 
@@ -130,37 +118,6 @@ function startStopPlayPause() {
 
                 if (!notAudio && !notVideo) statePLAYBACK();
             });
-
-            // TODO: look for other solution, otherwise leave it like this (audio not working on firefox)
-            // TODO: seems like getting audio from disk works (on dummy, but not here)
-            if (notAudio || notVideo) {
-                var notReload = true;
-
-                MRecordRTC.getFromDisk("all", function (dataURL, type) {
-                    if (type == "audio" && notAudio) {
-                        recorderAudio.pause();
-                        recorderAudio.src = dataURL;
-
-                        audioUrls[index] = dataURL;
-
-                        notAudio = false;
-                    }
-
-                    if (type == "video" && notVideo) {
-                        recorderVideo.pause();
-                        recorderVideo.src = dataURL;
-
-                        videoUrls[index] = dataURL;
-
-                        notVideo = false;
-                    }
-
-                    if (!notAudio && !notVideo && notReload) {
-                        statePLAYBACK();
-                        notReload = false;
-                    }
-                });
-            }
             break;
         case "play":
             recorderAudio.play();
@@ -169,7 +126,6 @@ function startStopPlayPause() {
             change(btnStartStopPlayPause, "inline", pauseGlyph);
             btnStartStopPlayPauseState = "pause";
             break;
-        // TODO: when video playback finishes the button must go back to play
         case "pause":
             recorderAudio.pause();
             recorderVideo.pause();
@@ -180,7 +136,6 @@ function startStopPlayPause() {
     }
 };
 
-// TODO: warning! watch out for asynchronous call of writeToDisk; I do not use getFromDisk, but be ware of it!
 function next() {
     recorderAudio.src = "";
     recorderVideo.src = "";
@@ -193,7 +148,6 @@ function next() {
             newrec = false;
         }
 
-        // TODO: take care when index out of bounds
         index ++;
         if (index >= questions.length) statePUBLISH();
         else stateBEGIN();
@@ -207,7 +161,6 @@ function change(button, display, className) {
     button.getElementsByTagName("span")[0].className = className;
 };
 
-// TODO: some changes can be skipped because of the state transition restriction
 function stateBEGIN() {
     state = "BEGIN";
     recorderVideo.removeEventListener("timeupdate", updateProgressPLAYBACK, false);
@@ -262,26 +215,22 @@ function statePLAYBACK() {
     change(btnRetry, "inline");
     change(btnStartStopPlayPause, "inline", playGlyph);
     btnStartStopPlayPauseState = "play";
-    // autoplay is required to be able to get thumbnail
     btnStartStopPlayPause.click();
     change(btnNext, "inline");
 
     leftClock.innerText = "00:00";
-    // right clock is done on updDurationVideo()
+    // right clock is set on updDurationVideo()
     document.getElementsByClassName(progressBarClass)[0].style.width = "0%";
 };
 
 function statePUBLISH() {
-    // TODO: camera is left on even if the user is not recording; this is bad but avoid access to camera question
     cameraStream.stop();
     recorderVideo.removeEventListener("timeupdate", updateProgressPLAYBACK, false);
 
-    // TODO: one alumni can record at most one video
     name = document.getElementById(recorderContainerId).getAttribute(nameAttr);
 
     document.getElementById(publishId).style.display = "inline";
 
-    // TODO: hide the recorder or switch pages
     var child = document.getElementById(recorderContainerId);
     child.parentNode.removeChild(child);
 };
@@ -316,8 +265,7 @@ function publish() {
         window.open(location.href + fName);
     });
 
-    // TODO: callback useless
-    function xhr(url, data, callback) {
+    function xhr(url, data) {
         var request = new XMLHttpRequest();
         request.onreadystatechange = function () {
             if (request.readyState == 4 && request.status == 200) {
@@ -402,7 +350,6 @@ function switchPauseToPlay() {
     btnStartStopPlayPauseState = "play";
 };
 
-// TODO: mirrored image of the camera only when recording; it goes back then; bad call;
 function initRecorder() {
     recorderAudio = document.getElementById(recorderAudioId);
 
