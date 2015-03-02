@@ -92,7 +92,7 @@ public class UserForm {
             errors.add(new ValidationError("name", "No name was given"));
         }
 
-        if (password != null && password.length() < 8) {
+        if (password != null && !password.equals("") && password.length() < 8) {
             errors.add(new ValidationError("password","Please enter a longer password so you account is more secure!"));
         }
 

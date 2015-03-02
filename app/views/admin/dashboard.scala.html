@@ -54,29 +54,31 @@
                 </p>
             </a></div>
 
-            @* Schools *@
-            <div><a class="btn btn-primary choice-button col-md-6" href="@routes.AdminController.schools">
-                <h3><span class="glyphicon glyphicon-education"></span> Manage Schools</h3>
-                <p>Click here to:
+            @if(user.getDiscriminator == "superadmin") {
+                @* Schools *@
+                <div><a class="btn btn-primary choice-button col-md-6" href="@routes.AdminController.schools">
+                    <h3><span class="glyphicon glyphicon-education"></span> Manage Schools</h3>
+                    <p>Click here to:
                 <ul>
                     <li>View schools that use the system</li>
                     <li>Edit information about the school</li>
                     <li>Add or remove schools</li>
                 </ul>
-                </p>
-            </a></div>
+                    </p>
+                </a></div>
 
-            @* Categories *@
-            <div><a class="btn btn-primary choice-button col-md-6" href="@routes.AdminController.categories">
-                <h3><span class="glyphicon glyphicon-list"></span> Manage categories</h3>
-                <p>Click here to:
+                @* Categories *@
+                <div><a class="btn btn-primary choice-button col-md-6" href="@routes.AdminController.categories">
+                    <h3><span class="glyphicon glyphicon-list"></span> Manage categories</h3>
+                    <p>Click here to:
                 <ul>
                     <li>View all possible video categories</li>
                     <li>Edit the category names</li>
                     <li>Add or remove categories</li>
                 </ul>
-                </p>
-            </a></div>
+                    </p>
+                </a></div>
+            }
         </div>
     </div>
 }
