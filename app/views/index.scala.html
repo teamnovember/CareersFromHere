@@ -1,5 +1,13 @@
 @(videos: java.util.List[models.Video])(catForm: Form[views.forms.CategorySelectionForm])(categoryMap: Map[String, Boolean])(user: models.User)
 
+@*
+    Video Gallery (index) page. Displays videos in a grid, allowing user to filter by categories.
+    @videos - list of videos user can access
+    @catForm - category selection form (List<Category>)
+    @categoryMap - 'category name' - 'selected' (bool) map
+    @user - currently logged in user
+*@
+
 @import bootstrap3._
 @import helpers.FormatHelper.SecToMMSS
 
@@ -17,15 +25,16 @@
 
             var resizeFn = function() {
                 if(isBreakpoint("xs")) {
+                    // remove css, collapse bar
                     $("#category-sidebar").css("display", "block");
                     $("#video-grid").css("display", "block");
                     $("#categories").hide();
-                    // remove css, collapse bar
+
                 } else {
+                    // add css, expand the bar
                     $("#category-sidebar").css("display", "table-cell");
                     $("#video-grid").css("display", "table-cell");
                     $("#categories").show();
-                    // add css, expand the bar
                 }
             };
 

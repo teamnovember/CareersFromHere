@@ -1,5 +1,9 @@
 @(user: models.User)(categoryList: java.util.List[models.Category])
 
+@*
+    Category Listing page -- lists all categories and provides links with common actions
+*@
+
 @stylesheets = {
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/admin.css")" />
 }
@@ -26,12 +30,14 @@
                     <tr>
                         <td>@category.getName</td>
                         <td>
+                            @* Edit *@
                             <div class="action-button-place">
                                 <a class="btn btn-default action-button"
                                 href="@routes.AdminController.getCategory(category.getId)">
                                     <span class="glyphicon glyphicon-pencil"></span> Edit</a>
                             </div>
 
+                            @* Delete *@
                             <div class="action-button-place">
                             @helper.form(action = routes.AdminController.deleteCategory()) {
                                 <input type="hidden" name="id" value="@category.getId" />

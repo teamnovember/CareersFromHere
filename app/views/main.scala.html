@@ -1,5 +1,14 @@
 @(title: String)(stylesheets: Html)(javascripts: Html)(user: models.User)(content: Html)
 
+@*
+    This is the UI template of the website. It allows children pages to customise some elements, such as
+    @title,
+    @stylesheets (HTML for embedding into stylesheets section),
+    @javascripts (same for JS),
+    @user (current user for displaying correct menu items and name),
+    @content (contents of page itself).
+*@
+
 <!DOCTYPE html>
 
 <html>
@@ -20,10 +29,13 @@
         @javascripts
     </head>
     <body>
+        @* UI scaling helpers - only one is visible on every scaling mode *@
         <div class="device-xs visible-xs"></div>
         <div class="device-sm visible-sm"></div>
         <div class="device-md visible-md"></div>
         <div class="device-lg visible-lg"></div>
+
+        @* Top menu bar *@
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
@@ -65,6 +77,7 @@
             </div>
         </div>
 
+        @* Error and success bars *@
         <div id="main-container" class="container">
             @if(flash.contains("success")) {
                 <div class="alert alert-success" role="alert">

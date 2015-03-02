@@ -1,5 +1,14 @@
 @(currentUser: models.User)(form: play.data.Form[views.forms.BulkRegisterForm])(schoolMap: java.util.Map[String, Boolean])(discrMap: java.util.Map[String, Boolean])(auth: Boolean)
 
+@*
+    Form for registering users in bulk.
+    @currentUser - currently logged-in admin
+    @form - bulk registration form to display (expected: school, discriminator (what type to register), email list)
+    @schoolMap - 'school name' to 'selected' (bool) map
+    @discrMap - 'discriminator' string to 'selected' (bool) map
+    @auth - true if user is authorised to select the school (i.e. superadmin)
+*@
+
 @import bootstrap3._
 
 @stylesheets = {
