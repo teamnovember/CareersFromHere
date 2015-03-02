@@ -41,7 +41,7 @@ public abstract class User extends Model {
     }
 
     /**
-     * Used for matchin an email and password with a user
+     * Used for matching an email and password with a user
      * @param email email of the user being authenticated
      * @param password password of the user being authenticated
      * @return User that matched the username and password, null if none match
