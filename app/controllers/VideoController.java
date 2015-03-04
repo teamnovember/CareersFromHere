@@ -95,7 +95,7 @@ public class VideoController extends Controller {
             flash("error","The video with the requested ID does not exist");
             return redirect("/");
         }
-        if (v.getUser().getSchool().getId() != user.getSchool().getId()) {
+        if (v.getUser().getSchool().getId() != user.getSchool().getId() && !v.getPublicAccess()) {
             flash("error", "You don't have sufficient permissions to view requested video.");
             return redirect("/");
         }
