@@ -1,6 +1,9 @@
 package controllers;
 
+import com.typesafe.config.ConfigFactory;
 import models.*;
+import org.apache.commons.lang3.RandomStringUtils;
+import play.api.Play;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Http.MultipartFormData.FilePart;
@@ -9,6 +12,7 @@ import play.mvc.Security;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import play.libs.mailer.*;
 import views.html.emails.registration_invite;
@@ -19,7 +23,7 @@ import views.html.emails.upload_alumni_notify;
 public class UploadController extends Controller {
 
     private static String prefixPath = "/assets/clips/";
-    private static String systemPath = "/home/tdn26/videos/";
+    private static String systemPath =  ConfigFactory.load().getString("cfh.videopath");
 
     /**
      * Parses the data from an upload request and creates a Video object that is saved into the database.
@@ -27,7 +31,7 @@ public class UploadController extends Controller {
      * @return Redirect to main page
      */
     public static Result uploadVideo() {
-        int count = request().body().asMultipartFormData().getFiles().size();
+        List<FilePart> files = request().body().asMultipartFormData().getFiles();
 
         ArrayList<String> audioPaths = new ArrayList<String>();
         ArrayList<String> oldVideoPaths = new ArrayList<String>();
@@ -35,11 +39,13 @@ public class UploadController extends Controller {
         ArrayList<Integer> questionsId = new ArrayList<Integer>();
         ArrayList<Double> durationVideo = new ArrayList<Double>();
 
-        String title = request().body().asMultipartFormData().asFormUrlEncoded().get("video-title")[0];
-        String description = request().body().asMultipartFormData().asFormUrlEncoded().get("video-description")[0];
 
-        for (int i = 0; i < count; ++i) {
-            FilePart fp = request().body().asMultipartFormData().getFiles().get(i);
+        Map<String, String[]> urlEncForm = request().body().asMultipartFormData().asFormUrlEncoded();
+        String title = urlEncForm.get("video-title")[0];
+        String description = urlEncForm.get("video-description")[0];
+
+        for (int i = 0; i < files.size(); ++i) {
+            FilePart fp = files.get(i);
             File f = fp.getFile();
 
             FileInputStream fis = null;
@@ -54,28 +60,32 @@ public class UploadController extends Controller {
                 e.printStackTrace();
             }
 
-            if (i % 2 == 0) {
-                Integer qid = Integer.parseInt(request().body().asMultipartFormData().asFormUrlEncoded().get("video-questionId")[i / 2]);
+            boolean isVideo = (i % 2 == 0);
+
+            if (isVideo) {
+                Integer qid = Integer.parseInt(urlEncForm.get("video-questionId")[i / 2]);
                 questionsId.add(qid);
 
-                Double duration = Double.parseDouble(request().body().asMultipartFormData().asFormUrlEncoded().get("video-duration")[i / 2]);
+                Double duration = Double.parseDouble(urlEncForm.get("video-duration")[i / 2]);
                 durationVideo.add(duration);
             }
 
-            String name = "";
-            if (i % 2 == 1)
-                name = request().body().asMultipartFormData().asFormUrlEncoded().get("audio-filename")[i / 2];
-            else name = request().body().asMultipartFormData().asFormUrlEncoded().get("video-filename")[i / 2];
+            String name = RandomStringUtils.randomAlphanumeric(12);
+            if (isVideo) // Audio
+                name += urlEncForm.get("video-filename")[i / 2];
+            else
+                name += urlEncForm.get("audio-filename")[i / 2];
 
             String oldFilePath = systemPath + "old-" + name;
             String filePath = systemPath + name;
 
-            if (i % 2 == 1) audioPaths.add(filePath);
-            else {
+            if(isVideo) {
                 oldVideoPaths.add(oldFilePath);
                 videoPaths.add(filePath);
 
                 filePath = oldFilePath;
+            } else {
+                audioPaths.add(filePath);
             }
 
             try {
@@ -90,7 +100,7 @@ public class UploadController extends Controller {
             }
         }
 
-        String name = request().body().asMultipartFormData().asFormUrlEncoded().get("thumbnail-filename")[0];
+        String name = RandomStringUtils.randomAlphanumeric(12) + urlEncForm.get("thumbnail-filename")[0];
         String thumbnailPath = systemPath + name;
         try {
             String cmd = "avconv -i " + oldVideoPaths.get(0) + " -vframes 1 -y " + thumbnailPath;
@@ -131,7 +141,7 @@ public class UploadController extends Controller {
             // merge webm with wav into webm
             // send "y" in case the file has to be replaced
             try {
-                OutputStream os = Runtime.getRuntime().exec("avconv -i " + audioPaths.get(i) + " -itsoffset -00:00:00 -i " + oldVideoPaths.get(i) + " -map 0:0 -map 1:0 " + videoPaths.get(i)).getOutputStream();
+                OutputStream os = Runtime.getRuntime().exec("avconv -y -i " + audioPaths.get(i) + " -itsoffset -00:00:00 -i " + oldVideoPaths.get(i) + " -map 0:0 -map 1:0 " + videoPaths.get(i)).getOutputStream();
                 os.write("y".getBytes());
                 os.close();
             } catch (IOException e) {

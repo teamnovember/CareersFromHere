@@ -229,7 +229,7 @@ function statePUBLISH() {
 
     name = document.getElementById(recorderContainerId).getAttribute(nameAttr);
 
-    document.getElementById(publishId).style.display = "inline";
+    document.getElementById(publishId).style.display = "block";
 
     var child = document.getElementById(recorderContainerId);
     child.parentNode.removeChild(child);

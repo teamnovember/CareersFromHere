@@ -1,5 +1,8 @@
 Deployment instructions
 
+SET-UP:
+1) Update application.conf to reflect your server configuration, in particular 'videopath' and database access
+
 LOCAL:
 1) Install "typesafe activator" tool, required for the play framework
 2) In terminal, go to the root of the git directory

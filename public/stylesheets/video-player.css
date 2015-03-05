@@ -29,9 +29,10 @@
 }
 
 #video-player-container #underlay {
-    padding-top: 480px;
+    margin-top: 480px;
     display: inline-block;
     width: 640px;
+    padding: 7px;
 }
 
 #video-player-container .progress,
